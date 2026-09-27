@@ -134,7 +134,7 @@ public class StageManager : MonoBehaviour
     public void Retry(){
         instance = null;
         // TODO : MAP DATA 받아와서 재시작하게 만들기
-        SceneManager.LoadScene($"00.Scenes/{GameManager.instance.MapInformation.mapName}");
+        SceneManager.LoadScene(GameManager.instance.MapInformation.mapName);
     }
 
     public void ReturnHome(){

@@ -13,8 +13,8 @@ public class ReplaySaver : MonoBehaviour
     }
 
     private void OnDestroy() {
-        string resourcesPath = Application.dataPath + "/Resources";
-        string filePath = resourcesPath + "/Highlight_" + (GameManager.instance?.stageIndex.ToString("D2") ?? "00") + ".txt";
+        string filePath = Path.Combine(Application.persistentDataPath,
+            "Highlight_" + (GameManager.instance?.stageIndex.ToString("D2") ?? "00") + ".txt");
 
         if(File.Exists(filePath)){
             File.Delete(filePath);

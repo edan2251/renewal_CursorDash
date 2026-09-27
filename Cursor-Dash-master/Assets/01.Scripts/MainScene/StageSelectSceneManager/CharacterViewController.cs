@@ -36,7 +36,7 @@ public class CharacterViewController : MonoBehaviour {
             characterImage.sprite = GameManager.instance.playerData.characterSetting.selectSprite.CharacterSprite;
         }
         catch {
-            "A".Log();
+            Debug.Log("A");
         }
         characterImage.color = GameManager.instance.playerData.characterSetting.selectColor.ColorValue;
     }

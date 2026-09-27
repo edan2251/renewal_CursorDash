@@ -106,7 +106,7 @@ public class PatternReader : MonoBehaviour {
                     int.Parse(detailedInformation[1]));
             }
             catch {
-                "a".Log();
+                Debug.Log("a");
             }
             newPatternData.PatternSteps.Add(newPatternStep);
         }

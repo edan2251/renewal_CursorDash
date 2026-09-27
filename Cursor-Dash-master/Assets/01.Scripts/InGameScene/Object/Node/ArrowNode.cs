@@ -17,7 +17,7 @@ public class ArrowNode : Node
     private Vector2 attackLineVector;
 
     private const float ScalingTime = 3.5f;
-    private SpriteRenderer spriteRenderer;
+    private new SpriteRenderer spriteRenderer;
     private Transform inside;
     private GameObject node;
 

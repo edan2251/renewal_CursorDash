@@ -8,12 +8,15 @@ public class JsonReader : MonoBehaviour
 {
     public void Save(){
         JsonData jsonData = JsonMapper.ToJson(null);
-        File.WriteAllText(Application.dataPath + "/Resources/SaveFile/fileName.json", jsonData.ToString());
+        File.WriteAllText(Path.Combine(Application.persistentDataPath, "fileName.json"), jsonData.ToString());
         
     }
 
     public void Load(){
-        string jsonText = Resources.Load<TextAsset>("SaveFile/fileName.json").ToString();
+        string filePath = Path.Combine(Application.persistentDataPath, "fileName.json");
+        string jsonText = File.Exists(filePath)
+            ? File.ReadAllText(filePath)
+            : Resources.Load<TextAsset>("SaveFile/fileName")?.text;
         JsonData jsonData = JsonMapper.ToObject(jsonText);
     }
 }

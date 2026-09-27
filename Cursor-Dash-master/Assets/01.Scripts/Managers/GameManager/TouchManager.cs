@@ -41,8 +41,9 @@ public class TouchManager : MonoBehaviour
     private void Update(){
         ProcessTouch();
         
-        #if UNITY_EDITOR
-        ProcessMouse();
+        #if UNITY_EDITOR || UNITY_WEBGL
+        if (Input.touchCount == 0)
+            ProcessMouse();
         #endif
     }
     

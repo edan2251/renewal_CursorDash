@@ -3,6 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 
 public static class ExtensionMethods {  
+    public static IEnumerator Start(this IEnumerator coroutine, MonoBehaviour owner){
+        owner.StartCoroutine(coroutine);
+        return coroutine;
+    }
+
+    public static void Stop(this IEnumerator coroutine, MonoBehaviour owner){
+        owner.StopCoroutine(coroutine);
+    }
+
     public static float Distance(this Vector2 fisrtPosition, Vector2 secondPosition){
         return Mathf.Abs((fisrtPosition - secondPosition).magnitude);
     }
