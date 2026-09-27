@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f87e3a18960543fea1a5fbf01ed2df7, type: 3}
+  m_Name: PlayerData
+  m_EditorClassIdentifier: 
+  _characterSetting: {fileID: 11400000, guid: 0e1b7794b025e4164b320d8c3de436a9, type: 2}
+  achieveRequire: {fileID: 11400000, guid: ef78287d6491e4bb487d597ae1152278, type: 2}
+  achieveData: {fileID: 11400000, guid: c33181ff05544470494de8f047bddd49, type: 2}

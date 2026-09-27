@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad64a5be85930464c946e2e971708c6d, type: 3}
+  m_Name: Cyberpunk
+  m_EditorClassIdentifier: 
+  mapName: Cyberpunk
+  mapSprite: {fileID: 21300000, guid: 0a9ff38e1209b4511a85adb16d33ae71, type: 3}
+  mapBackground: {fileID: 21300000, guid: 9119e1514ea384423889f193946e2dd7, type: 3}
+  mapBackgroundAfterImage: {fileID: 21300000, guid: 5af4148e1d2c44c78b822b07b0cb022c,
+    type: 3}
+  mainPatternFile: {fileID: 4900000, guid: 146152ca7d4114a54ab051002a7e3482, type: 3}
+  subPatternFile: {fileID: 4900000, guid: 05989ddaf91e04fe590e6812e51e931d, type: 3}
+  index: 0
+  highScore: 0
+  isUnlock: 1
+  audioClip: {fileID: 8300000, guid: 0d0f1fd88bd824524af01f98290aece6, type: 3}

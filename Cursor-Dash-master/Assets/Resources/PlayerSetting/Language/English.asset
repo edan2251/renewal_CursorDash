@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0dfd03c2cddb419a8d9647cacd19631, type: 3}
+  m_Name: English
+  m_EditorClassIdentifier: 
+  _fileKey: English
+  items:
+  - _key: Black
+    _id: black
+    _description: 'Protect 15 nodes in a row from "Flame" '
+  - _key: Mint
+    _id: mint
+    _description: 'Survive more than 7minutes from "Flame" '
+  - _key: Blue
+    _id: blue
+    _description: 'Survive more than 3minutes from "Flame" '
+  - _key: Green
+    _id: green
+    _description: 'Protect core 10 times in a row in "Cyberpunk" '
+  - _key: Pulple
+    _id: pulple
+    _description: 'Survive more than 5minutes from "Flame" '
+  - _key: Red
+    _id: red
+    _description: 'Survive more than 7 minutes in "Cyberpunk" '
+  - _key: Magenta
+    _id: magenta
+    _description: 'Survive more than 5 minutes in "Cyberpunk" '
+  - _key: Orange
+    _id: orange
+    _description: 'Survive more than 3 minutes in "Cyberpunk" '
+  - _key: Yellow
+    _id: yellow
+    _description: 'Survive 7 minutes without a single hit in "Flame" '
+  - _key: White
+    _id: white
+    _description: 
+  - _key: Arrow
+    _id: 'cursor '
+    _description: 
+  - _key: Square
+    _id: square
+    _description: 'Protect core 5 times in a row in "Cyberpunk" '
+  - _key: Circle
+    _id: 'circle '
+    _description: 'Protect core 15 times in a row in "Cyberpunk" '
+  - _key: Triangle
+    _id: 'triangle '
+    _description: 'Game over in "Cyberpunk" in 1 to 1:10 seconds '
+  - _key: Pentagon
+    _id: 'pentagon '
+    _description: 'Game over by laser in "Flame" '
+  - _key: Diamond
+    _id: 'diamond '
+    _description: 'Protect 5 nodes in a row from "Flame" '
+  - _key: Setting
+    _id: 'setting '
+    _description: 'Protect core 20 times in a row in "Cyberpunk" '
+  - _key: Perforated square
+    _id: 'perforated square '
+    _description: 'Protect 10 nodes in a row from "Flame" '
+  - _key: Perforated circle
+    _id: 'perforated circle '
+    _description: 'Game over in "Flame" in 1 to 1:10 seconds '
+  - _key: A crooked diamond
+    _id: perfortated diamond
+    _description: 'Protect the 5 nodes in the laser range in "Flame" '
+  - _key: Cyberpunk Tip
+    _id: 
+    _description: Protect the "core" at the center of the screen from the "node"!
+  - _key: Circle Tip
+    _id: 
+    _description: Destroy circular nodes by hitting them with characters!
+  - _key: SquareTip
+    _id: 
+    _description: Stop the attack of the hexagon node with the tail of the character!
+  - _key: Flame Tip
+    _id: 
+    _description: Block the rays that attacking the square nodes,
+  - _key: Unlock
+    _id: 
+    _description: unlocking condition
+  - _key: Flame_Require
+    _id: 
+    _description: One minute on the Cyberpunk Map

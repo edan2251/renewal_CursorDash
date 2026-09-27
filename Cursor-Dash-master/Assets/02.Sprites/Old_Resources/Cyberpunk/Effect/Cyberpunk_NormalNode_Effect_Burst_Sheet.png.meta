@@ -1,0 +1,351 @@
+fileFormatVersion: 2
+guid: a51aa1bc08f964d21986444f464943ee
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1704675688099998744
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_0
+  - first:
+      213: -5171783209192108387
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_1
+  - first:
+      213: -912668856811271231
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_2
+  - first:
+      213: -1635068301186099037
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_3
+  - first:
+      213: -4805543424734556278
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_4
+  - first:
+      213: -1458611742066496835
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_5
+  - first:
+      213: 8976927970839346446
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_6
+  - first:
+      213: 1875729376756934325
+    second: Cyberpunk_NormalNode_Effect_Burst_Sheet_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 150
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 70
+        width: 130
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16121994}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81ce17ea18938a710800000000000000
+      internalID: 1704675688099998744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 70
+        width: 143
+        height: 133
+      alignment: 9
+      pivot: {x: 0.5244337, y: 0.10593116}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9e46c092922a38b0800000000000000
+      internalID: -5171783209192108387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 78
+        width: 185
+        height: 215
+      alignment: 9
+      pivot: {x: 0.5424455, y: 0.032052327}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cbc330a28c8553f0800000000000000
+      internalID: -912668856811271231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 73
+        width: 194
+        height: 313
+      alignment: 9
+      pivot: {x: 0.5594825, y: 0.030774614}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a81d440b021f49e0800000000000000
+      internalID: -1635068301186099037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 78
+        width: 217
+        height: 375
+      alignment: 9
+      pivot: {x: 0.49750796, y: 0.017020548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f8bff47b74f4db0800000000000000
+      internalID: -4805543424734556278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 1343
+        y: 72
+        width: 232
+        height: 436
+      alignment: 9
+      pivot: {x: 0.5091784, y: 0.026240936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbaa9e04958f1cbe0800000000000000
+      internalID: -1458611742066496835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 1651
+        y: 49
+        width: 262
+        height: 502
+      alignment: 9
+      pivot: {x: 0.5, y: 0.07156001}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0db52c7d64749c70800000000000000
+      internalID: 8976927970839346446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyberpunk_NormalNode_Effect_Burst_Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 1996
+        y: 27
+        width: 252
+        height: 528
+      alignment: 9
+      pivot: {x: 0.49999902, y: 0.108789876}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b6ac5c1eede70a10800000000000000
+      internalID: 1875729376756934325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_0: 1704675688099998744
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_1: -5171783209192108387
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_2: -912668856811271231
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_3: -1635068301186099037
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_4: -4805543424734556278
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_5: -1458611742066496835
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_6: 8976927970839346446
+      Cyberpunk_NormalNode_Effect_Burst_Sheet_7: 1875729376756934325
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

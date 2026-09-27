@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4814b663185e49298acee6f0bc5c8031, type: 3}
+  m_Name: AchieveData
+  m_EditorClassIdentifier: 
+  achieves:
+  - achieveName: Black
+    achieveDescription: 
+    require: MaxDefence_Flame
+    amount: 15
+    openRewardName: Black
+    isUnlock: 0
+  - achieveName: Mint
+    achieveDescription: 
+    require: Hold_Flame
+    amount: 7
+    openRewardName: Mint
+    isUnlock: 0
+  - achieveName: Blue
+    achieveDescription: 
+    require: Hold_Flame
+    amount: 3
+    openRewardName: Blue
+    isUnlock: 0
+  - achieveName: Green
+    achieveDescription: 
+    require: MaxDefence_Cyberpunk
+    amount: 10
+    openRewardName: Green
+    isUnlock: 0
+  - achieveName: Pulpe
+    achieveDescription: 
+    require: Hold_Flame
+    amount: 5
+    openRewardName: Pulpe
+    isUnlock: 0
+  - achieveName: Green
+    achieveDescription: 
+    require: MaxDefence_Cyberpunk
+    amount: 0
+    openRewardName: 
+    isUnlock: 0
+  - achieveName: Red
+    achieveDescription: 
+    require: Hold_Cyberpunk
+    amount: 7
+    openRewardName: Red
+    isUnlock: 0
+  - achieveName: Magenta
+    achieveDescription: 
+    require: Hold_Cyberpunk
+    amount: 5
+    openRewardName: Magenta
+    isUnlock: 0
+  - achieveName: Orange
+    achieveDescription: 
+    require: Hold_Cyberpunk
+    amount: 3
+    openRewardName: Orange
+    isUnlock: 0
+  - achieveName: Yellow
+    achieveDescription: 
+    require: Hold_MaxHp_Flame
+    amount: 0
+    openRewardName: Yellow
+    isUnlock: 0
+  - achieveName: Square
+    achieveDescription: 
+    require: MaxDefence_Cyberpunk
+    amount: 0
+    openRewardName: Square
+    isUnlock: 0
+  - achieveName: Circle
+    achieveDescription: 
+    require: MaxDefence_Cyberpunk
+    amount: 15
+    openRewardName: Circle
+    isUnlock: 0
+  - achieveName: Triangle
+    achieveDescription: 
+    require: Cyber
+    amount: 1
+    openRewardName: Triangle
+    isUnlock: 0
+  - achieveName: Pentagon
+    achieveDescription: 
+    require: Razor_Death
+    amount: 1
+    openRewardName: Pentagon
+    isUnlock: 0
+  - achieveName: Diamond
+    achieveDescription: 
+    require: MaxDefence_Flame
+    amount: 0
+    openRewardName: Diamond
+    isUnlock: 0
+  - achieveName: Setting
+    achieveDescription: 
+    require: MaxDefence_Flame
+    amount: 20
+    openRewardName: Setting
+    isUnlock: 0
+  - achieveName: Perforated Square
+    achieveDescription: 
+    require: Hold_MaxHp_Flame
+    amount: 10
+    openRewardName: Perforated Square
+    isUnlock: 0
+  - achieveName: Perforated Circle
+    achieveDescription: 
+    require: Flame_Map_Death
+    amount: 1
+    openRewardName: Perforated Circle
+    isUnlock: 0
+  - achieveName: A crooked diamond
+    achieveDescription: 
+    require: Hold_MaxHp_Flame
+    amount: 5
+    openRewardName: A crooked diamond
+    isUnlock: 0
+  - achieveName: Flame
+    achieveDescription: 
+    require: Hold_Cyberpunk
+    amount: 0
+    openRewardName: Flame
+    isUnlock: 0

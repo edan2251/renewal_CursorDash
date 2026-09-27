@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/00.Scenes/01.StageSelectScene.unity
+    guid: 9d5154c837b3d4d9dbc76f433a1a963d
+  - enabled: 1
+    path: Assets/00.Scenes/Cyberpunk.unity
+    guid: 8bb9b3500bda947a983e7dc9c2ab5071
+  - enabled: 1
+    path: Assets/00.Scenes/Flame.unity
+    guid: 62faa1fcdc65e4a9ebafb79c8bf874d8
+  m_configObjects: {}

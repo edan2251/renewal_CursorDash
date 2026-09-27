@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ad64a5be85930464c946e2e971708c6d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mapSprite: {instanceID: 0}
+  - mapBackground: {instanceID: 0}
+  - mapBackgroundAfterImage: {instanceID: 0}
+  - Button00: {instanceID: 0}
+  - Button01: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

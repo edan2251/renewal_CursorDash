@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f13cc7020684ed79b4d4b750349c09, type: 3}
+  m_Name: CharacterSetting
+  m_EditorClassIdentifier: 
+  characterColors:
+  - _isUnlock: 0
+    _colorValue: {r: 0.92941177, g: 0.10980392, b: 0.14117648, a: 1}
+    keyName: Red
+  - _isUnlock: 0
+    _colorValue: {r: 0.94509804, g: 0.3529412, b: 0.14117648, a: 1}
+    keyName: Orange
+  - _isUnlock: 0
+    _colorValue: {r: 0.9882353, g: 0.93333334, b: 0.12941177, a: 1}
+    keyName: Yellow
+  - _isUnlock: 0
+    _colorValue: {r: 0.22352941, g: 0.70980394, b: 0.2901961, a: 1}
+    keyName: Green
+  - _isUnlock: 0
+    _colorValue: {r: 0, g: 0.6627451, b: 0.6156863, a: 1}
+    keyName: Mint
+  - _isUnlock: 0
+    _colorValue: {r: 0.18039216, g: 0.19215687, b: 0.57254905, a: 1}
+    keyName: Blue
+  - _isUnlock: 0
+    _colorValue: {r: 0.4, g: 0.1764706, b: 0.5686275, a: 1}
+    keyName: Pulple
+  - _isUnlock: 0
+    _colorValue: {r: 0.92941177, g: 0.11764706, b: 0.4745098, a: 1}
+    keyName: Magenta
+  - _isUnlock: 0
+    _colorValue: {r: 0, g: 0, b: 0, a: 1}
+    keyName: Black
+  - _isUnlock: 1
+    _colorValue: {r: 1, g: 1, b: 1, a: 1}
+    keyName: White
+  characterSprites:
+  - _isUnlock: 1
+    _characterSprite: {fileID: 21300000, guid: 17766b6fff7a84c0a8b7c87e07fc744e, type: 3}
+    keyName: Arrow
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: dfe6f3a6556d740b196a8737f853db26, type: 3}
+    keyName: Square
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 098419ee5a567c2449c15ac4281a0975, type: 3}
+    keyName: Circle
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 7ad0b4b63f02a40d0a77183cdd12d141, type: 3}
+    keyName: Triangle
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 675334345da144f82abeced73a12efb7, type: 3}
+    keyName: Pentagon
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 4616c765fb6864714a94265aad13db95, type: 3}
+    keyName: Diamond
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 22e9fd42dab2a4e90b4572005dcb2a17, type: 3}
+    keyName: Setting
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 08f937adde23a4fab8944bd07c5e6981, type: 3}
+    keyName: Perforated square
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 1ec49acd5a3154e109bd90edb42b396e, type: 3}
+    keyName: Perforated circle
+  - _isUnlock: 0
+    _characterSprite: {fileID: 21300000, guid: 17d96630751d44f2687c263c0214341d, type: 3}
+    keyName: A crooked diamond

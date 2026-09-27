@@ -1,0 +1,714 @@
+fileFormatVersion: 2
+guid: b93af2f5a1c794b3581d2c5cd95a087d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -274531293571798321
+    second: Fire_AttackNode_Effect_Burst_Sheet_0
+  - first:
+      213: -128934146333442649
+    second: Fire_AttackNode_Effect_Burst_Sheet_1
+  - first:
+      213: -7302642293527883772
+    second: Fire_AttackNode_Effect_Burst_Sheet_2
+  - first:
+      213: 6155180362218702839
+    second: Fire_AttackNode_Effect_Burst_Sheet_3
+  - first:
+      213: -6328397788651505738
+    second: Fire_AttackNode_Effect_Burst_Sheet_4
+  - first:
+      213: 3202571108698040657
+    second: Fire_AttackNode_Effect_Burst_Sheet_5
+  - first:
+      213: 1481395843672684908
+    second: Fire_AttackNode_Effect_Burst_Sheet_6
+  - first:
+      213: -3991783670019567993
+    second: Fire_AttackNode_Effect_Burst_Sheet_7
+  - first:
+      213: -6437300941949590312
+    second: Fire_AttackNode_Effect_Burst_Sheet_8
+  - first:
+      213: 7197090358106028915
+    second: Fire_AttackNode_Effect_Burst_Sheet_9
+  - first:
+      213: 5289267870027074681
+    second: Fire_AttackNode_Effect_Burst_Sheet_10
+  - first:
+      213: 4314807952635846638
+    second: Fire_AttackNode_Effect_Burst_Sheet_11
+  - first:
+      213: -4339474379805469302
+    second: Fire_AttackNode_Effect_Burst_Sheet_12
+  - first:
+      213: -1647582795322371148
+    second: Fire_AttackNode_Effect_Burst_Sheet_13
+  - first:
+      213: -6403103021013136943
+    second: Fire_AttackNode_Effect_Burst_Sheet_14
+  - first:
+      213: 8662413423415566886
+    second: Fire_AttackNode_Effect_Burst_Sheet_15
+  - first:
+      213: 6938352218343924687
+    second: Fire_AttackNode_Effect_Burst_Sheet_16
+  - first:
+      213: -6995729754597930326
+    second: Fire_AttackNode_Effect_Burst_Sheet_17
+  - first:
+      213: -3409774462186688924
+    second: Fire_AttackNode_Effect_Burst_Sheet_18
+  - first:
+      213: 1473815310692483944
+    second: Fire_AttackNode_Effect_Burst_Sheet_19
+  - first:
+      213: 6435298743299696497
+    second: Fire_AttackNode_Effect_Burst_Sheet_20
+  - first:
+      213: 148015253468007770
+    second: Fire_AttackNode_Effect_Burst_Sheet_21
+  - first:
+      213: -679534836897719059
+    second: Fire_AttackNode_Effect_Burst_Sheet_22
+  - first:
+      213: -1995321384672252364
+    second: Fire_AttackNode_Effect_Burst_Sheet_23
+  - first:
+      213: 437161967443606298
+    second: Fire_AttackNode_Effect_Burst_Sheet_24
+  - first:
+      213: -1478799323491465658
+    second: Fire_AttackNode_Effect_Burst_Sheet_25
+  - first:
+      213: 1132120602801927869
+    second: Fire_AttackNode_Effect_Burst_Sheet_26
+  - first:
+      213: 1481202905256190527
+    second: Fire_AttackNode_Effect_Burst_Sheet_27
+  - first:
+      213: 1424808242067633486
+    second: Fire_AttackNode_Effect_Burst_Sheet_28
+  - first:
+      213: 9094945924119431702
+    second: Fire_AttackNode_Effect_Burst_Sheet_29
+  - first:
+      213: -7154528009877765027
+    second: Fire_AttackNode_Effect_Burst_Sheet_30
+  - first:
+      213: 417861322580896582
+    second: Fire_AttackNode_Effect_Burst_Sheet_31
+  - first:
+      213: 6619150395942261096
+    second: Fire_AttackNode_Effect_Burst_Sheet_32
+  - first:
+      213: 7887521890423864550
+    second: Fire_AttackNode_Effect_Burst_Sheet_33
+  - first:
+      213: 6947579278750416092
+    second: Fire_AttackNode_Effect_Burst_Sheet_34
+  - first:
+      213: 6036617750121450009
+    second: Fire_AttackNode_Effect_Burst_Sheet_35
+  - first:
+      213: 8791520938191053679
+    second: Fire_AttackNode_Effect_Burst_Sheet_36
+  - first:
+      213: -5902849505201060537
+    second: Fire_AttackNode_Effect_Burst_Sheet_37
+  - first:
+      213: 1608204192851147897
+    second: Fire_AttackNode_Effect_Burst_Sheet_38
+  - first:
+      213: 8456190895806716937
+    second: Fire_AttackNode_Effect_Burst_Sheet_39
+  - first:
+      213: -6468899443966014554
+    second: Fire_AttackNode_Effect_Burst_Sheet_40
+  - first:
+      213: -4926746659766297678
+    second: Fire_AttackNode_Effect_Burst_Sheet_41
+  - first:
+      213: 4139489275546916694
+    second: Fire_AttackNode_Effect_Burst_Sheet_42
+  - first:
+      213: 5307607902683307878
+    second: Fire_AttackNode_Effect_Burst_Sheet_43
+  - first:
+      213: -6561647725111302221
+    second: Fire_AttackNode_Effect_Burst_Sheet_44
+  - first:
+      213: -604465888109731086
+    second: Fire_AttackNode_Effect_Burst_Sheet_45
+  - first:
+      213: -1187158099681356383
+    second: Fire_AttackNode_Effect_Burst_Sheet_46
+  - first:
+      213: -6336818634032356160
+    second: Fire_AttackNode_Effect_Burst_Sheet_47
+  - first:
+      213: -2007880751517911304
+    second: Fire_AttackNode_Effect_Burst_Sheet_48
+  - first:
+      213: -8404439581599230802
+    second: Fire_AttackNode_Effect_Burst_Sheet_49
+  - first:
+      213: 6719599178914282953
+    second: Fire_AttackNode_Effect_Burst_Sheet_50
+  - first:
+      213: 8834403034216833680
+    second: Fire_AttackNode_Effect_Burst_Sheet_51
+  - first:
+      213: 7416584813090169819
+    second: Fire_AttackNode_Effect_Burst_Sheet_52
+  - first:
+      213: -7700815071702299283
+    second: Fire_AttackNode_Effect_Burst_Sheet_53
+  - first:
+      213: 964833835511081496
+    second: Fire_AttackNode_Effect_Burst_Sheet_54
+  - first:
+      213: -9219514878139981610
+    second: Fire_AttackNode_Effect_Burst_Sheet_55
+  - first:
+      213: 2314483811809384950
+    second: Fire_AttackNode_Effect_Burst_Sheet_0
+  - first:
+      213: -6178097678894002065
+    second: Fire_AttackNode_Effect_Burst_Sheet_1
+  - first:
+      213: -3927985537249903190
+    second: Fire_AttackNode_Effect_Burst_Sheet_2
+  - first:
+      213: 7006277532194597569
+    second: Fire_AttackNode_Effect_Burst_Sheet_3
+  - first:
+      213: 8365916162197078294
+    second: Fire_AttackNode_Effect_Burst_Sheet_4
+  - first:
+      213: 6855667894535988172
+    second: Fire_AttackNode_Effect_Burst_Sheet_5
+  - first:
+      213: -9000008812240001797
+    second: Fire_AttackNode_Effect_Burst_Sheet_6
+  - first:
+      213: 5904444990441678350
+    second: Fire_AttackNode_Effect_Burst_Sheet_7
+  - first:
+      213: -2298503889825063998
+    second: Fire_AttackNode_Effect_Burst_Sheet_8
+  - first:
+      213: 293969998162372490
+    second: Fire_AttackNode_Effect_Burst_Sheet_9
+  - first:
+      213: 2261511770656958255
+    second: Fire_AttackNode_Effect_Burst_Sheet_10
+  - first:
+      213: -8375012118489315572
+    second: Fire_AttackNode_Effect_Burst_Sheet_11
+  - first:
+      213: 4572365285033046919
+    second: Fire_AttackNode_Effect_Burst_Sheet_12
+  - first:
+      213: -173537617502577897
+    second: Fire_AttackNode_Effect_Burst_Sheet_13
+  - first:
+      213: -7077316347588550872
+    second: Fire_AttackNode_Effect_Burst_Sheet_14
+  - first:
+      213: 8413223726812253600
+    second: Fire_AttackNode_Effect_Burst_Sheet_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 406
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f95a41a3c2be1020800000000000000
+      internalID: -274531293571798321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 542
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f609bddd4ecf24aa0800000000000000
+      internalID: -128934146333442649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 0
+        width: 427
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aadf85917fdfc79c0800000000000000
+      internalID: -7302642293527883772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 0
+        width: 550
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ca62407b4c4b3160800000000000000
+      internalID: 6155180362218702839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 0
+        width: 466
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 611c47ccc64b91470800000000000000
+      internalID: -6328397788651505738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 2391
+        y: 0
+        width: 591
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc32edf80a9342f50800000000000000
+      internalID: 3202571108698040657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 2982
+        y: 0
+        width: 468
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf4ac0b5bab891380800000000000000
+      internalID: 1481395843672684908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 3450
+        y: 0
+        width: 669
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e066c1b8f6dc0f150800000000000000
+      internalID: -3991783670019567993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 4118
+        y: 0
+        width: 513
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cb9f14e3e21a10e0800000000000000
+      internalID: -6437300941949590312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 4632
+        y: 0
+        width: 707
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a872713e724641400800000000000000
+      internalID: 7197090358106028915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 5339
+        y: 0
+        width: 605
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f276f5139f0826f10800000000000000
+      internalID: 5289267870027074681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 5943
+        y: 0
+        width: 792
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c074ad7d9daf5cb80800000000000000
+      internalID: 4314807952635846638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 6735
+        y: 0
+        width: 652
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 783f8b5500e447f30800000000000000
+      internalID: -4339474379805469302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 7387
+        y: 0
+        width: 837
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71b5791d478779df0800000000000000
+      internalID: -1647582795322371148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 8225
+        y: 0
+        width: 666
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82f5be2774258cd90800000000000000
+      internalID: -6403103021013136943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_AttackNode_Effect_Burst_Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 8971
+        y: 0
+        width: 707
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ad48848766c1c470800000000000000
+      internalID: 8662413423415566886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fire_AttackNode_Effect_Burst_Sheet_0: -274531293571798321
+      Fire_AttackNode_Effect_Burst_Sheet_1: -128934146333442649
+      Fire_AttackNode_Effect_Burst_Sheet_10: 5289267870027074681
+      Fire_AttackNode_Effect_Burst_Sheet_11: 4314807952635846638
+      Fire_AttackNode_Effect_Burst_Sheet_12: -4339474379805469302
+      Fire_AttackNode_Effect_Burst_Sheet_13: -1647582795322371148
+      Fire_AttackNode_Effect_Burst_Sheet_14: -6403103021013136943
+      Fire_AttackNode_Effect_Burst_Sheet_15: 8662413423415566886
+      Fire_AttackNode_Effect_Burst_Sheet_2: -7302642293527883772
+      Fire_AttackNode_Effect_Burst_Sheet_3: 6155180362218702839
+      Fire_AttackNode_Effect_Burst_Sheet_4: -6328397788651505738
+      Fire_AttackNode_Effect_Burst_Sheet_5: 3202571108698040657
+      Fire_AttackNode_Effect_Burst_Sheet_6: 1481395843672684908
+      Fire_AttackNode_Effect_Burst_Sheet_7: -3991783670019567993
+      Fire_AttackNode_Effect_Burst_Sheet_8: -6437300941949590312
+      Fire_AttackNode_Effect_Burst_Sheet_9: 7197090358106028915
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

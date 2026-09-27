@@ -1,0 +1,22 @@
+버튼 클릭음 - Button
+
+
+Cyberpunk map
+
+node_explosion
+- 원형노드, 육각노드 터지는 이펙트에 출력
+attackdefence 
+- 육각노드 공격 방어 시 출력
+coreAttack
+- 코어가 공격당했을 때 출력
+
+
+Flame map
+
+사각노드한테 레이저 - core attack
+사각노드 피격 - node_explosion
+사각노드 보호 - attackdefence
+
+즉사레이저 발동 - Lazer
+
+불꽃맵 배경음악 - https://www.bensound.com/royalty-free-music/track/evolution-epic-nature
