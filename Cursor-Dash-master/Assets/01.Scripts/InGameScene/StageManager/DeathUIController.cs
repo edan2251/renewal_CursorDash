@@ -1,44 +1,45 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class DeathUIController : MonoBehaviour
 {
-
-    [Header("Objects")]    
-    [SerializeField]
-    private Image[] uiImages;
-
-    [SerializeField]
-    private Text scoreText;
-
-    public void UICanvasOn(){
+    [SerializeField] private Image[] uiImages;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private TMP_Text scoreLabel;
+    [SerializeField] private TMP_Text summaryLabel;
+    private Tween tween;
+    public void UICanvasOn()
+    {
         gameObject.SetActive(true);
-        
-        for(int i = 0; i < uiImages.Length; i++){
-            uiImages[i].DOFade(1.0f, 0.25f);
+        CanvasGroup group = GetComponent<CanvasGroup>();
+        if (group != null)
+        {
+            group.alpha = 0f;
+            group.interactable = group.blocksRaycasts = true;
+            tween?.Kill();
+            tween = group.DOFade(1f, 0.2f).SetUpdate(true);
         }
-
-        scoreText.DOFade(1.0f, 0.25f);
-    }    
-
-    public void UICanvasOff(){
+        else
+        {
+            if (uiImages != null) foreach (Image image in uiImages) if (image != null) image.DOFade(1f, 0.2f).SetUpdate(true);
+            if (scoreText != null) scoreText.DOFade(1f, 0.2f).SetUpdate(true);
+        }
+    }
+    public void UICanvasOff()
+    {
+        tween?.Kill();
         gameObject.SetActive(false);
-        
-        Color initialColor = Color.white;
-        initialColor.a = 0;
-
-        for(int i = 0; i < uiImages.Length; i++){
-            uiImages[i].color = initialColor; 
-        }
-
-        scoreText.color = initialColor;
     }
-
-    public void SetScoreText(string value){
-        scoreText.text = value;
+    public void SetScoreText(string value)
+    {
+        if (scoreLabel != null) scoreLabel.text = value;
+        if (scoreText != null) scoreText.text = value;
     }
-
+    public void SetSummary(int circles, int beams)
+    {
+        if (summaryLabel != null) summaryLabel.text = $"원형 파괴 {circles}  ·  육각 차단 {beams}";
+    }
+    private void OnDisable() { tween?.Kill(); tween = null; }
 }

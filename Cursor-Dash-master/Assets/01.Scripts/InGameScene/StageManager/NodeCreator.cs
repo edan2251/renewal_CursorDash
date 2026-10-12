@@ -1,138 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using NaughtyAttributes;
 
 public class NodeCreator : MonoBehaviour
-{   
-    [Header("Objects")]
-    [SerializeField]
-    private GameObject nodesObject;
-
-    [SerializeField]
-    private Transform[] generatePositions;
-
-    private List<Node> normalNodes = new List<Node>();
-    private List<Node> arrowNodes = new List<Node>();
-
-    private void Awake(){
-        Node[] tempNodes;
-    
-        tempNodes = nodesObject.GetComponentsInChildren<NormalNode>(true);
-        if(tempNodes.Length <= 0){
-            tempNodes = nodesObject.GetComponentsInChildren<DefenceNode>(true);
-        }
-        normalNodes = tempNodes.ToList();
-        
-        tempNodes = nodesObject.GetComponentsInChildren<ArrowNode>(true);
-        if(tempNodes.Length <= 0){
-            tempNodes = nodesObject.GetComponentsInChildren<LaserNode>(true);
-        }
-        arrowNodes = tempNodes.ToList();
-    }
-
-    private void Start(){
-        if(GameManager.instance.CurrentSceneType.Equals(GameManager.SceneType.NotInGame)){
-            this.enabled = false;
-        }
-    }
-
-    #if UNITY_EDITOR
-    private void Update(){
-        switch(Input.anyKeyDown){
-            case var k when Input.GetKeyDown(KeyCode.K):
-            NormalNodeGenerate();
-            break; 
-
-            case var k when Input.GetKeyDown(KeyCode.L):
-            ArrowNodeGenerate();
-            break; 
-        }
-    }
-    #endif
-
-
-    public void CreateNode(int index){
-        Node node = null;
-        switch(index){
-            case 0:
-                node = GetAvailableNode(normalNodes);
-            break;
-
-            case 1:
-                node = GetAvailableNode(arrowNodes);
-            break;
-        }
-
-        if(node is null){
-            return;
-        }
-
-        node.transform.position = GetRandomPosition(Random.Range(0,4));
-        node.Execute();
-
-        // NodeCreate:index:int#position:Vector3]&time:float
-        StageManager.instance.AddReplayData("NodeCreate:" + 
-        index.ToString() + "#" + node.transform.position().ToString() + 
-        "&" + StageManager.instance.scoreManager.TimeScore);
-    }
-
-    public void CreateNode(int index, int position) {
-        Node node = null;
-        switch(index){
-            case 0:
-                node = GetAvailableNode(normalNodes);
-                break;
-
-            case 1:
-                node = GetAvailableNode(arrowNodes);
-                break;
-        }
-
-        if(node is null){
-            return;
-        }
-
-
-        if (node is LaserNode laserNode) {
-             laserNode.Index = position;
-        }
-        else {
-            node.transform.position = GetRandomPosition(Mathf.Clamp(position, 0, 3));
-        }
-        
-        node.Execute();
-
-        // NodeCreate:index:int#position:Vector3]&time:float
-        StageManager.instance.AddReplayData("NodeCreate:" + 
-                                            index.ToString() + "#" + node.transform.position().ToString() + 
-                                            "&" + StageManager.instance.scoreManager.TimeScore);
-    }
-
-    [Button("Normal Node Generate")]
-    public void NormalNodeGenerate(){
-        CreateNode(0);
-    }
-
-    [Button("Arrow Node Generate")]
-    public void ArrowNodeGenerate(){
-        CreateNode(1);
-    }
-
-    private Vector2 GetRandomPosition(int index)
+{
+    [SerializeField] private GameObject nodesObject;
+    [SerializeField] private Transform[] generatePositions;
+    [SerializeField, Min(0f)] private float spawnJitter = 0.35f;
+    private Node[] normalNodes;
+    private Node[] arrowNodes;
+    private Node[] allNodes;
+    private Vector2 minimum;
+    private Vector2 maximum;
+    private void Awake()
     {
-        Debug.Log(index);
-        return (Vector2)(generatePositions[index].position + Random.onUnitSphere);
+        normalNodes = nodesObject.GetComponentsInChildren<NormalNode>(true);
+        if (normalNodes.Length == 0) normalNodes = nodesObject.GetComponentsInChildren<DefenceNode>(true);
+        arrowNodes = nodesObject.GetComponentsInChildren<ArrowNode>(true);
+        if (arrowNodes.Length == 0) arrowNodes = nodesObject.GetComponentsInChildren<LaserNode>(true);
+        allNodes = nodesObject.GetComponentsInChildren<Node>(true);
+        Camera camera = Camera.main;
+        minimum = camera.ViewportToWorldPoint(new Vector3(0.12f, 0.12f, 0f));
+        maximum = camera.ViewportToWorldPoint(new Vector3(0.88f, 0.88f, 0f));
     }
-
-    private Node GetAvailableNode(List<Node> nodes){
-        for(int i = 0; i < nodes.Count; i++){
-            if(nodes[i].gameObject.activeInHierarchy.Equals(false)){
-                return nodes[i];
-            }
+    public void CreateNode(int index)
+    {
+        if (generatePositions == null || generatePositions.Length == 0) return;
+        CreateNode(index, Random.Range(0, generatePositions.Length));
+    }
+    public void CreateNode(int index, int position)
+    {
+        if (StageManager.instance == null || !StageManager.instance.IsPlaying) return;
+        Node node = GetAvailable(index == 0 ? normalNodes : index == 1 ? arrowNodes : null);
+        if (node == null || generatePositions == null || generatePositions.Length == 0) return;
+        position = Mathf.Clamp(position, 0, generatePositions.Length - 1);
+        if (node is LaserNode laser) laser.Index = position;
+        else
+        {
+            Vector2 candidate = (Vector2)generatePositions[position].position + Random.insideUnitCircle * spawnJitter;
+            node.transform.position = PlayerCharacterController.ClampPosition(candidate, minimum, maximum);
         }
-        
+        node.Execute();
+    }
+    private static Node GetAvailable(Node[] nodes)
+    {
+        if (nodes != null) foreach (Node node in nodes) if (!node.gameObject.activeSelf) return node;
         return null;
     }
+    public void StopNodes()
+    {
+        if (allNodes != null) foreach (Node node in allNodes) if (node.gameObject.activeSelf) node.ResetObject();
+    }
+    [Button("Normal Node Generate")] public void NormalNodeGenerate() => CreateNode(0);
+    [Button("Arrow Node Generate")] public void ArrowNodeGenerate() => CreateNode(1);
 }

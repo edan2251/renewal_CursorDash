@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 
+[DefaultExecutionOrder(-100)]
 public class GameManager : DontDestroySingleton<GameManager>
 {
     [HideInInspector]
@@ -48,6 +49,7 @@ public class GameManager : DontDestroySingleton<GameManager>
     private void Awake(){
         if (instance != null && instance != this) {
             Destroy(gameObject);
+            return;
         }
         
         touchManager = gameObject.GetComponent<TouchManager>();
@@ -76,7 +78,8 @@ public class GameManager : DontDestroySingleton<GameManager>
 
     private void Start() {
         playerData.AchieveRequire.Initialize();
-        maps[1].isUnlock = playerData.AchieveData.GetAchieve("Flame");
+        foreach (var map in maps)
+            if (map.mapName == "Flame") map.isUnlock = playerData.AchieveData.GetAchieve("Flame");
     }
 
     [Button("Reset")]

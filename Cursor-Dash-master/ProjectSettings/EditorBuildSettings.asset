@@ -11,7 +11,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00.Scenes/Cyberpunk.unity
     guid: 8bb9b3500bda947a983e7dc9c2ab5071
-  - enabled: 1
-    path: Assets/00.Scenes/Flame.unity
-    guid: 62faa1fcdc65e4a9ebafb79c8bf874d8
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

@@ -29,10 +29,11 @@ public class TouchManager : MonoBehaviour
 
     private void Awake() {
         mainCamera = Camera.main;
-        SceneManager.sceneLoaded += (scene, loadMode) => {
-            mainCamera = Camera.main;
-        };
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => mainCamera = Camera.main;
+    private void OnDestroy() => SceneManager.sceneLoaded -= OnSceneLoaded;
     
     private void Start(){
         minSwipeDistance = Screen.width / 8;
@@ -63,7 +64,7 @@ public class TouchManager : MonoBehaviour
                     swipeDirection = (currentPosition - touchDownPositionNotScreen).normalized;
                 }
             }
-            else if(tempTouch.phase.Equals(TouchPhase.Ended)){
+            else if(tempTouch.phase.Equals(TouchPhase.Ended) || tempTouch.phase.Equals(TouchPhase.Canceled)){
                 isTouch = false;
                 isSwipe = false;
                 touchUpPosition = mainCamera.ScreenToWorldPoint(tempTouch.position);

@@ -13,6 +13,7 @@ public class ReplaySaver : MonoBehaviour
     }
 
     private void OnDestroy() {
+        if (!Application.isPlaying || replayInformation.Count == 0) return;
         string filePath = Path.Combine(Application.persistentDataPath,
             "Highlight_" + (GameManager.instance?.stageIndex.ToString("D2") ?? "00") + ".txt");
 

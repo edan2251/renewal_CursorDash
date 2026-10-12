@@ -1,141 +1,89 @@
-﻿using System.Collections;
-using UnityEngine;
+using System.Collections;
 using DG.Tweening;
+using UnityEngine;
 
 public class NormalNode : Node
 {
     private static int defenseStreak;
-
     public static int DefenseStreak
     {
         get => defenseStreak;
         set
         {
             defenseStreak = value;
-            if (defenseStreak == 15 || defenseStreak == 20)
+            if (value == 15 || value == 20)
                 GameManager.instance.playerData.AchieveRequire.SetValueToRequire("MaxDefence_Cyberpunk", value);
         }
     }
-    private IEnumerator executeCoroutine;
-
-    [Header("Objects")]
-    [SerializeField]
-    private GameObject effectObject;
-
-    [SerializeField]
-    private Animator childAniamtor;
-
-    [Header("Values")]
-    [SerializeField]
-    private float lineDuration;
-
+    [SerializeField] private GameObject effectObject;
+    [SerializeField] private Animator childAniamtor;
+    [SerializeField, Min(0.05f)] private float lineDuration = 0.6f;
+    [SerializeField, Min(0.05f)] private float preparationDuration = 2f;
     private LineRenderer lineRenderer;
-    private Vector2 lineVector;
-
     private Tween moveTween;
-
-    private new void Awake(){
-        base.Awake();
-        lineRenderer = gameObject.GetComponent<LineRenderer>();
+    private new void Awake() { base.Awake(); lineRenderer = GetComponent<LineRenderer>(); }
+    public override void Execute()
+    {
+        BeginExecution();
+        if (circleCollider != null) circleCollider.enabled = true;
+        lineRenderer.enabled = false;
+        if (effectObject != null) effectObject.SetActive(false);
+        StartCoroutine(Prepare());
     }
-
-    public override void Execute(){
-        gameObject.SetActive(true);
-        executeCoroutine = ExecuteCoroutine().Start(this);
-    }
-
-    public override void Interaction(){
-        if(isInteraction){
-            return;
-        }
-        
-        base.Interaction();
-
-        StageManager.instance.CameraShake(1.5f, 0.1f);
-        StageManager.instance.CameraInteractionFlash();
-
-        executeCoroutine.Stop(this);
-        DefenseStreak++;
-
-        spriteRenderer.enabled = false;
-        animator.enabled = false;
-
-        GameManager.instance.soundManager.PlaySFX(ClipTag.nodeExplosion);
-
-        StageManager.instance.CameraShake(0.5f, 0.5f);
-        StageManager.instance.CameraInteractionFlash();
-
-        InteractionCoroutine().Start(this);
-    }
-
-    private IEnumerator InteractionCoroutine(){
-        Time.timeScale = 0.1f;
-
-        do{
-            if(childAniamtor.GetCurrentAnimatorStateInfo(0).normalizedTime % 1 > 0.1f){
-                Time.timeScale = 1.0f;
-            }
-
-            yield return YieldInstructionCache.WaitFrame;
-
-        }while(childAniamtor.GetCurrentAnimatorStateInfo(0).normalizedTime % 1 < 0.96f);
-        ResetObject();
-    }
-
-    private IEnumerator ExecuteCoroutine(){
-        do{
-            yield return YieldInstructionCache.WaitFrame;
-        }while(animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1 < 0.99f);
-
+    private IEnumerator Prepare()
+    {
+        yield return new WaitForSeconds(preparationDuration);
+        if (Phase != NodePhase.Preparing || StageManager.instance.IsDeath) yield break;
+        Phase = NodePhase.Fired;
         isInteraction = true;
-        FailedInteraction();
-    }
-
-    private void FailedInteraction(){
+        if (circleCollider != null) circleCollider.enabled = false;
+        Vector2 origin = transform.position;
+        Vector2 tip = origin;
         lineRenderer.enabled = true;
-        lineVector = gameObject.transform.position;
-
-        lineRenderer.SetPosition(0, gameObject.transform.position);
-        lineRenderer.SetPosition(1, gameObject.transform.position);
-
-        moveTween = DOTween.To(() => lineVector, x => lineVector = x, Vector2.zero, lineDuration);
-
-        moveTween.OnUpdate(() => {
-            lineRenderer.SetPosition(1, lineVector);
-        });
-
-        moveTween.OnComplete(() => {
-            StageManager.instance.scoreManager.Hp -= deducationHp;
+        lineRenderer.SetPosition(0, origin);
+        lineRenderer.SetPosition(1, origin);
+        // Circular-node beams never ask the trail for defense.
+        moveTween = DOTween.To(() => tip, value => tip = value, StageManager.instance.NexusPosition,
+            Mathf.Max(0.05f, lineDuration)).SetEase(Ease.Linear);
+        moveTween.OnUpdate(() => lineRenderer.SetPosition(1, tip));
+        moveTween.OnComplete(() =>
+        {
+            if (Phase != NodePhase.Fired) return;
             DefenseStreak = 0;
+            StageManager.instance.DamageNexus(deducationHp);
             ResetObject();
         });
-
     }
-
-    public override void ResetObject(){
-        base.ResetObject();
-
-        animator.enabled = true;
-        lineRenderer.enabled = false;
-
-        effectObject.SetActive(false);
-    }
-
-    public override void ShowEffect(Vector2 position){
-        if(isInteraction){
-            return;
-        }
-
+    public override void Interaction()
+    {
+        if (Phase != NodePhase.Preparing || !StageManager.instance.IsPlaying) return;
+        Phase = NodePhase.Resolving;
         isInteraction = true;
-
-        float angle = Mathf.Atan2(
-            position.y - effectObject.transform.position.y,
-            position.x - effectObject.transform.position.x
-        ) * 180 / Mathf.PI;
-
-        angle += 90;
-
-        effectObject.transform.localRotation = Quaternion.Euler(0,0, angle);
+        StopAllCoroutines();
+        base.Interaction();
+        DefenseStreak++;
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        if (animator != null) animator.enabled = false;
+        if (circleCollider != null) circleCollider.enabled = false;
+        if (childAniamtor != null) childAniamtor.updateMode = AnimatorUpdateMode.UnscaledTime;
+        GameManager.instance.soundManager.PlaySFX(ClipTag.nodeExplosion);
+        StageManager.instance.RegisterCircleDestroyed(transform.position);
+        StartCoroutine(Resolve());
+    }
+    private IEnumerator Resolve() { yield return new WaitForSecondsRealtime(0.3f); ResetObject(); }
+    public override void ShowEffect(Vector2 position)
+    {
+        if (Phase != NodePhase.Resolving || effectObject == null) return;
+        Vector2 direction = position - (Vector2)effectObject.transform.position;
+        effectObject.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f);
         effectObject.SetActive(true);
+    }
+    public override void ResetObject()
+    {
+        moveTween?.Kill();
+        moveTween = null;
+        if (lineRenderer != null) lineRenderer.enabled = false;
+        if (effectObject != null) effectObject.SetActive(false);
+        base.ResetObject();
     }
 }

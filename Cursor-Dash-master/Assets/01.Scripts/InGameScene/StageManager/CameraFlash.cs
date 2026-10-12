@@ -1,63 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class CameraFlash : MonoBehaviour
 {
-    [Header("Objects")]
-    [SerializeField]
-    private Image flashImage;
-
-    [Header("Values")]
-    [SerializeField]
-    private float defaultFlashDuration;
-
-    [SerializeField]
-    private float interactionFlashDuration;
-
-    [SerializeField]
-    private float damagedFlashDuration;
-
-    private IEnumerator flashCoroutine;
-
-    private Tween flashTween;
-    
-    [Space(10)]
-    [SerializeField]
-    private Color defaultColor;
-
-    [SerializeField]
-    private Color interactionColor;
-
-    [SerializeField]
-    private Color damagedColor;
-
-    public void InteractionFlash() {
-        if (bool.Parse(PlayerPrefs.GetString("OnFlash", "true"))) {
-            flashCoroutine?.Stop(this);
-            flashCoroutine = FlashCoroutine(interactionColor, interactionFlashDuration).Start(this);
-        }
-
+    [SerializeField] private Image flashImage;
+    [SerializeField] private float defaultFlashDuration;
+    [SerializeField] private float interactionFlashDuration = 0.15f;
+    [SerializeField] private float damagedFlashDuration = 0.25f;
+    [SerializeField] private Color defaultColor;
+    [SerializeField] private Color interactionColor = Color.white;
+    [SerializeField] private Color damagedColor = Color.red;
+    private Tween tween;
+    public void InteractionFlash() => Flash(interactionColor, 0.12f, interactionFlashDuration);
+    public void DamagedFlash() => Flash(damagedColor, 0.25f, damagedFlashDuration);
+    public void Flash(Color color, float opacity, float duration)
+    {
+        if (flashImage == null || PlayerPrefs.GetString("OnFlash", "true") != "true") return;
+        tween?.Kill();
+        color.a = Mathf.Clamp01(opacity);
+        flashImage.raycastTarget = false;
+        flashImage.color = color;
+        tween = flashImage.DOFade(0f, Mathf.Max(0.01f, duration)).SetUpdate(true).SetEase(Ease.OutQuad);
     }
-
-    public void DamagedFlash(){
-        if (bool.Parse(PlayerPrefs.GetString("OnFlash", "true"))) {
-            flashCoroutine?.Stop(this);
-            flashCoroutine = FlashCoroutine(damagedColor, damagedFlashDuration).Start(this);
-        }
+    public void ResetFlash()
+    {
+        tween?.Kill();
+        tween = null;
+        if (flashImage != null) flashImage.color = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0f);
     }
-
-    private IEnumerator FlashCoroutine(Color color, float duration){
-        flashImage.DOColor(color, 0.2f);
-
-        flashTween = flashImage.DOFade(1.0f, duration);
-        yield return flashTween.WaitForCompletion();
-        
-        flashTween = flashImage.DOFade(0.5f, 0.25f);
-        yield return flashTween.WaitForCompletion();
-
-        flashImage.DOColor(defaultColor, 0.2f);
-    }
+    private void Awake() => ResetFlash();
+    private void OnDisable() => ResetFlash();
 }

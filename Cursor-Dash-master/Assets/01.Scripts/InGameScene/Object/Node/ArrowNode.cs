@@ -1,121 +1,94 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System.Collections;
 using DG.Tweening;
+using UnityEngine;
 
 public class ArrowNode : Node
 {
-    [Header("Values")]
-    [SerializeField]
-    private float attackDuration;
-
-    private Vector3 arrowPosition;
-
+    [SerializeField, Min(0.05f)] private float attackDuration = 0.6f;
+    [SerializeField, Min(0.05f)] private float preparationDuration = 3.5f;
     private LineRenderer lineRenderer;
-
-    private Tween moveTween;
-    private Vector2 attackLineVector;
-
-    private const float ScalingTime = 3.5f;
-    private new SpriteRenderer spriteRenderer;
     private Transform inside;
     private GameObject node;
-
-    private new void Awake(){
+    private Tween preparationTween;
+    private Tween moveTween;
+    private Vector2 tip;
+    private new void Awake()
+    {
         base.Awake();
-
-        lineRenderer = gameObject.GetComponent<LineRenderer>();
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        lineRenderer = GetComponent<LineRenderer>();
         node = transform.GetChild(0).gameObject;
         inside = node.transform.GetChild(0);
-
-        attackLineVector = gameObject.transform.position;
-        
-        lineRenderer.SetPosition(0, gameObject.transform.position);
-        lineRenderer.SetPosition(1, gameObject.transform.position);
     }
-
-    public override void Interaction(){ }
-    public override void ShowEffect(){ }
-
-    public override void Execute(){
-        attackLineVector = gameObject.transform.position;
-
-        gameObject.SetActive(true);
+    // The hexagonal body cannot be destroyed by touching it.
+    public override void Interaction() { }
+    public override void ShowEffect() { }
+    public override void Execute()
+    {
+        BeginExecution();
         node.SetActive(true);
-        spriteRenderer.color = Color.clear;
-        circleCollider.enabled = false;
+        if (spriteRenderer != null) spriteRenderer.color = Color.clear;
+        if (circleCollider != null) circleCollider.enabled = false;
         inside.localScale = Vector3.zero;
-
-        lineRenderer.SetPosition(0, gameObject.transform.position);
-        lineRenderer.SetPosition(1, gameObject.transform.position);
-
-        ExecuteCoroutine().Start(this);
+        lineRenderer.enabled = false;
+        StartCoroutine(Prepare());
     }
-
-    private void PlayDestroyAnimation() {
+    private IEnumerator Prepare()
+    {
+        preparationTween = inside.DOScale(1f, preparationDuration).SetEase(Ease.Linear);
+        yield return preparationTween.WaitForCompletion();
+        if (Phase != NodePhase.Preparing || StageManager.instance.IsDeath) yield break;
+        Phase = NodePhase.Fired;
+        Vector2 origin = transform.position;
+        tip = origin;
         node.SetActive(false);
-        spriteRenderer.color = Color.white;
-        animator.SetTrigger("destroy");
-    }
-
-    private IEnumerator ExecuteCoroutine(){
-        yield return inside.DOScale(1f, ScalingTime).SetEase(Ease.Linear).WaitForCompletion();
-        PlayDestroyAnimation();
-        
-        circleCollider.enabled = true;
-        circleCollider.offset = Vector2.zero;
-
-        moveTween = DOTween.To(() => attackLineVector, x => attackLineVector = x, Vector2.zero, attackDuration);
-        
-        moveTween.OnUpdate(() => {
-            lineRenderer.SetPosition(1, attackLineVector);
-            circleCollider.offset = (Vector3)attackLineVector - gameObject.transform.position;
+        if (spriteRenderer != null) spriteRenderer.color = Color.white;
+        if (animator != null) animator.SetTrigger("destroy");
+        lineRenderer.enabled = true;
+        lineRenderer.SetPosition(0, origin);
+        lineRenderer.SetPosition(1, origin);
+        moveTween = DOTween.To(() => tip, value => tip = value, StageManager.instance.NexusPosition,
+            Mathf.Max(0.05f, attackDuration)).SetEase(Ease.Linear);
+        moveTween.OnUpdate(() =>
+        {
+            lineRenderer.SetPosition(1, tip);
+            if (Phase != NodePhase.Fired || !StageManager.instance.IsPlaying) return;
+            PlayerCharacterAfterImage trail = PlayerCharacterAfterImage.instance;
+            Vector2 contact;
+            // Only the visible, fired beam is tested. Preparation never reserves a defense.
+            if (trail != null && trail.TryBlockBeam(origin, tip, lineRenderer.startWidth * 0.5f, out contact))
+                Block(contact);
+        });
+        moveTween.OnComplete(() =>
+        {
+            if (Phase != NodePhase.Fired) return;
+            DefenseStreakFailed();
+            StageManager.instance.DamageNexus(deducationHp);
+            ResetObject();
         });
     }
-
-    private IEnumerator ResetCoroutine(){
-        PlayDestroyAnimation();
-        GameManager.instance.soundManager.PlaySFX(ClipTag.nodeExplosion);
-
-        do{
-            yield return null;
-        }while((animator.GetCurrentAnimatorStateInfo(0).normalizedTime) % 1 < 0.9f);
-        
-        ResetObject();
+    private void Block(Vector2 contact)
+    {
+        if (Phase != NodePhase.Fired) return;
+        Phase = NodePhase.Resolving;
+        isInteraction = true;
+        moveTween?.Kill();
+        lineRenderer.SetPosition(1, contact);
+        NormalNode.DefenseStreak++;
+        GameManager.instance.soundManager.PlaySFX(ClipTag.arrowDefence);
+        StageManager.instance.RegisterHexBlocked(contact);
+        base.Interaction();
+        StartCoroutine(Resolve());
     }
-
-    public override void ResetObject(){
+    private static void DefenseStreakFailed() => NormalNode.DefenseStreak = 0;
+    private IEnumerator Resolve() { yield return new WaitForSecondsRealtime(0.25f); ResetObject(); }
+    public override void ResetObject()
+    {
+        preparationTween?.Kill();
+        moveTween?.Kill();
+        preparationTween = moveTween = null;
+        if (lineRenderer != null) lineRenderer.enabled = false;
+        if (inside != null) inside.localScale = Vector3.zero;
         base.ResetObject();
-    
-        circleCollider.enabled = false;
-
-        moveTween.Kill();        
-    }
-
-    private void OnTriggerEnter2D(Collider2D other) {
-        if(other.CompareTag("AfterImage") && !isInteraction){
-            isInteraction = true;
-            moveTween.Kill();
-            
-            GameManager.instance.soundManager.PlaySFX(ClipTag.arrowDefence);
-            NormalNode.DefenseStreak++;
-
-            StageManager.instance.CameraShake(0.5f, 0.5f);
-            StageManager.instance.CameraInteractionFlash();
-        
-            ResetCoroutine().Start(this);
-        } else if (other.CompareTag("Core") && !isInteraction){
-            isInteraction = true;
-            
-            moveTween.Kill();
-
-            StageManager.instance.scoreManager.Hp -= deducationHp;
-            NormalNode.DefenseStreak = 0;
-            // lineRenderer.SetPosition(1, gameObject.transform.position);            
-
-            ResetCoroutine().Start(this);
-        }
-        
+        if (circleCollider != null) circleCollider.enabled = false;
     }
 }

@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.coplaydev.unity-mcp": {
+      "version": "file:C:/Users/molph/Documents/Codex/2026-10-03/task/unity-mcp-v10.0.0/MCPForUnity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.physics2d": "1.0.0",
+        "com.unity.modules.uielements": "1.0.0",
+        "com.unity.modules.screencapture": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.test-framework": "1.1.31"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -69,6 +85,12 @@
       "dependencies": {
         "com.unity.modules.uielements": "1.0.0"
       }
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "file:C:/Users/molph/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.nuget.newtonsoft-json@3.2.1",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
     },
     "com.unity.test-framework": {
       "version": "1.6.0",

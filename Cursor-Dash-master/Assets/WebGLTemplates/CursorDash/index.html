@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | {{{ PRODUCT_NAME }}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#060b1b">
+    <title>{{{ PRODUCT_NAME }}}</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
 #if SHOW_DIAGNOSTICS
@@ -16,7 +18,7 @@
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1" aria-label="CursorDash 게임"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -81,6 +83,8 @@
         productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
         productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
         showBanner: unityShowBanner,
+        // Initial mobile performance cap; device tuning remains a separate check.
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
         // errorHandler: function(err, url, line) {
         //    alert("error " + err + " occurred at line " + line);
         //    // Return 'true' if you handled this error and don't want Unity
@@ -108,10 +112,6 @@
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
 
@@ -128,11 +128,30 @@
         canvas.after(diagnostics_icon);
 #endif
 
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "{{{ WIDTH }}}px";
-        canvas.style.height = "{{{ HEIGHT }}}px";
       }
+
+      function fitPortraitCanvas() {
+        var viewport = window.visualViewport;
+        var availableWidth = viewport ? viewport.width : window.innerWidth;
+        var availableHeight = viewport ? viewport.height : window.innerHeight;
+        var rootStyle = getComputedStyle(document.documentElement);
+        var top = parseFloat(rootStyle.getPropertyValue("--safe-top")) || 0;
+        var bottom = parseFloat(rootStyle.getPropertyValue("--safe-bottom")) || 0;
+        var left = parseFloat(rootStyle.getPropertyValue("--safe-left")) || 0;
+        var right = parseFloat(rootStyle.getPropertyValue("--safe-right")) || 0;
+        availableWidth -= left + right;
+        availableHeight -= top + bottom;
+        var height = Math.floor(Math.min(availableHeight, availableWidth * 16 / 9));
+        var container = document.querySelector("#unity-container");
+        container.style.width = Math.floor(height * 9 / 16) + "px";
+        container.style.height = height + "px";
+        container.style.left = (left + availableWidth / 2) + "px";
+        container.style.top = (top + availableHeight / 2) + "px";
+      }
+      window.addEventListener("resize", fitPortraitCanvas);
+      if (window.visualViewport) window.visualViewport.addEventListener("resize", fitPortraitCanvas);
+      fitPortraitCanvas();
+      canvas.addEventListener("contextmenu", event => event.preventDefault());
 
 #if BACKGROUND_FILENAME
       canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
@@ -145,6 +164,7 @@
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
               }).then((unityInstance) => {
+                document.documentElement.dataset.unityState = "ready";
                 document.querySelector("#unity-loading-bar").style.display = "none";
 #if SHOW_DIAGNOSTICS
                 document.getElementById("diagnostics-icon").onclick = () => {
@@ -192,7 +212,8 @@
                 };
 #endif
               }).catch((message) => {
-                alert(message);
+                document.documentElement.dataset.unityState = "failed";
+                unityShowBanner(String(message), "error");
               });
             };
 

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class PauseHandler : MonoBehaviour
@@ -7,92 +7,60 @@ public class PauseHandler : MonoBehaviour
     [Header("BGM")] [SerializeField] private Image bgm;
     [SerializeField] private Sprite bgmOn;
     [SerializeField] private Sprite bgmOff;
-
     [Header("SFX")] [SerializeField] private Image sfx;
     [SerializeField] private Sprite sfxOn;
     [SerializeField] private Sprite sfxOff;
-
     [Header("Vibration")] [SerializeField] private Image vibration;
     [SerializeField] private Sprite vibrationOn;
     [SerializeField] private Sprite vibrationOff;
-
+    [SerializeField] private TMP_Text bgmLabel;
+    [SerializeField] private TMP_Text sfxLabel;
     private float bgmVolume;
     private float sfxVolume;
-    private const string vibrationKey = "OnVibe";
+    private bool isBgmOn;
+    private bool isSfxOn;
+    private bool isVibrationOn;
 
-    private bool isBgmOn = true;
-    private bool isSfxOn = true;
-    private bool isVibrationOn = true;
-
-    public static bool IsPaused { get; private set; }
-    private Sprite BgmSprite => isBgmOn ? bgmOn : bgmOff;
-    private Sprite SfxSprite => isSfxOn ? sfxOn : sfxOff;
-    private Sprite VibrationSprite => isVibrationOn ? vibrationOn : vibrationOff;
-    private float BgmVolume => isBgmOn ? bgmVolume : 0f;
-    private float SfxVolume => isSfxOn ? sfxVolume : 0f;
-
-    public void Pause()
+    public static bool IsPaused => StageManager.instance != null && StageManager.instance.State == StageManager.RoundState.Paused;
+    private void Awake()
     {
-        IsPaused = true;
-        gameObject.SetActive(true);
-        Time.timeScale = 0f;
+        SoundManager sound = GameManager.instance.soundManager;
+        isBgmOn = sound.BGMVolume > 0f;
+        isSfxOn = sound.SFXVolume > 0f;
+        bgmVolume = isBgmOn ? sound.BGMVolume : 1f;
+        sfxVolume = isSfxOn ? sound.SFXVolume : 1f;
+        isVibrationOn = PlayerPrefs.GetString("OnVibe", "true") == "true";
+        RefreshLabels();
     }
-
-    public void Unpause()
-    {
-        IsPaused = false;
-        gameObject.SetActive(false);
-        Time.timeScale = 1f;
-    }
-
+    public void Pause() => StageManager.instance?.SetPaused(true);
+    public void Unpause() => StageManager.instance?.SetPaused(false);
+    public void LoadScene(string sceneName) => StageManager.instance?.ChangeScene(sceneName);
+    public void Retry() => StageManager.instance?.Retry();
+    public void ReturnHome() => StageManager.instance?.ReturnHome();
     public void ToggleBgm()
     {
         isBgmOn = !isBgmOn;
-        bgm.sprite = BgmSprite;
-        GameManager.instance.soundManager.BGMVolume = BgmVolume;
+        GameManager.instance.soundManager.BGMVolume = isBgmOn ? bgmVolume : 0f;
+        RefreshLabels();
     }
-
     public void ToggleSfx()
     {
         isSfxOn = !isSfxOn;
-        sfx.sprite = SfxSprite;
-        GameManager.instance.soundManager.SFXVolume = SfxVolume;
+        GameManager.instance.soundManager.SFXVolume = isSfxOn ? sfxVolume : 0f;
+        RefreshLabels();
     }
-
     public void ToggleVibration()
     {
         isVibrationOn = !isVibrationOn;
-        vibration.sprite = VibrationSprite;
-        PlayerPrefs.SetString(vibrationKey, isVibrationOn.ToString());
+        PlayerPrefs.SetString("OnVibe", isVibrationOn.ToString().ToLowerInvariant());
+        RefreshLabels();
     }
-
-    public void LoadScene(string sceneName)
+    private void RefreshLabels()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(sceneName);
-    }
-
-    private void Awake()
-    {
-        bgmVolume = GameManager.instance.soundManager.BGMVolume;
-        if (bgmVolume == 0f)
-        {
-            bgmVolume = 2f;
-            isBgmOn = false;
-        }
-
-        bgm.sprite = BgmSprite;
-
-        sfxVolume = GameManager.instance.soundManager.SFXVolume;
-        if (sfxVolume == 0f)
-        {
-            sfxVolume = 2f;
-            isSfxOn = false;
-        }
-
-        sfx.sprite = SfxSprite;
-
-        isVibrationOn = PlayerPrefs.GetString(vibrationKey) == "true";
-        vibration.sprite = VibrationSprite;
+        if (bgm != null) bgm.sprite = isBgmOn ? bgmOn : bgmOff;
+        if (sfx != null) sfx.sprite = isSfxOn ? sfxOn : sfxOff;
+        if (vibration != null) vibration.sprite = isVibrationOn ? vibrationOn : vibrationOff;
+        if (bgmLabel != null) bgmLabel.text = "BGM " + (isBgmOn ? "ON" : "OFF");
+        if (sfxLabel != null) sfxLabel.text = "SFX " + (isSfxOn ? "ON" : "OFF");
     }
 }

@@ -1,130 +1,72 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCharacterController : Singleton<PlayerCharacterController>
 {
-    [SerializeField]
-    private float moveSpeed;
-    private Vector2 moveVector = Vector2.zero;
+    [SerializeField, Min(0f)] private float moveSpeed = 5f;
+    [SerializeField, Range(0f, 0.2f)] private float viewportMargin = 0.08f;
+    [SerializeField] private bool useCharacterSettings = true;
+    private Vector2 moveVector;
+    private Rigidbody2D body;
+    private Vector2 minimum;
+    private Vector2 maximum;
 
-    private float sideMin = 0.1f;
-    private float sideMax = 0.9f;
-
-    private Vector2 beforePosition;
-    private SpriteRenderer spriteRenderer;
-
-    private TrailRenderer trailRenderer;
-    public Vector2 MoveVector{
-        get{
-            return moveVector;
+    public Vector2 MoveVector
+    {
+        get => moveVector;
+        set
+        {
+            moveVector = Vector2.ClampMagnitude(value, 1f);
+            if (moveVector == Vector2.zero && body != null)
+            {
+                body.linearVelocity = Vector2.zero;
+                // Replace a movement queued before release for the next physics step.
+                body.MovePosition(body.position);
+            }
         }
+    }
 
-        set{
-            moveVector = value;
-            moveVector = moveVector.normalized;
+    public float MoveSpeed => moveSpeed;
+
+    private void Awake()
+    {
+        body = GetComponent<Rigidbody2D>();
+        SpriteRenderer visual = GetComponent<SpriteRenderer>();
+        if (useCharacterSettings)
+        {
+            CharacterSetting settings = GameManager.instance.playerData.characterSetting;
+            if (settings.selectSprite != null) visual.sprite = settings.selectSprite.CharacterSprite;
+            if (settings.selectColor != null) visual.color = settings.selectColor.ColorValue;
         }
-    }
-    
-    private void Awake(){
-        trailRenderer = gameObject.GetComponent<TrailRenderer>();
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-
-        spriteRenderer.sprite = GameManager.instance.playerData.characterSetting.selectSprite.CharacterSprite;
-        spriteRenderer.color = GameManager.instance.playerData.characterSetting.selectColor.ColorValue;
+        Camera camera = Camera.main;
+        minimum = camera.ViewportToWorldPoint(new Vector3(viewportMargin, viewportMargin, 0f));
+        maximum = camera.ViewportToWorldPoint(new Vector3(1f - viewportMargin, 1f - viewportMargin, 0f));
     }
 
-    // private void Start(){
-    //     Color spriteColor = gameObject.GetComponent<SpriteRenderer>().color;
-    //
-    //     trailRenderer.startColor = spriteColor;
-    //
-    //     spriteColor.a = 0.8f;
-    //
-    //     trailRenderer.endColor = spriteColor;
-    // }
-
-    private void FixedUpdate(){
-        Move();
-    }
-
-    private void Move(){
-        if(moveVector.Equals(Vector2.zero)){
+    private void FixedUpdate()
+    {
+        if (StageManager.instance == null || !StageManager.instance.IsPlaying || moveVector == Vector2.zero)
             return;
-        }
-
-        Vector2 playerCharacterViewPoint; 
-        Vector2 playerNewPosition; 
-        
-        playerNewPosition = (Vector2)gameObject.transform.position + (moveVector * moveSpeed);
-
-        // playerNewPosition = Vector2.Lerp(gameObject.transform.position, moveVector, 0.1f);
-
-        gameObject.transform.LookAt2D(playerNewPosition);
-        gameObject.transform.position = playerNewPosition;
-
-        playerCharacterViewPoint = Camera.main.WorldToViewportPoint(gameObject.transform.position);
-
-        LimitSide(ref playerCharacterViewPoint.x);
-        LimitSide(ref playerCharacterViewPoint.y);
-
-        playerCharacterViewPoint = Camera.main.ViewportToWorldPoint(playerCharacterViewPoint);
-        gameObject.transform.position = playerCharacterViewPoint;
-
-        beforePosition = gameObject.transform.position;
+        Vector2 position = body != null ? body.position : (Vector2)transform.position;
+        Vector2 next = ClampPosition(position + moveVector * (moveSpeed * Time.fixedDeltaTime), minimum, maximum);
+        transform.LookAt2D(position + moveVector);
+        if (body != null) body.MovePosition(next);
+        else transform.position = next;
     }
 
-    private void LimitSide(ref float positionValue){
-        if(positionValue > sideMax){
-            positionValue = sideMax;
-        }
-        
-        if(positionValue < sideMin){
-            positionValue = sideMin;
-        }
-    }
-    
-    public void Dash(float dashDistance){
-        var playerNewPosition = (Vector2)gameObject.transform.position + (moveVector * dashDistance);
-
-        gameObject.transform.LookAt2D(playerNewPosition);
-        gameObject.transform.position = playerNewPosition;
-
-        Vector2 playerCharacterViewPosition = Camera.main.WorldToViewportPoint(gameObject.transform.position);
-
-        LimitSide(ref playerCharacterViewPosition.x);
-        LimitSide(ref playerCharacterViewPosition.y);
-
-        playerCharacterViewPosition = Camera.main.ViewportToWorldPoint(playerCharacterViewPosition);
-        gameObject.transform.position = playerCharacterViewPosition;
-
-        beforePosition = gameObject.transform.position;
+    public static Vector2 ClampPosition(Vector2 position, Vector2 minimum, Vector2 maximum)
+    {
+        return new Vector2(Mathf.Clamp(position.x, minimum.x, maximum.x), Mathf.Clamp(position.y, minimum.y, maximum.y));
     }
 
-    public void SpeedAcceleration(float speed){
-        StartCoroutine(SpeedCoroutine(speed));   
-    }
+    public void MoveStop() => MoveVector = Vector2.zero;
 
-    public void SpeedDecelration(float speed){
-        StartCoroutine(SpeedCoroutine(-speed));
-    }
-
-    public void MoveStop(){
-        moveSpeed = 0;
-    }
-
-    private IEnumerator SpeedCoroutine(float speed){
-        float changeSpeed = (moveSpeed / speed) * 2;
-        moveSpeed += changeSpeed;
-        yield return YieldInstructionCache.WaitingSeconds(1.5f);
-        moveSpeed -= changeSpeed;
-    }
-
-    public void OnTriggerEnter2D(Collider2D ohter){
-        if(ohter.transform.CompareTag("Node")){
-            Node node = ohter.GetComponent<Node>();
-            node.Interaction();
-            node.ShowEffect(gameObject.transform.position);
-        }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (StageManager.instance == null || !StageManager.instance.IsPlaying) return;
+        if (!other.CompareTag("Node")) return;
+        NormalNode node = other.GetComponent<NormalNode>();
+        if (node == null) return;
+        node.Interaction();
+        node.ShowEffect(transform.position);
     }
 }

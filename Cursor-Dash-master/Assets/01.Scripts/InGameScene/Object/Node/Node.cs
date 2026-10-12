@@ -1,61 +1,52 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    [SerializeField]
-    private Animator _animator;
-    protected Animator animator => _animator;
-
+    public enum NodePhase { Inactive, Preparing, Fired, Resolving }
+    [SerializeField] private Animator _animator;
+    [SerializeField] private int _deducationHp = 1;
     private SpriteRenderer _spriteRenderer;
-    protected SpriteRenderer spriteRenderer => _spriteRenderer;
-
     private ParticleSystem particle;
     private CircleCollider2D _circleCollider;
-    protected CircleCollider2D circleCollider => _circleCollider;
-
     private bool _isInteraction;
-    protected bool isInteraction {get => _isInteraction; set{_isInteraction = value;}}
-
-    [SerializeField]
-    private int _deducationHp;
+    protected Animator animator => _animator;
+    protected SpriteRenderer spriteRenderer => _spriteRenderer;
+    protected CircleCollider2D circleCollider => _circleCollider;
     protected int deducationHp => _deducationHp;
+    protected bool isInteraction { get => _isInteraction; set => _isInteraction = value; }
+    public NodePhase Phase { get; protected set; }
 
-    [SerializeField]
-    private int distanceFromFocus;
-
-    private float defaultDestroyTimer = 2.0f;
-    private float destroyTimer;
-
-    protected void Awake(){
-        _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        particle = gameObject.GetComponentInChildren<ParticleSystem>(true);
-        _circleCollider = gameObject.GetComponent<CircleCollider2D>();
-
-        destroyTimer = defaultDestroyTimer;
+    protected void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        particle = GetComponentInChildren<ParticleSystem>(true);
+        _circleCollider = GetComponent<CircleCollider2D>();
     }
-
-    public virtual void Interaction() {
-        particle.gameObject.SetActive(true);
-        particle.Play();
+    protected void BeginExecution()
+    {
+        gameObject.SetActive(true);
+        isInteraction = false;
+        Phase = NodePhase.Preparing;
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
+        if (animator != null) { animator.enabled = true; animator.Rebind(); }
     }
-
-    public virtual void Execute(){}
-    public virtual void ShowEffect(){}
-    public virtual void ShowEffect(Vector2 position){}
-
-    public virtual void ResetObject(){
-        gameObject.transform.localPosition = Vector2.zero;
-        gameObject.SetActive(false);
-
-        _isInteraction = false;
-
-        if (spriteRenderer != null) _spriteRenderer.enabled = true;
+    public virtual void Interaction()
+    {
+        if (particle != null) { particle.gameObject.SetActive(true); particle.Play(); }
+    }
+    public virtual void Execute() { }
+    public virtual void ShowEffect() { }
+    public virtual void ShowEffect(Vector2 position) { }
+    public virtual void ResetObject()
+    {
+        StopAllCoroutines();
+        Phase = NodePhase.Inactive;
+        isInteraction = false;
+        if (particle != null) { particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); particle.gameObject.SetActive(false); }
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
         if (circleCollider != null) circleCollider.enabled = true;
-
-        if (_animator != null) _animator.Rebind();
-
-        if (particle != null) particle.gameObject.SetActive(false);
+        if (animator != null) { animator.enabled = true; animator.Rebind(); }
+        transform.localPosition = Vector2.zero;
+        gameObject.SetActive(false);
     }
 }

@@ -1,0 +1,7 @@
+{
+  "name": "CursorDash.EditorTests",
+  "references": [],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
