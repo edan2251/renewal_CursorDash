@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerCharacterController : Singleton<PlayerCharacterController>
 {
-    [SerializeField, Min(0f)] private float moveSpeed = 5f;
+    [SerializeField, Min(0f)] private float moveSpeed = 5.75f;
     [SerializeField, Range(0f, 0.2f)] private float viewportMargin = 0.08f;
     [SerializeField] private bool useCharacterSettings = true;
     [Header("Control feel (tune on devices)")]
@@ -30,7 +30,8 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
-        SpriteRenderer visual = GetComponent<SpriteRenderer>();
+        // The visible cursor lives on a child so resizing it does not shrink the body collider.
+        SpriteRenderer visual = transform.Find("CursorVisual").GetComponent<SpriteRenderer>();
         if (useCharacterSettings)
         {
             CharacterSetting settings = GameManager.instance.playerData.characterSetting;

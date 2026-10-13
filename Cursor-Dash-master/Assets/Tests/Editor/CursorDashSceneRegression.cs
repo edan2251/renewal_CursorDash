@@ -99,7 +99,7 @@ namespace CursorDashTests
             yield return WaitRealtime(0.16f);
             Assert.AreEqual(0f, Time.timeScale, "A completing hit-stop must not unpause the round.");
             Call(stage, "SetPaused", false);
-            yield return WaitGameplay(0.65f);
+            yield return WaitGameplay(0.75f);
             Assert.AreEqual(0, (int)Get(trail, "ActiveSegmentCount"));
 
             Set(score, "Hp", 0f);
@@ -159,7 +159,7 @@ namespace CursorDashTests
             yield return WaitPhysicsStep();
             Assert.AreEqual(1, (int)Get(stage, "DestroyedNodes"));
             Assert.AreEqual(3f, (float)Get(score, "Hp"));
-            yield return WaitRealtime(0.35f);
+            yield return WaitRealtime(0.5f);
             Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
             playerBody.position = new Vector2(1.8f, -2f);
             player.transform.position = playerBody.position;
@@ -188,7 +188,7 @@ namespace CursorDashTests
             yield return WaitGameplay(0.3f);
             Assert.AreEqual(1, (int)Get(stage, "BlockedBeams"));
             Assert.AreEqual(2f, (float)Get(score, "Hp"));
-            yield return WaitRealtime(0.3f);
+            yield return WaitGameplay(1.7f);
 
             Call(trail, "ClearTrail");
             Set(hex, "preparationDuration", 0.18f);
@@ -234,11 +234,20 @@ namespace CursorDashTests
             LineRenderer beam = normal.GetComponent<LineRenderer>();
             CircleCollider2D body = normal.GetComponent<CircleCollider2D>();
             Transform ring = normal.transform.Find("Outside");
+            Transform inside = normal.transform.Find("Inside");
+            Transform broken = normal.transform.Find("BreakShell");
+            Assert.IsNotNull(broken.GetComponent<SpriteRenderer>().sprite);
             Vector3 originalScale = normal.transform.localScale;
             Vector3 originalRingScale = ring.localScale;
             float originalLineWidth = beam.widthMultiplier;
-            Assert.That((float)Get(trail, "Lifetime"), Is.EqualTo(0.6f).Within(0.00001f));
-            Assert.That(trail.GetComponent<TrailRenderer>().time, Is.EqualTo(0.6f).Within(0.00001f));
+            Assert.That((float)Get(trail, "Lifetime"), Is.EqualTo(0.6782609f).Within(0.00001f));
+            Assert.That(trail.GetComponent<TrailRenderer>().time, Is.EqualTo(0.6782609f).Within(0.00001f));
+            Assert.That((float)Get(player, "MoveSpeed"), Is.EqualTo(5.75f).Within(0.00001f));
+            Assert.That(trail.GetComponent<TrailRenderer>().startWidth, Is.EqualTo(0.0675f).Within(0.00001f));
+            Assert.That(5.75f * (float)Get(trail, "Lifetime"), Is.EqualTo(3.9f).Within(0.00001f));
+            Assert.AreEqual(Vector3.one * 0.5f, player.transform.Find("CursorVisual").localScale);
+            Assert.AreEqual(new Vector2(0.75f, 0.75f), player.GetComponent<BoxCollider2D>().size,
+                "The cursor visual must shrink without changing its existing collision body.");
             Assert.IsFalse(((AudioSource)Get((Component)Get(Find("GameManager"), "soundManager"), "BGMSource")).isPlaying);
             Assert.IsNotNull((AudioSource)Get((Component)Get(Find("GameManager"), "soundManager"), "SFXSource"));
             Assert.That((float)Get(normal, "preparationDuration"), Is.EqualTo(2.5f).Within(0.00001f));
@@ -246,7 +255,12 @@ namespace CursorDashTests
             Call(normal, "Execute");
             yield return WaitGameplay(2.56f);
             Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            Assert.That(inside.localScale.x, Is.EqualTo(1f).Within(0.001f));
             ScreenCapture.CaptureScreenshot("Captures/node-alignment-runtime.png");
+            yield return null;
+            yield return WaitGameplay(0.12f);
+            ScreenCapture.CaptureScreenshot("Captures/node-warning-runtime.png");
+            yield return null;
             yield return null;
             Call(normal, "ResetObject");
             Set(normal, "preparationDuration", 0.1f);
@@ -262,7 +276,10 @@ namespace CursorDashTests
             Assert.IsFalse(beam.enabled);
             Assert.Less(normal.transform.localScale.x, originalScale.x);
             Assert.Less(ring.localScale.x, originalRingScale.x);
-            ScreenCapture.CaptureScreenshot("Captures/node-warning-runtime.png");
+            Assert.Greater(Mathf.Abs(ring.localEulerAngles.z), 0f);
+            ScreenCapture.CaptureScreenshot("Captures/node-warning-short-runtime.png");
+            yield return null;
+            yield return null;
             Call(stage, "SetPaused", true);
             Vector3 pausedScale = normal.transform.localScale;
             yield return WaitRealtime(0.4f);
@@ -276,6 +293,10 @@ namespace CursorDashTests
             yield return WaitPhysicsStep();
             Assert.AreEqual(1, (int)Get(stage, "DestroyedNodes"));
             Assert.AreEqual("Resolving", Get(normal, "Phase").ToString());
+            Assert.IsTrue(broken.gameObject.activeSelf);
+            ScreenCapture.CaptureScreenshot("Captures/node-break-runtime.png");
+            yield return null;
+            yield return null;
             Assert.IsFalse(beam.enabled);
             Assert.AreEqual(3f, (float)Get(score, "Hp"));
             yield return WaitGameplay(0.55f);
@@ -288,6 +309,7 @@ namespace CursorDashTests
             Assert.AreEqual(originalScale, normal.transform.localScale);
             Assert.AreEqual(originalRingScale, ring.localScale);
             Assert.AreEqual(originalLineWidth, beam.widthMultiplier);
+            Assert.IsFalse(broken.gameObject.activeSelf);
 
             normal.transform.position = new Vector2(0f, 2f);
             Call(normal, "Execute");
@@ -297,7 +319,7 @@ namespace CursorDashTests
             Assert.AreEqual("Fired", Get(normal, "Phase").ToString());
             Assert.IsFalse(body.enabled);
             Assert.IsTrue(beam.enabled);
-            Assert.That(beam.widthMultiplier, Is.EqualTo(originalLineWidth * 1.6f).Within(0.0001f));
+            Assert.That(beam.widthMultiplier, Is.EqualTo(originalLineWidth * 0.65f).Within(0.0001f));
             yield return WaitGameplay(0.18f);
             Assert.AreEqual(2f, (float)Get(score, "Hp"));
             Assert.AreEqual("Inactive", Get(normal, "Phase").ToString());
@@ -316,6 +338,11 @@ namespace CursorDashTests
             Component score = (Component)Get(stage, "scoreManager");
             Component trail = Find("PlayerCharacterAfterImage");
             Component hex = NodesOfType("ArrowNode").First();
+            Component player = Find("PlayerCharacterController");
+            Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
+            playerBody.position = new Vector2(2f, -3f);
+            player.transform.position = playerBody.position;
+            yield return null;
             LineRenderer beam = hex.GetComponent<LineRenderer>();
             Transform body = hex.transform.GetChild(0);
             Transform outsideOne = body.Find("Outside 1");
@@ -337,6 +364,7 @@ namespace CursorDashTests
             Assert.Less(body.localScale.x, bodyScale.x);
             Assert.Less(outsideOne.localScale.x, outsideOneScale.x);
             Assert.Less(outsideTwo.localScale.x, outsideTwoScale.x);
+            Assert.Greater(Mathf.Abs(outsideOne.localEulerAngles.z), 0f);
             Call(hex, "Interaction");
             Assert.AreEqual("Warning", Get(hex, "Phase").ToString(),
                 "Touching a hexagonal body must not destroy it.");
@@ -351,14 +379,31 @@ namespace CursorDashTests
             yield return WaitGameplay(0.31f);
             Assert.AreEqual("Fired", Get(hex, "Phase").ToString());
             Assert.IsTrue(beam.enabled);
-            Assert.That(beam.widthMultiplier, Is.EqualTo(baseWidth * 1.6f).Within(0.0001f));
+            Assert.IsTrue(body.gameObject.activeSelf, "The target remains visible while the beam travels out.");
+            Assert.IsFalse(hex.GetComponent<Animator>().enabled, "Destroy art must not play at fire time.");
+            Assert.That(beam.widthMultiplier, Is.EqualTo(baseWidth * 0.65f).Within(0.0001f));
             Assert.That((float)Get(hex, "beamDefenseRadius"), Is.EqualTo(baseBlockRadius).Within(0.0001f),
-                "The brighter beam must keep its previous blocking radius.");
-            Call(trail, "RecordMovement", new Vector2(-1f, 1.8f), new Vector2(1f, 1.8f), Time.time);
-            yield return WaitGameplay(0.06f);
+                "The thinner beam must keep its previous blocking radius.");
+            Call(trail, "RecordMovement", new Vector2(-1f, 1f), new Vector2(1f, 1f), Time.time);
+            yield return WaitGameplay(0.14f);
             Assert.AreEqual(1, (int)Get(stage, "BlockedBeams"));
             Assert.AreEqual(3f, (float)Get(score, "Hp"));
-            yield return WaitRealtime(0.3f);
+            Assert.AreEqual("Resolving", Get(hex, "Phase").ToString());
+            Assert.IsTrue(body.gameObject.activeSelf);
+            Assert.IsTrue(beam.enabled);
+            Assert.IsFalse(hex.GetComponent<Animator>().enabled);
+            Vector3 returnStart = beam.GetPosition(1);
+            yield return WaitGameplay(0.12f);
+            Assert.Less(Vector3.Distance(beam.GetPosition(1), hex.transform.position),
+                Vector3.Distance(returnStart, hex.transform.position), "The reflected beam must travel toward the node.");
+            ScreenCapture.CaptureScreenshot("Captures/hex-return-runtime.png");
+            yield return WaitGameplay(0.24f);
+            Assert.AreEqual("Resolving", Get(hex, "Phase").ToString());
+            Assert.IsFalse(body.gameObject.activeSelf);
+            Assert.IsFalse(beam.enabled);
+            Assert.IsTrue(hex.GetComponent<Animator>().enabled);
+            ScreenCapture.CaptureScreenshot("Captures/hex-impact-runtime.png");
+            yield return WaitGameplay(1.4f);
             Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
             Assert.AreEqual(bodyScale, body.localScale);
             Assert.AreEqual(outsideOneScale, outsideOne.localScale);
@@ -372,6 +417,30 @@ namespace CursorDashTests
             Assert.AreEqual(2f, (float)Get(score, "Hp"));
             Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
             Assert.AreEqual(baseWidth, beam.widthMultiplier);
+
+            // A round interruption during reflection cannot leave an impact callback on this pooled node.
+            Set(hex, "preparationDuration", 0.05f);
+            Set(hex, "warningDuration", 0.05f);
+            Set(hex, "attackDuration", 0.4f);
+            Call(trail, "ClearTrail");
+            hex.transform.position = new Vector2(0f, 2f);
+            Call(hex, "Execute");
+            yield return WaitGameplay(0.13f);
+            Call(trail, "RecordMovement", new Vector2(-1f, 1.8f), new Vector2(1f, 1.8f), Time.time);
+            yield return WaitGameplay(0.06f);
+            Assert.AreEqual("Resolving", Get(hex, "Phase").ToString());
+            Call(Find("NodeCreator"), "StopNodes");
+            Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
+            Assert.IsFalse(beam.enabled);
+            yield return WaitGameplay(0.4f);
+            Assert.IsFalse(hex.GetComponent<Animator>().enabled);
+            Assert.AreEqual(2f, (float)Get(score, "Hp"));
+            Call(trail, "ClearTrail");
+            hex.transform.position = new Vector2(0f, 2f);
+            Call(hex, "Execute");
+            yield return WaitGameplay(0.7f);
+            Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
+            Assert.AreEqual(1f, (float)Get(score, "Hp"));
         }
 
         [Test]

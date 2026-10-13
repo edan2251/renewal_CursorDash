@@ -15,9 +15,10 @@ public class PlayerCharacterAfterImage : MonoBehaviour
     public static PlayerCharacterAfterImage instance { get; private set; }
     [SerializeField] private GameObject trailCollisions;
     [Header("Trail settings")]
-    [SerializeField, Min(0.05f)] private float lifetime = 0.6f;
+    // 5.75 * lifetime = 1.3 * (5 * 0.6), so speed does not double-count trail length.
+    [SerializeField, Min(0.05f)] private float lifetime = 0.6782609f;
     [SerializeField, Min(0.01f)] private float sampleInterval = 0.02f;
-    [SerializeField, Min(0.01f)] private float segmentWidth = 0.135f;
+    [SerializeField, Min(0.01f)] private float segmentWidth = 0.0675f;
     [SerializeField, Min(0.001f)] private float minimumDistance = 0.015f;
     private Segment[] segments;
     private TrailRenderer visual;
