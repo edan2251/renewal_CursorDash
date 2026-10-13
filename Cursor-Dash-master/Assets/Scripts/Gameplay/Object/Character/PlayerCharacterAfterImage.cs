@@ -14,8 +14,8 @@ public class PlayerCharacterAfterImage : MonoBehaviour
 
     public static PlayerCharacterAfterImage instance { get; private set; }
     [SerializeField] private GameObject trailCollisions;
-    [Header("Initial trail settings (existing lifetime retained)")]
-    [SerializeField, Min(0.05f)] private float lifetime = 0.5f;
+    [Header("Trail settings")]
+    [SerializeField, Min(0.05f)] private float lifetime = 0.6f;
     [SerializeField, Min(0.01f)] private float sampleInterval = 0.02f;
     [SerializeField, Min(0.01f)] private float segmentWidth = 0.135f;
     [SerializeField, Min(0.001f)] private float minimumDistance = 0.015f;

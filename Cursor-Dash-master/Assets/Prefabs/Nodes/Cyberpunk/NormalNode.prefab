@@ -308,6 +308,8 @@ MonoBehaviour:
   effectObject: {fileID: 681115501795315194}
   childAniamtor: {fileID: 681115501795315193}
   lineDuration: 0.5
+  preparationDuration: 2.5
+  warningDuration: 0.25
 --- !u!58 &-2133005433628797631
 CircleCollider2D:
   m_ObjectHideFlags: 0

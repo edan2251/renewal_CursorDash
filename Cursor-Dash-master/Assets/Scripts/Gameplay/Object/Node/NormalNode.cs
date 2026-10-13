@@ -18,13 +18,30 @@ public class NormalNode : Node
     [SerializeField] private GameObject effectObject;
     [SerializeField] private Animator childAniamtor;
     [SerializeField, Min(0.05f)] private float lineDuration = 0.6f;
-    [SerializeField, Min(0.05f)] private float preparationDuration = 2f;
+    [SerializeField, Min(0.05f)] private float preparationDuration = 2.5f;
+    [SerializeField, Min(0.05f)] private float warningDuration = 0.25f;
     private LineRenderer lineRenderer;
     private Tween moveTween;
-    private new void Awake() { base.Awake(); lineRenderer = GetComponent<LineRenderer>(); }
+    private Tween warningTween;
+    private Tween releaseTween;
+    private Transform outsideRing;
+    private Vector3 initialScale;
+    private Vector3 initialRingScale;
+    private float initialLineWidth;
+    private new void Awake()
+    {
+        base.Awake();
+        lineRenderer = GetComponent<LineRenderer>();
+        outsideRing = transform.Find("Outside");
+        initialScale = transform.localScale;
+        if (outsideRing != null) initialRingScale = outsideRing.localScale;
+        if (lineRenderer != null) initialLineWidth = lineRenderer.widthMultiplier;
+    }
     public override void Execute()
     {
         BeginExecution();
+        StopVisualTweens();
+        RestoreVisuals();
         if (circleCollider != null) circleCollider.enabled = true;
         lineRenderer.enabled = false;
         if (effectObject != null) effectObject.SetActive(false);
@@ -33,10 +50,24 @@ public class NormalNode : Node
     private IEnumerator Prepare()
     {
         yield return new WaitForSeconds(preparationDuration);
-        if (Phase != NodePhase.Preparing || StageManager.instance.IsDeath) yield break;
+        if (Phase != NodePhase.Preparing || !StageManager.instance.IsPlaying) yield break;
+        Phase = NodePhase.Warning;
+        warningTween = DOTween.Sequence()
+            .Join(transform.DOScale(initialScale * 0.92f, warningDuration).SetEase(Ease.InCubic))
+            .Join(outsideRing.DOScale(initialRingScale * 0.68f, warningDuration).SetEase(Ease.InCubic));
+        yield return warningTween.WaitForCompletion();
+        while (Phase == NodePhase.Warning && !StageManager.instance.IsPlaying) yield return null;
+        if (Phase != NodePhase.Warning || !StageManager.instance.IsPlaying) yield break;
+        warningTween = null;
         Phase = NodePhase.Fired;
         isInteraction = true;
         if (circleCollider != null) circleCollider.enabled = false;
+        lineRenderer.widthMultiplier = initialLineWidth * 1.6f;
+        releaseTween = DOTween.Sequence()
+            .Join(transform.DOScale(initialScale * 1.07f, 0.09f).SetEase(Ease.OutQuad))
+            .Join(outsideRing.DOScale(initialRingScale * 1.05f, 0.09f).SetEase(Ease.OutQuad))
+            .Append(transform.DOScale(initialScale, 0.13f).SetEase(Ease.OutQuad))
+            .Join(outsideRing.DOScale(initialRingScale, 0.13f).SetEase(Ease.OutQuad));
         Vector2 origin = transform.position;
         Vector2 tip = origin;
         lineRenderer.enabled = true;
@@ -56,10 +87,11 @@ public class NormalNode : Node
     }
     public override void Interaction()
     {
-        if (Phase != NodePhase.Preparing || !StageManager.instance.IsPlaying) return;
+        if ((Phase != NodePhase.Preparing && Phase != NodePhase.Warning) || !StageManager.instance.IsPlaying) return;
         Phase = NodePhase.Resolving;
         isInteraction = true;
         StopAllCoroutines();
+        StopVisualTweens();
         base.Interaction();
         DefenseStreak++;
         if (spriteRenderer != null) spriteRenderer.enabled = false;
@@ -80,10 +112,25 @@ public class NormalNode : Node
     }
     public override void ResetObject()
     {
+        StopVisualTweens();
         moveTween?.Kill();
         moveTween = null;
         if (lineRenderer != null) lineRenderer.enabled = false;
         if (effectObject != null) effectObject.SetActive(false);
+        RestoreVisuals();
         base.ResetObject();
+    }
+    private void StopVisualTweens()
+    {
+        warningTween?.Kill();
+        warningTween = null;
+        releaseTween?.Kill();
+        releaseTween = null;
+    }
+    private void RestoreVisuals()
+    {
+        transform.localScale = initialScale;
+        if (outsideRing != null) outsideRing.localScale = initialRingScale;
+        if (lineRenderer != null) lineRenderer.widthMultiplier = initialLineWidth;
     }
 }

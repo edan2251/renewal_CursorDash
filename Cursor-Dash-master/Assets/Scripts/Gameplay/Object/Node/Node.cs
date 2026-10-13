@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public enum NodePhase { Inactive, Preparing, Fired, Resolving }
+    public enum NodePhase { Inactive, Preparing, Warning, Fired, Resolving }
     [SerializeField] private Animator _animator;
     [SerializeField] private int _deducationHp = 1;
     private SpriteRenderer _spriteRenderer;

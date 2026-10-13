@@ -11461,7 +11461,7 @@ TrailRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Time: 0.5
+  m_Time: 0.6
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -11535,7 +11535,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trailCollisions: {fileID: 570927788}
-  lifetime: 0.5
+  lifetime: 0.6
   sampleInterval: 0.02
   segmentWidth: 0.135
   minimumDistance: 0.015

@@ -99,7 +99,7 @@ namespace CursorDashTests
             yield return WaitRealtime(0.16f);
             Assert.AreEqual(0f, Time.timeScale, "A completing hit-stop must not unpause the round.");
             Call(stage, "SetPaused", false);
-            yield return WaitGameplay(0.55f);
+            yield return WaitGameplay(0.65f);
             Assert.AreEqual(0, (int)Get(trail, "ActiveSegmentCount"));
 
             Set(score, "Hp", 0f);
@@ -146,6 +146,7 @@ namespace CursorDashTests
             Component hex = NodesOfType("ArrowNode").First();
             Component player = Find("PlayerCharacterController");
             Set(normal, "preparationDuration", 0.1f);
+            Set(normal, "warningDuration", 0.06f);
             Set(normal, "lineDuration", 0.2f);
             Set(hex, "preparationDuration", 0.06f);
             Set(hex, "attackDuration", 0.35f);
@@ -168,6 +169,8 @@ namespace CursorDashTests
             normal.transform.position = new Vector2(0f, 2f);
             Call(normal, "Execute");
             yield return WaitGameplay(0.12f);
+            Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            yield return WaitGameplay(0.1f);
             Assert.AreEqual("Fired", Get(normal, "Phase").ToString());
             Call(normal, "Interaction");
             Assert.AreEqual(1, (int)Get(stage, "DestroyedNodes"));
@@ -210,6 +213,106 @@ namespace CursorDashTests
             yield return WaitGameplay(0.08f);
             Assert.AreEqual(2, (int)Get(stage, "BlockedBeams"), "A new live trail intersecting the visible fired beam must block it.");
             Assert.AreEqual(1f, (float)Get(score, "Hp"));
+        }
+
+        [UnityTest]
+        public IEnumerator CircularNode_WarnsUntilFire_CanBeDestroyedAndResetsForReuse()
+        {
+            Click("RemakeMenu/Start");
+            yield return WaitForScene("Cyberpunk");
+            DisablePatterns();
+            Component stage = Find("StageManager");
+            Component score = (Component)Get(stage, "scoreManager");
+            Component normal = NodesOfType("NormalNode").First();
+            Component player = Find("PlayerCharacterController");
+            Component trail = Find("PlayerCharacterAfterImage");
+            Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
+            playerBody.position = new Vector2(2f, -3f);
+            player.transform.position = playerBody.position;
+            yield return null;
+            LineRenderer beam = normal.GetComponent<LineRenderer>();
+            CircleCollider2D body = normal.GetComponent<CircleCollider2D>();
+            Transform ring = normal.transform.Find("Outside");
+            Vector3 originalScale = normal.transform.localScale;
+            Vector3 originalRingScale = ring.localScale;
+            float originalLineWidth = beam.widthMultiplier;
+            Assert.That((float)Get(trail, "Lifetime"), Is.EqualTo(0.6f).Within(0.00001f));
+            Assert.That(trail.GetComponent<TrailRenderer>().time, Is.EqualTo(0.6f).Within(0.00001f));
+            Assert.IsFalse(((AudioSource)Get((Component)Get(Find("GameManager"), "soundManager"), "BGMSource")).isPlaying);
+            Assert.IsNotNull((AudioSource)Get((Component)Get(Find("GameManager"), "soundManager"), "SFXSource"));
+            Assert.That((float)Get(normal, "preparationDuration"), Is.EqualTo(2.5f).Within(0.00001f));
+            normal.transform.position = new Vector2(0f, 2f);
+            Call(normal, "Execute");
+            yield return WaitGameplay(2.56f);
+            Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            ScreenCapture.CaptureScreenshot("Captures/node-alignment-runtime.png");
+            yield return null;
+            Call(normal, "ResetObject");
+            Set(normal, "preparationDuration", 0.1f);
+            Set(normal, "warningDuration", 0.3f);
+            Set(normal, "lineDuration", 0.12f);
+
+            normal.transform.position = new Vector2(0f, 2f);
+            Call(normal, "Execute");
+            Assert.AreEqual("Preparing", Get(normal, "Phase").ToString());
+            yield return WaitGameplay(0.15f);
+            Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            Assert.IsTrue(body.enabled, "The circular node remains destructible during warning.");
+            Assert.IsFalse(beam.enabled);
+            Assert.Less(normal.transform.localScale.x, originalScale.x);
+            Assert.Less(ring.localScale.x, originalRingScale.x);
+            ScreenCapture.CaptureScreenshot("Captures/node-warning-runtime.png");
+            Call(stage, "SetPaused", true);
+            Vector3 pausedScale = normal.transform.localScale;
+            yield return WaitRealtime(0.4f);
+            Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            Assert.Less(Vector3.Distance(pausedScale, normal.transform.localScale), 0.001f);
+            Assert.IsFalse(beam.enabled);
+            Call(stage, "SetPaused", false);
+
+            normal.transform.position = player.transform.position;
+            yield return WaitPhysicsStep();
+            yield return WaitPhysicsStep();
+            Assert.AreEqual(1, (int)Get(stage, "DestroyedNodes"));
+            Assert.AreEqual("Resolving", Get(normal, "Phase").ToString());
+            Assert.IsFalse(beam.enabled);
+            Assert.AreEqual(3f, (float)Get(score, "Hp"));
+            yield return WaitGameplay(0.55f);
+            Assert.AreEqual("Inactive", Get(normal, "Phase").ToString());
+            Assert.IsFalse(beam.enabled, "A destroyed warning must never fire later.");
+            Assert.IsFalse(((GameObject)Get(normal, "effectObject")).activeSelf,
+                "A destroyed warning must not revive its delayed effect.");
+            Assert.AreEqual(1, (int)Get(stage, "DestroyedNodes"));
+            Assert.AreEqual(3f, (float)Get(score, "Hp"));
+            Assert.AreEqual(originalScale, normal.transform.localScale);
+            Assert.AreEqual(originalRingScale, ring.localScale);
+            Assert.AreEqual(originalLineWidth, beam.widthMultiplier);
+
+            normal.transform.position = new Vector2(0f, 2f);
+            Call(normal, "Execute");
+            yield return WaitGameplay(0.15f);
+            Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
+            yield return WaitGameplay(0.32f);
+            Assert.AreEqual("Fired", Get(normal, "Phase").ToString());
+            Assert.IsFalse(body.enabled);
+            Assert.IsTrue(beam.enabled);
+            Assert.That(beam.widthMultiplier, Is.EqualTo(originalLineWidth * 1.6f).Within(0.0001f));
+            yield return WaitGameplay(0.18f);
+            Assert.AreEqual(2f, (float)Get(score, "Hp"));
+            Assert.AreEqual("Inactive", Get(normal, "Phase").ToString());
+            Assert.AreEqual(originalScale, normal.transform.localScale);
+            Assert.AreEqual(originalRingScale, ring.localScale);
+            Assert.AreEqual(originalLineWidth, beam.widthMultiplier);
+        }
+
+        [Test]
+        public void OutsideRing_PivotMatchesItsMeasuredCircularCenter()
+        {
+            Sprite ring = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Art/Nodes/Cyberpunk/Types/Cyberpunk_NormalNode/Cyberpunk_NormalNode_Outside.png");
+            Assert.IsNotNull(ring);
+            Assert.That(ring.pivot.x, Is.EqualTo(100f).Within(0.1f));
+            Assert.That(ring.pivot.y, Is.EqualTo(91.5f).Within(0.1f));
         }
 
         [UnityTest]
