@@ -5298,6 +5298,7 @@ MonoBehaviour:
   _deducationHp: 1
   distanceFromFocus: 5
   attackDuration: 0.25
+  warningDuration: 0.25
 --- !u!58 &6719566646809669151
 CircleCollider2D:
   m_ObjectHideFlags: 0

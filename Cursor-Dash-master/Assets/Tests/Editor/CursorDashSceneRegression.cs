@@ -149,6 +149,7 @@ namespace CursorDashTests
             Set(normal, "warningDuration", 0.06f);
             Set(normal, "lineDuration", 0.2f);
             Set(hex, "preparationDuration", 0.06f);
+            Set(hex, "warningDuration", 0.05f);
             Set(hex, "attackDuration", 0.35f);
 
             // Real Physics2D body overlap goes through PlayerCharacterController.OnTriggerEnter2D.
@@ -303,6 +304,74 @@ namespace CursorDashTests
             Assert.AreEqual(originalScale, normal.transform.localScale);
             Assert.AreEqual(originalRingScale, ring.localScale);
             Assert.AreEqual(originalLineWidth, beam.widthMultiplier);
+        }
+
+        [UnityTest]
+        public IEnumerator HexNode_WarnsWithoutBodyDestruction_AndKeepsOriginalBlockRadius()
+        {
+            Click("RemakeMenu/Start");
+            yield return WaitForScene("Cyberpunk");
+            DisablePatterns();
+            Component stage = Find("StageManager");
+            Component score = (Component)Get(stage, "scoreManager");
+            Component trail = Find("PlayerCharacterAfterImage");
+            Component hex = NodesOfType("ArrowNode").First();
+            LineRenderer beam = hex.GetComponent<LineRenderer>();
+            Transform body = hex.transform.GetChild(0);
+            Transform outsideOne = body.Find("Outside 1");
+            Transform outsideTwo = body.Find("Outside 2");
+            Vector3 bodyScale = body.localScale;
+            Vector3 outsideOneScale = outsideOne.localScale;
+            Vector3 outsideTwoScale = outsideTwo.localScale;
+            float baseWidth = beam.widthMultiplier;
+            float baseBlockRadius = beam.startWidth * 0.5f;
+            Set(hex, "preparationDuration", 0.1f);
+            Set(hex, "warningDuration", 0.3f);
+            Set(hex, "attackDuration", 0.25f);
+            hex.transform.position = new Vector2(0f, 2f);
+            Call(hex, "Execute");
+            yield return WaitGameplay(0.15f);
+            Assert.AreEqual("Warning", Get(hex, "Phase").ToString());
+            Assert.IsFalse(beam.enabled);
+            Assert.IsFalse(hex.GetComponent<CircleCollider2D>().enabled);
+            Assert.Less(body.localScale.x, bodyScale.x);
+            Assert.Less(outsideOne.localScale.x, outsideOneScale.x);
+            Assert.Less(outsideTwo.localScale.x, outsideTwoScale.x);
+            Call(hex, "Interaction");
+            Assert.AreEqual("Warning", Get(hex, "Phase").ToString(),
+                "Touching a hexagonal body must not destroy it.");
+            Assert.AreEqual(0, (int)Get(stage, "DestroyedNodes"));
+            Call(stage, "SetPaused", true);
+            Vector3 pausedScale = body.localScale;
+            yield return WaitRealtime(0.4f);
+            Assert.AreEqual("Warning", Get(hex, "Phase").ToString());
+            Assert.Less(Vector3.Distance(pausedScale, body.localScale), 0.001f);
+            Assert.IsFalse(beam.enabled);
+            Call(stage, "SetPaused", false);
+            yield return WaitGameplay(0.31f);
+            Assert.AreEqual("Fired", Get(hex, "Phase").ToString());
+            Assert.IsTrue(beam.enabled);
+            Assert.That(beam.widthMultiplier, Is.EqualTo(baseWidth * 1.6f).Within(0.0001f));
+            Assert.That((float)Get(hex, "beamDefenseRadius"), Is.EqualTo(baseBlockRadius).Within(0.0001f),
+                "The brighter beam must keep its previous blocking radius.");
+            Call(trail, "RecordMovement", new Vector2(-1f, 1.8f), new Vector2(1f, 1.8f), Time.time);
+            yield return WaitGameplay(0.06f);
+            Assert.AreEqual(1, (int)Get(stage, "BlockedBeams"));
+            Assert.AreEqual(3f, (float)Get(score, "Hp"));
+            yield return WaitRealtime(0.3f);
+            Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
+            Assert.AreEqual(bodyScale, body.localScale);
+            Assert.AreEqual(outsideOneScale, outsideOne.localScale);
+            Assert.AreEqual(outsideTwoScale, outsideTwo.localScale);
+            Assert.AreEqual(baseWidth, beam.widthMultiplier);
+
+            Call(trail, "ClearTrail");
+            hex.transform.position = new Vector2(0f, 2f);
+            Call(hex, "Execute");
+            yield return WaitGameplay(0.75f);
+            Assert.AreEqual(2f, (float)Get(score, "Hp"));
+            Assert.AreEqual("Inactive", Get(hex, "Phase").ToString());
+            Assert.AreEqual(baseWidth, beam.widthMultiplier);
         }
 
         [Test]
