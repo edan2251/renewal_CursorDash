@@ -35,7 +35,7 @@ namespace CursorDashTests
                 SessionState.SetFloat(Prefix + mapName + ".score", (float)Get(map, "highScore"));
                 SessionState.SetBool(Prefix + mapName + ".unlock", (bool)Get(map, "isUnlock"));
             }
-            EditorSceneManager.OpenScene("Assets/00.Scenes/01.StageSelectScene.unity", OpenSceneMode.Single);
+            EditorSceneManager.OpenScene("Assets/Scenes/01.StageSelectScene.unity", OpenSceneMode.Single);
             yield return new EnterPlayMode();
             yield return null;
             yield return null;

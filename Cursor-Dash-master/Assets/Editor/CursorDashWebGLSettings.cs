@@ -8,8 +8,8 @@ public static class CursorDashWebGLSettings
     {
         if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Exit Play Mode first.");
         EditorBuildSettings.scenes = new[] {
-            new EditorBuildSettingsScene("Assets/00.Scenes/01.StageSelectScene.unity", true),
-            new EditorBuildSettingsScene("Assets/00.Scenes/Cyberpunk.unity", true)
+            new EditorBuildSettingsScene("Assets/Scenes/01.StageSelectScene.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/Cyberpunk.unity", true)
         };
         PlayerSettings.defaultScreenWidth = 540;
         PlayerSettings.defaultScreenHeight = 960;

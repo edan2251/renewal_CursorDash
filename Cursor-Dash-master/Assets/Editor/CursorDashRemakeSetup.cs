@@ -11,9 +11,9 @@ using UnityEngine.UI;
 /// <summary>One reproducible, asset-backed setup for the existing two-scene loop.</summary>
 public static class CursorDashRemakeSetup
 {
-    private const string MainPath = "Assets/00.Scenes/01.StageSelectScene.unity";
-    private const string PlayPath = "Assets/00.Scenes/Cyberpunk.unity";
-    private const string ArtRoot = "Assets/02.Sprites/New_Resources/";
+    private const string MainPath = "Assets/Scenes/01.StageSelectScene.unity";
+    private const string PlayPath = "Assets/Scenes/Cyberpunk.unity";
+
     private static TMP_FontAsset medium;
     private static TMP_FontAsset bold;
     private static Sprite ring;
@@ -74,7 +74,7 @@ public static class CursorDashRemakeSetup
         float cursorHeight = Mathf.Max(0.2f, cursor.bounds.size.y);
         BoxCollider2D playerCollider = player.GetComponent<BoxCollider2D>();
         Vector2 collisionSize = playerCollider != null ? (Vector2)playerCollider.bounds.size : Vector2.one * 0.25f;
-        cursor.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/02.Sprites/Old_Resources/Character/cursor.png");
+        cursor.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Characters/Player/cursor.png");
         cursor.color = Color.white;
         if (cursor.sprite != null) player.transform.localScale = Vector3.one * (cursorHeight / cursor.sprite.bounds.size.y);
         if (playerCollider != null)
@@ -153,7 +153,7 @@ public static class CursorDashRemakeSetup
         if (previous != null) UnityEngine.Object.DestroyImmediate(previous);
         RectTransform menu = CanvasRoot("RemakeMenu", 20);
         MainSceneController controller = menu.gameObject.AddComponent<MainSceneController>();
-        Sprite background = AssetDatabase.LoadAssetAtPath<Sprite>(ArtRoot + "Stage/Cyberpunk/Background/Cyberpunk_Background.png");
+        Sprite background = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Backgrounds/Cyberpunk/Remake/Cyberpunk_Background.png");
         RectTransform bg = Stretch("Background", menu);
         Image backgroundImage = bg.gameObject.AddComponent<Image>();
         backgroundImage.sprite = background;
@@ -167,7 +167,7 @@ public static class CursorDashRemakeSetup
         Label("Best caption", menu, "BEST TIME", new Vector2(0.5f, 0.39f), new Vector2(750f, 60f), 28f, Muted);
         ButtonAt("Start", menu, "클릭해서 게임 시작", new Vector2(0.5f, 0.285f), new Vector2(980f, 170f), Color.clear, controller.StartGame);
         Label("Controls", menu, "터치한 곳에서 드래그해 이동", new Vector2(0.5f, 0.215f), new Vector2(960f, 85f), 32f, Muted);
-        Sprite curve = AssetDatabase.LoadAssetAtPath<Sprite>(ArtRoot + "Settings/Ui_Down/Ui_Down_Design.png");
+        Sprite curve = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Settings/Ui_Down/Ui_Down_Design.png");
         ImageAt("Menu curve", menu, curve, new Vector2(0.5f, 0.065f), new Vector2(1080f, 66f), Color.white);
         RectTransform cursorBadge = Rect("Cursor badge", menu, new Vector2(0.5f, 0.065f), new Vector2(190f, 190f));
         for (int i = 0; i < 48; i++)
@@ -180,10 +180,10 @@ public static class CursorDashRemakeSetup
             stroke.color = Color.white;
             stroke.raycastTarget = false;
         }
-        Sprite mainIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/02.Sprites/Old_Resources/Character/cursor.png");
+        Sprite mainIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Characters/Player/cursor.png");
         ImageAt("Cursor menu icon", menu, mainIcon, new Vector2(0.5f, 0.065f), new Vector2(105f, 105f), Color.white);
         Button gear = ButtonAt("Settings", menu, "", new Vector2(0.88f, 0.065f), new Vector2(130f, 130f), Color.clear, controller.OpenSettings);
-        gear.GetComponent<Image>().sprite = AssetDatabase.LoadAssetAtPath<Sprite>(ArtRoot + "Settings/Ui_Down/Ui_Down_Settings.png");
+        gear.GetComponent<Image>().sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Settings/Ui_Down/Ui_Down_Settings.png");
         gear.GetComponent<Image>().preserveAspect = true;
         gear.GetComponent<Image>().color = Color.white;
 
