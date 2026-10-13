@@ -19,6 +19,9 @@ public class VirtualJoyStick : MonoBehaviour
     private Vector2 origin;
     private int fingerId = -1;
     private bool mouseGesture;
+#if UNITY_EDITOR || UNITY_STANDALONE
+    private bool keyboardReady = true;
+#endif
     private Vector2Int screenSize;
 
     public bool HasGesture => fingerId >= 0 || mouseGesture;
@@ -60,6 +63,12 @@ public class VirtualJoyStick : MonoBehaviour
             Vector2 keyboard = new Vector2(
                 (Input.GetKey(KeyCode.D) ? 1 : 0) - (Input.GetKey(KeyCode.A) ? 1 : 0),
                 (Input.GetKey(KeyCode.W) ? 1 : 0) - (Input.GetKey(KeyCode.S) ? 1 : 0));
+            // After an interruption, a held key must be released before steering resumes.
+            if (!keyboardReady)
+            {
+                if (keyboard == Vector2.zero) keyboardReady = true;
+                keyboard = Vector2.zero;
+            }
             SetMovement(Vector2.ClampMagnitude(keyboard, 1f));
         }
 #endif
@@ -74,7 +83,9 @@ public class VirtualJoyStick : MonoBehaviour
                 TryBeginPointer(touch.fingerId, touch.position, IsOverButton(touch.position));
 
             if (touch.fingerId != fingerId) continue;
-            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            if (touch.phase == TouchPhase.Canceled)
+                CancelPointer(touch.fingerId);
+            else if (touch.phase == TouchPhase.Ended)
                 ReleasePointer(touch.fingerId);
             else
                 ApplyPosition(touch.position);
@@ -96,7 +107,16 @@ public class VirtualJoyStick : MonoBehaviour
         }
         if (!mouseGesture) return;
         if (Input.GetMouseButton(0)) ApplyPosition(position);
-        else ResetInput();
+        else ReleaseGesture();
+    }
+
+    public static Vector2 FollowOrigin(Vector2 currentOrigin, Vector2 pointer, float radius)
+    {
+        if (radius <= 0f) return pointer;
+        Vector2 displacement = pointer - currentOrigin;
+        return displacement.sqrMagnitude > radius * radius
+            ? pointer - displacement.normalized * radius
+            : currentOrigin;
     }
 
     public static Vector2 CalculateInput(Vector2 displacement, float radius, float deadZone)
@@ -118,11 +138,13 @@ public class VirtualJoyStick : MonoBehaviour
         return true;
     }
 
-    public void ReleasePointer(int id) { if (id == fingerId) ResetInput(); }
+    public void ReleasePointer(int id) { if (id == fingerId) ReleaseGesture(); }
+    public void CancelPointer(int id) { if (id == fingerId) ResetInput(); }
 
     private void ApplyPosition(Vector2 position)
     {
         // Screen-space deltas stay stable while the gameplay camera shakes.
+        origin = FollowOrigin(origin, position, Radius);
         Vector2 displacement = position - origin;
         SetMovement(CalculateInput(displacement, Radius, deadZone));
         if (inputCamera == null) return;
@@ -170,6 +192,17 @@ public class VirtualJoyStick : MonoBehaviour
     }
 
     public void ResetInput()
+    {
+        fingerId = -1;
+        mouseGesture = false;
+#if UNITY_EDITOR || UNITY_STANDALONE
+        keyboardReady = false;
+#endif
+        PlayerCharacterController.instance?.MoveStop();
+        SetVisible(false);
+    }
+
+    private void ReleaseGesture()
     {
         fingerId = -1;
         mouseGesture = false;

@@ -237,26 +237,47 @@ namespace CursorDashTests
             Call(stick, "ReleasePointer", 12);
             Assert.IsTrue((bool)Get(stick, "HasGesture"));
             Call(stick, "SetMovement", Vector2.right);
+            Set(player, "travelSpeed", 2f);
             Call(stage, "SetPaused", true);
             Assert.IsFalse((bool)Get(stick, "HasGesture"));
             Assert.AreEqual(Vector2.zero, (Vector2)Get(player, "MoveVector"));
+            Assert.AreEqual(0f, (float)Get(player, "travelSpeed"));
             Call(stage, "SetPaused", false);
+            Assert.IsFalse((bool)Get(stick, "keyboardReady"), "Held keyboard input must be released after pause.");
             Assert.IsTrue((bool)Call(stick, "TryBeginPointer", 12, Vector2.one * 200f, false));
+            Set(player, "travelSpeed", 2f);
             Call(stick, "OnApplicationFocus", false);
             Assert.IsFalse((bool)Get(stick, "HasGesture"));
+            Assert.AreEqual(0f, (float)Get(player, "travelSpeed"));
             Assert.IsTrue((bool)Call(stick, "TryBeginPointer", 13, Vector2.one * 200f, false));
+            Set(player, "travelSpeed", 2f);
             Call(stick, "ReleasePointer", 13);
             Assert.IsFalse((bool)Get(stick, "HasGesture"));
+            Assert.AreEqual(Vector2.zero, (Vector2)Get(player, "MoveVector"));
+            Assert.AreEqual(2f, (float)Get(player, "travelSpeed"), "Normal release should keep momentum.");
+            Assert.IsTrue((bool)Call(stick, "TryBeginPointer", 14, Vector2.one * 200f, false));
+            Call(stick, "CancelPointer", 13);
+            Assert.IsTrue((bool)Get(stick, "HasGesture"), "A different finger cannot cancel the owner.");
+            Call(stick, "CancelPointer", 14);
+            Assert.IsFalse((bool)Get(stick, "HasGesture"));
+            Assert.AreEqual(0f, (float)Get(player, "travelSpeed"), "Canceled touch must stop immediately.");
             ((Behaviour)stick).enabled = false;
             Vector2 start = player.transform.position;
             Set(player, "MoveVector", Vector2.one);
             Assert.That(((Vector2)Get(player, "MoveVector")).magnitude, Is.EqualTo(1f).Within(0.001f));
             yield return WaitGameplay(0.2f);
+            Vector2 driven = player.transform.position;
+            Assert.That(Vector2.Distance(start, driven), Is.InRange(0.65f, 1.2f),
+                "Acceleration should remain responsive without an instant speed jump.");
+            Set(player, "MoveVector", Vector2.zero);
+            Rigidbody2D body = player.GetComponent<Rigidbody2D>();
+            Vector2 releasePosition = body.position;
+            yield return WaitGameplay(0.08f);
+            Assert.Greater(Vector2.Distance(releasePosition, body.position), 0.05f,
+                "A normal release should coast before stopping.");
             Call(player, "MoveStop");
             Vector2 stopped = player.transform.position;
-            Rigidbody2D body = player.GetComponent<Rigidbody2D>();
             Vector2 stoppedPhysics = body.position;
-            Assert.That(Vector2.Distance(start, stopped), Is.InRange(0.75f, 1.2f));
             yield return WaitGameplay(0.12f);
             Assert.Less(Vector2.Distance(stoppedPhysics, body.position), 0.01f, "Release must not leave physical Rigidbody drift.");
             float interpolationStep = (float)Get(player, "MoveSpeed") * Time.fixedDeltaTime + 0.01f;
@@ -266,6 +287,32 @@ namespace CursorDashTests
             yield return WaitForScene("Cyberpunk");
             Assert.IsFalse((bool)Get(Find("VirtualJoyStick"), "HasGesture"));
             Assert.AreEqual(Vector2.zero, (Vector2)Get(Find("PlayerCharacterController"), "MoveVector"));
+            Assert.AreEqual(0f, (float)Get(Find("PlayerCharacterController"), "travelSpeed"));
+        }
+
+        [UnityTest]
+        public IEnumerator OppositeInput_ChangesThePhysicalPathGradually()
+        {
+            Click("RemakeMenu/Start");
+            yield return WaitForScene("Cyberpunk");
+            DisablePatterns();
+            Component player = Find("PlayerCharacterController");
+            Rigidbody2D body = player.GetComponent<Rigidbody2D>();
+            Set(player, "MoveVector", Vector2.right);
+            yield return WaitGameplay(0.12f);
+            Vector2 reversalStart = body.position;
+            Set(player, "MoveVector", Vector2.left);
+            yield return WaitGameplay(0.08f);
+            Vector2 earlyTurn = body.position;
+            Assert.Greater(earlyTurn.x, reversalStart.x,
+                "Reversing at speed should continue forward briefly while turning.");
+            Assert.Greater(Mathf.Abs(earlyTurn.y - reversalStart.y), 0.04f,
+                "The actual Rigidbody path must curve, not just the sprite.");
+            yield return WaitGameplay(0.32f);
+            Assert.Less(((Vector2)Get(player, "travelDirection")).x, -0.9f);
+            Assert.Less(body.position.x, earlyTurn.x,
+                "After the curve, physical movement should follow the new direction.");
+            Call(player, "MoveStop");
         }
 
         // EditMode keeps driving the enumerator after EnterPlayMode; plain engine
@@ -362,6 +409,107 @@ namespace CursorDashTests
         {
             MethodInfo method = item.GetType().GetMethods(Flags).First(m => m.Name == name && m.GetParameters().Length == arguments.Length);
             return method.Invoke(item, arguments);
+        }
+    }
+
+    public class CursorDashControlFeelTests
+    {
+        private static MethodInfo Method(string typeName, string methodName)
+        {
+            Type type = AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(typeName))
+                .FirstOrDefault(candidate => candidate != null);
+            Assert.IsNotNull(type, typeName);
+            MethodInfo method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+            Assert.IsNotNull(method, methodName);
+            return method;
+        }
+
+        private static Vector2 Step(ref Vector2 direction, ref float speed, Vector2 input, float dt)
+        {
+            object[] args = { direction, speed, input, 5f, 60f, 18f, 540f, dt };
+            Vector2 displacement = (Vector2)Method("PlayerCharacterController", "AdvanceMotion").Invoke(null, args);
+            direction = (Vector2)args[0];
+            speed = (float)args[1];
+            return displacement;
+        }
+
+        [Test]
+        public void FloatingOrigin_FollowsOnlyBeyondTheStickRadius()
+        {
+            MethodInfo follow = Method("VirtualJoyStick", "FollowOrigin");
+            Vector2 origin = Vector2.zero;
+            Assert.AreEqual(origin, (Vector2)follow.Invoke(null, new object[] { origin, new Vector2(100f, 0f), 100f }));
+            origin = (Vector2)follow.Invoke(null, new object[] { origin, new Vector2(150f, 0f), 100f });
+            Assert.AreEqual(new Vector2(50f, 0f), origin);
+            Vector2 input = (Vector2)Method("VirtualJoyStick", "CalculateInput")
+                .Invoke(null, new object[] { new Vector2(150f, 0f) - origin, 100f, 0.12f });
+            Assert.That(input.x, Is.EqualTo(1f).Within(0.001f));
+            Assert.AreEqual(Vector2.zero, (Vector2)Method("VirtualJoyStick", "CalculateInput")
+                .Invoke(null, new object[] { new Vector2(5f, 0f), 100f, 0.12f }));
+        }
+
+        [Test]
+        public void ReleaseCoastsThenStops_AndSmallInputSetsAProportionalSpeed()
+        {
+            Vector2 direction = Vector2.right;
+            float speed = 5f;
+            Vector2 first = Step(ref direction, ref speed, Vector2.zero, 0.02f);
+            Assert.Greater(first.x, 0f);
+            Assert.That(speed, Is.EqualTo(4.64f).Within(0.001f));
+            for (int i = 0; i < 16; i++) Step(ref direction, ref speed, Vector2.zero, 0.02f);
+            Assert.AreEqual(0f, speed);
+            Assert.AreEqual(Vector2.zero, Step(ref direction, ref speed, Vector2.zero, 0.02f));
+            for (int i = 0; i < 20; i++) Step(ref direction, ref speed, Vector2.right * 0.25f, 0.02f);
+            Assert.That(speed, Is.EqualTo(1.25f).Within(0.001f));
+        }
+
+        [Test]
+        public void ReverseAtSpeedCurves_ButNearStopRespondsPromptly()
+        {
+            Vector2 direction = Vector2.right;
+            float speed = 5f;
+            Vector2 first = Step(ref direction, ref speed, Vector2.left, 0.02f);
+            Assert.Greater(first.x, 0f);
+            Assert.Greater(Mathf.Abs(first.y), 0.001f);
+            Vector2 distance = first;
+            for (int i = 0; i < 19; i++) distance += Step(ref direction, ref speed, Vector2.left, 0.02f);
+            Assert.Less(direction.x, -0.9f);
+            Assert.Greater(Mathf.Abs(distance.y), 0.4f);
+            direction = Vector2.right;
+            speed = 0.25f;
+            Vector2 restart = Step(ref direction, ref speed, Vector2.left, 0.02f);
+            Assert.Less(restart.x, 0f);
+        }
+
+        [Test]
+        public void CurveAndCoastStayCloseAcrossPhysicsStepSizes()
+        {
+            Vector2 coarse = SimulateTurn(0.02f);
+            Vector2 fine = SimulateTurn(0.01f);
+            Assert.Less(Vector2.Distance(coarse, fine), 0.12f);
+            Assert.That(SimulateCoast(0.02f), Is.EqualTo(SimulateCoast(0.01f)).Within(0.07f));
+        }
+
+        private static Vector2 SimulateTurn(float dt)
+        {
+            Vector2 direction = Vector2.right;
+            float speed = 5f;
+            Vector2 position = Vector2.zero;
+            for (int i = 0; i < Mathf.RoundToInt(0.4f / dt); i++)
+                position += Step(ref direction, ref speed, Vector2.left, dt);
+            Assert.Less(direction.x, -0.9f);
+            return position;
+        }
+
+        private static float SimulateCoast(float dt)
+        {
+            Vector2 direction = Vector2.right;
+            float speed = 5f;
+            float distance = 0f;
+            for (int i = 0; i < Mathf.RoundToInt(0.4f / dt); i++)
+                distance += Step(ref direction, ref speed, Vector2.zero, dt).magnitude;
+            Assert.AreEqual(0f, speed);
+            return distance;
         }
     }
 }
