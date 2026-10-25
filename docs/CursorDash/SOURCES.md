@@ -1,5 +1,11 @@
 # 근거와 참고 자료
 
+## D-038 공개 릴리스 근거 (2026-10-26)
+
+최신사용자직접현재버전확정/한정빌드·소스/산출물/사후문서push·기존Pages/압축지시가근거다. 소스e6d297fb6e764fee06221bf294c4c39c1198d19a,배포416255354068e8455185a7e719afcb09349068f8,buildId cursordash-20261026-hex6-c430e822d9a1. 기록형식은공통game-studio-release/release-record.ko.md를활용했다. 공통등록프로필/Slack/독립ClaudeQA는미설정·미실행이다.
+로컬증거는Logs/release-pages-20261026의Before/git-start-status·source-selection/source-build-manifest·Unity실제로그/build-result·candidate/deployment-manifest·HTTP체크·실제런타임JSON/Console·public-main/fever-running/version화면이다. Text5개는Git CRLF→LF만별도확인했다. Pages [실행40245318532](https://github.com/edan2251/renewal_CursorDash/actions/runs/40245318532) success/동일commit, 실제공개게임의JSON·보고서가같은buildId다.
+공식OpenAI문서에서 `/compact` 명령과가용성이호스트/앱구성에따른다는설명을읽었으나현재도구에직접압축기능은없었다. 앱UI/API우회·새대화를만들지않았고요약을압축으로보고하지않는다. [통합인계](RELEASE_20261026.md).
+
 ## D-037 최신 종료 박자 정의 (2026-10-26)
 
 최신 사용자 글이 기준: 생성 뒤첫회전1/3,3회2/3,5회완충,변형뒤6회에발사하며 **회전 종료 시점**을 뜻한다. 이번 추가 영상/이미지는 없으며 새로 실제화면을 확인했다고 하지 않는다. 기존지침/STATUS·MASTER/결정·환경·검증과 현재NodeRhythmMath/ArrowNode·관련테스트를 읽었다.
@@ -42,19 +48,19 @@
 - 로컬 기존 UGUI/TMP `TextMeshProUGUI.LoadFontAsset`와 TMP_Text.font/fontSharedMaterial 설정 경로를 읽었다. 글꼴 UV·아틀라스와 할당 재질의 일치가 필요하며, 점수/배율 재질을 각각 소유/재연결한다. 이전 런타임 재질·CanvasRenderer 상태는 미수집이라 정확한 글자 오류 원인은 확정하지 않는다.
 - 배경 참고 영상은 없다는 사용자 정정을 유지하며 글의 팔레트/흐름 기준만 사용. [상세/근거](FEVER_STREAM_ALIGNMENT_20261026.md).
 
-## 최신 — D-031 현재 자료와 실제 호출 경로 (2026-10-26)
+## 이력 — D-031 현재 자료와 실제 호출 경로 (2026-10-26)
 
 30_current_play.mp4는44.6333초/626×1108의 현재 결과이며 목표가 아니다.31/32 PNG는 흡수 잔선/중앙×1·시작선·빈호 문제다. 요청 D:/renewal_CursorDash_incoming/references는 없고 같은 이름은 저장소 _incoming/references에서 확인했다.30전체표본/21~24.68진입/30~33.68종료,06진입.60~4.28/07유지0~4.83·종료4.70~7.69 프레임을 실제 읽었다. 초기46초 라벨 중복은 제외했고 일부 시트 아래행 크롭/오디오 미열람을 기록했다. 새 GPU화면의 증거가 아니다. 배경 참고는 사용자 답변으로 없었던 것으로 정정됐다.
 소스 실제 확인: FeverBonusNode의 root1반경/Transform/Trigger·조기해제, Field의 풀/배치/수집·버스트목록, Player FixedUpdate의 예약 이동/박스, Stage·Fever 규칙과 시간/점수·저장, gauge중앙캡처/빈트랙, World 알파/마스크검색·상단판, 원래Trail/실제커서 합성, 원형·육각 Execute→준비·warning·공격과 기존 프리팹값/rotator·아트자식. 기존 노드 생성기와 일반·최종 VFX를 재활용하고 새로 제작하지 않는다.
 Unity6.3 공식 [HideFlags](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/HideFlags.html)의 물리장면 제외와 [FindObjectsByType](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Object.FindObjectsByType.html)의 DontSave 검색 제외를 확인했다. 현재 메모리/PhysicsScene/셰이더 호출 결과는 보지 않았다. Logs/fever-contact-polish-20261026의 source-evidence.json·before/소스delta/순수·정적·Compile·프레임이 근거다. [구현과 미검수 구분](FEVER_CONTACT_POLISH_20261026.md).
 
-## 최신 — D-030 현재 영상·공식 서체·우선순위 (2026-10-26)
+## 이력 — D-030 현재 영상·공식 서체·우선순위 (2026-10-26)
 
 lastVersion.mp4(42.866633초,624×1122)는 사용자 현재 촬영, 첨부 PNG는 수정 전 넥서스 문제 자료다. 현재 영상의 전반/22~24.3초 진입/30.4~33.39초 복귀를 확인했고 참고06(.6~4.28)/07(유지0~4.83,종료4.7~7.69) 프레임도 다시 확인했다. 요청 프레임 시점과 SHA는 Logs/fever-white-world-20261026/source-evidence.json, 캡처는 같은 폴더다. 초기 overview의44/46초 라벨은 끝 프레임으로 clamp된 중복이며 근거는0~42.32의 current-overview-valid.png로 교체한다. 새 Unity 결과를 확인한 영상이 아니다.
 공식 https://www.gonggames.com/#csr 의 한국어 이용 조건/임베딩 허용과 /assets/fonts/esamanru_TTF(Win).zip 를 실제 읽었다. Bold/Medium 권장 용도·출처 권장을 확인했다. ZIP에는 Bold/Light/Medium TTF만 있어 필요한2개를 원본 그대로 쓰고 공식 조건을 별도 기록했다. OFL로 재분류하지 않는다. 폰트 비교는 실제 TTF의 CPU 래스터다.
 최신 사용자8번이7번의 배경 보류를 대체한다. 반면 검은5원호의 시간 표시는 임시 우선 시안이다. 기존 승인 원형/육각·레일건·최종 VFX/규칙은 재제작 지시가 아니다. 관련 합성/기록/씬 저장값을 좁혀 확인하고 source별 정적 보존을 검사했다. [상세](NEXUS_WHITE_FEVER_20261026.md).
 
-## 최신 — D-029 C 정책·참고 영상 재열람 (2026-10-25)
+## 이력 — D-029 C 정책·참고 영상 재열람 (2026-10-25)
 
 사용자 B 확인/C 승인·상한4/최신 연출 요청과 Fever_System_v1 00/08이 기준이다. B 행동 확인은 게이지 외형 최종 승인을 뜻하지 않는다. 원본 스케치/생성 시트의 역할은 D-028대로 유지한다.
 실제 06_FEVER_REFERENCE_ENTRY.mp4의.60~4.28초를.16초 간격, 07_FEVER_REFERENCE_PLAY_EXIT.mp4의0~4.83초를.21초 간격/4.70~7.69초를.13초 간격으로 브라우저 디코딩 프레임에서 재검토했다. 진입의 즉각적인 전환/집중, 유지의 연속파괴·짧은 여운, 종료의 짧은 전환 뒤 안정감을 참고한다. 영상의 긴 설명 대기·색/도형·무적/게임규칙은 복제하지 않고 우리가 정한 흑백 곡선 에너지로 구성한다. 두 영상의 오디오 없음은 B에서 확인한 입력 파일과 동일 해시다.
@@ -102,7 +108,7 @@ Downloads의 01_current_circle_break.mp4,02_current_hex_attack_break.mp4,03_curr
 사용자 직접 승인: 원형 외형 유지, 육각 A 형태/비율·노랑·두 겹 끊어진 역회전 복원. 충전/6꼭짓점/발사 방향/뒤→앞 배출 유지. 타격감 미승인·이번 튜닝/확장 금지·넥서스 보류·자동 Play/빌드/커밋/배포 금지.
 A 실제 부품: `Assets/Art/Nodes/Cyberpunk/Types/Cyberpunk_AttackNode/`의 Central/Inside/Outside/Outside_2 PNG/.meta, 기존 ArrowNode.prefab의 Node 스케일.5/회전±60도·.4초. 이전 A 원본 근거와 현재 파일을 대조했으며 B 옛 시트로 대체하지 않았다. 새 `Logs/hex-originalA-20261025/original-hex-contours.json`에4개 원화SHA/피벗/반알파 윤곽·실측이 있다. 정적 비교 PNG는 Unity 화면이 아니다. 레퍼런스 WaveGame을 다시 열거나 타격감 조사로 확대하지 않았다.
 
-## 최신 — D-020 원본 복원·WaveGame 실물 근거 (2026-10-25)
+## 이력 — D-020 원본 복원·WaveGame 실물 근거 (2026-10-25)
 
 사용자직접요청: 원본프리팹/에셋외형복원,레퍼런스경로WaveGame/21_ref_hitfeel.mp4 실제호출흐름분석,분석/계획후중단,사용자UnityPlay/컴퓨터사용전알림. 추가선택: **A형태·비율+육각노랑유지**. 추가요청: 원형중앙원중심오차보정,넥서스/UI역할분류.
 HEAD프리팹본문을읽기전용git show로새로그에추출해현재에셋GUID와대조했다. Types의A부품과OriginalNodes의B시트를구분한다. 분석용PNG합성은Unity실행이아니며실제메타피벗반영여부를명시했다. 바깥원피벗/반알파윤곽상자추정과정확한원중심맞춤도구분한다.
