@@ -100,7 +100,7 @@ public class MapController : MonoBehaviour
             mapRightUIdown.gameObject.SetActive(false);
         }
 
-        scoreText.text = currentMapInformation.highScore.ToString("F2");
+        scoreText.text = CursorDashPointsRecord.Read(currentMapInformation.mapName).ToString();
 
         var isCyberpunk = currentMapInformation.mapName == "Cyberpunk";
         flameCore.SetActive(currentMapInformation.isUnlock && !isCyberpunk);

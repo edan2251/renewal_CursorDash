@@ -19,6 +19,7 @@ public class HoldAchivement : MonoBehaviour
         {
             minutes++;
             yield return YieldInstructionCache.WaitingSeconds(60f);
+            if(StageManager.instance==null||!StageManager.instance.RecordEligible)continue;
             GameManager.instance.playerData.AchieveRequire.SetValueToRequire($"Hold_{stage}", minutes);
             if (IsMaxHp)
                 GameManager.instance.playerData.AchieveRequire.SetValueToRequire($"Hold_MaxHp_{stage}", minutes);

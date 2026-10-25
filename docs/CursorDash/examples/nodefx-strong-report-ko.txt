@@ -1,0 +1,31 @@
+CursorDash 변경 수치 보고서
+빌드: nodefx-20261024-a4818b5046e2 / 기본값: cp14-v2.1-20261024
+히트스톱 [fx.circleRemove.stop] 0.04 → 0.075 초 / 다음 타격 / 현재 유효: 0.075
+셰이크 강도 [fx.circleRemove.shake] 0.055 → 0.15 월드 / 다음 타격 / 현재 유효: 0.15
+셰이크 지속 [fx.circleRemove.shakeDuration] 0.14 → 0.22 초 / 다음 타격 / 현재 유효: 0.22
+국소 왜곡 강도 [fx.circleRemove.distortion] 0.008 → 0.055 화면 UV / 다음 타격 / 현재 유효: 0.055
+국소 왜곡 반경 [fx.circleRemove.radius] 0.14 → 1.05 짧은 변 비율 / 다음 타격 / 현재 유효: 1.05
+국소 왜곡 지속 [fx.circleRemove.duration] 0.18 → 0.26 초 / 다음 타격 / 현재 유효: 0.26
+파편·스파크 수 [fx.circleRemove.count] 6 → 10 개 / 다음 타격 / 현재 유효: 10
+파편 크기 [fx.circleRemove.size] 0.05 → 0.105 월드 / 다음 타격 / 현재 유효: 0.105
+파편 이동속도 [fx.circleRemove.speed] 1.5 → 2.4 월드/초 / 다음 타격 / 현재 유효: 2.4
+파편 수명 [fx.circleRemove.life] 0.3 → 0.32 초 / 다음 타격 / 현재 유효: 0.32
+히트스톱 [fx.triangleBreak.stop] 0.05 → 0.085 초 / 다음 타격 / 현재 유효: 0.085
+셰이크 강도 [fx.triangleBreak.shake] 0.065 → 0.18 월드 / 다음 타격 / 현재 유효: 0.18
+셰이크 지속 [fx.triangleBreak.shakeDuration] 0.14 → 0.25 초 / 다음 타격 / 현재 유효: 0.25
+국소 왜곡 강도 [fx.triangleBreak.distortion] 0.01 → 0.06 화면 UV / 다음 타격 / 현재 유효: 0.06
+국소 왜곡 반경 [fx.triangleBreak.radius] 0.14 → 1.15 짧은 변 비율 / 다음 타격 / 현재 유효: 1.15
+국소 왜곡 지속 [fx.triangleBreak.duration] 0.18 → 0.28 초 / 다음 타격 / 현재 유효: 0.28
+파편·스파크 수 [fx.triangleBreak.count] 6 → 12 개 / 다음 타격 / 현재 유효: 12
+파편 크기 [fx.triangleBreak.size] 1 → 0.9 실루엣 배율 / 다음 타격 / 현재 유효: 0.9
+파편 이동속도 [fx.triangleBreak.speed] 1.5 → 2.8 월드/초 / 다음 타격 / 현재 유효: 2.8
+파편 수명 [fx.triangleBreak.life] 0.3 → 0.34 초 / 다음 타격 / 현재 유효: 0.34
+셰이크 주파수 [fx.circleRemove.frequency] 26 → 22 Hz / 다음 타격 / 현재 유효: 22
+셰이크 되튕김 [fx.circleRemove.rebound] 0.35 → 0.55 배 / 다음 타격 / 현재 유효: 0.55
+왜곡 복귀 감쇠 [fx.circleRemove.recovery] 2 → 1.4 지수 / 다음 타격 / 현재 유효: 1.4
+방향 파편 분산 [fx.circleRemove.spread] 65 → 55 ±도 / 다음 타격 / 현재 유효: 55
+파편 회전 속도 [fx.circleRemove.spin] 180 → 220 도/초 / 다음 타격 / 현재 유효: 220
+셰이크 주파수 [fx.triangleBreak.frequency] 26 → 24 Hz / 다음 타격 / 현재 유효: 24
+셰이크 되튕김 [fx.triangleBreak.rebound] 0.35 → 0.55 배 / 다음 타격 / 현재 유효: 0.55
+왜곡 복귀 감쇠 [fx.triangleBreak.recovery] 2 → 1.4 지수 / 다음 타격 / 현재 유효: 1.4
+파편 회전 속도 [fx.triangleBreak.spin] 180 → 260 도/초 / 다음 타격 / 현재 유효: 260

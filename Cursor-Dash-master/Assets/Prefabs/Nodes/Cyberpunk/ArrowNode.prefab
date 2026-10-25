@@ -5377,11 +5377,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: -133933907728115581}
   _deducationHp: 1
-  attackDuration: 0.25
+  attackDuration: 0.06
   preparationDuration: 3.5
   warningDuration: 0.25
-  reflectionDuration: 0.3
+  preFireDuration: 0.025
+  preFireRecoilRatio: 0.08
+  firingRecoilDuration: 0.08
+  beamAfterglowDuration: 0.06
+  reflectionDuration: 0.06
   destroyDuration: 1.333
+  triangleRadius: 0.8
+  triangleColor: {r: 1, g: 0.83, b: 0.4, a: 1}
 --- !u!58 &6719566646809669151
 CircleCollider2D:
   m_ObjectHideFlags: 0

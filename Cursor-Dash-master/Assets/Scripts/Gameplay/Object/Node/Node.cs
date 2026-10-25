@@ -5,6 +5,9 @@ public class Node : MonoBehaviour
     public enum NodePhase { Inactive, Preparing, Warning, Fired, Resolving }
     [SerializeField] private Animator _animator;
     [SerializeField] private int _deducationHp = 1;
+    [Header("Node entrance — presentation only; attack clocks are unchanged")]
+    [SerializeField,Range(.05f,.4f)] private float entranceSeconds=.20f;
+    private float entranceStarted,activeEntrance,originalColliderRadius;
     private SpriteRenderer _spriteRenderer;
     private ParticleSystem particle;
     private CircleCollider2D _circleCollider;
@@ -15,15 +18,31 @@ public class Node : MonoBehaviour
     protected int deducationHp => _deducationHp;
     protected bool isInteraction { get => _isInteraction; set => _isInteraction = value; }
     public NodePhase Phase { get; protected set; }
+    public ulong ExecutionId {get;private set;}
+    public float EntranceSeconds=>activeEntrance;
+    protected float EntranceProgress=>Phase==NodePhase.Preparing?Mathf.Clamp01((Time.time-entranceStarted)/Mathf.Max(.001f,activeEntrance)):1;
+    protected float EntranceBody=>(float)NodeEntranceMath.Body(EntranceProgress);
+    protected float EntranceRing=>(float)NodeEntranceMath.Ring(EntranceProgress);
+    protected float EntranceTurn=>(float)NodeEntranceMath.RingTurn(EntranceProgress);
+    protected void ApplyEntranceCollider()
+    {
+        if(_circleCollider==null)return;
+        _circleCollider.radius=originalColliderRadius*(Phase==NodePhase.Preparing?Mathf.Max(.001f,(float)NodeEntranceMath.Collider(EntranceProgress)):1);
+        if(Phase==NodePhase.Preparing)_circleCollider.enabled=EntranceBody>.015f;
+        else if(Phase==NodePhase.Warning)_circleCollider.enabled=true;
+    }
 
     protected void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         particle = GetComponentInChildren<ParticleSystem>(true);
         _circleCollider = GetComponent<CircleCollider2D>();
+        if(_circleCollider!=null)originalColliderRadius=_circleCollider.radius;
     }
     protected void BeginExecution()
     {
+        ExecutionId++;
+        entranceStarted=Time.time;activeEntrance=Mathf.Max(.001f,entranceSeconds);
         gameObject.SetActive(true);
         isInteraction = false;
         Phase = NodePhase.Preparing;
@@ -41,6 +60,7 @@ public class Node : MonoBehaviour
     {
         StopAllCoroutines();
         Phase = NodePhase.Inactive;
+        if(_circleCollider!=null)_circleCollider.radius=originalColliderRadius;
         isInteraction = false;
         if (particle != null) { particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); particle.gameObject.SetActive(false); }
         if (spriteRenderer != null) spriteRenderer.enabled = true;

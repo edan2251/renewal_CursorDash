@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e5e83f6279e4a2b8d560c5b014b5c12, type: 3}
+  m_Name: VisualPrototype
+  m_EditorClassIdentifier:
+  backgroundSpeed: 0.16
+  backgroundMix: 0.66
+  backgroundBend: 0.22
+  feverBreakStrength: 2.5
+  backgroundHitSpeed: 1.8
+  backgroundHitRecovery: 0.26
+  circuitRestContrast: 0.72
+  feverSpawnInterval: 0.12
+  feverConcurrentLimit: 14
+  feverNodeGap: 0.22
+  feverCursorClearance: 0.28
+  feverSideMargin: 0.12
+  feverTopMargin: 0.18
+  feverBottomMargin: 0.16
+  feverFragmentLife: 0.48
+  feverGatherCompression: 0.115
+  feverNodeAppearSeconds: 0.12
+  feverNodeRetireSeconds: 0.55
+  feverThreatRetireSeconds: 0.18
+  feverOpticsSeconds: 0.3
+  feverLensStrength: 0.0175
+  feverLensRadius: 0.58
+  feverChromaticHit: 0.0042
+  feverChromaticAmbient: 0.0008
+  feverShakeScale: 0.45

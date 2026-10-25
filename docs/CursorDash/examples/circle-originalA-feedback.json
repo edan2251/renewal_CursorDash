@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "buildId": "source-only-D021-not-built",
+  "defaultsVersion": "cp14-v2.1-20261024",
+  "presetName": "원형 A · 원본 배경 타격감 D021",
+  "createdAt": "2026-10-25T00:00:00+09:00",
+  "kind": "changes",
+  "values": {
+    "fx.circleRemove.stop": 0.05,
+    "fx.circleRemove.shake": 0.20,
+    "fx.circleRemove.shakeDuration": 0.35,
+    "fx.circleRemove.frequency": 20,
+    "fx.circleRemove.distortion": 0.045,
+    "fx.circleRemove.radius": 2.2,
+    "fx.circleRemove.duration": 2.0,
+    "fx.circleRemove.recovery": 2.0
+  }
+}

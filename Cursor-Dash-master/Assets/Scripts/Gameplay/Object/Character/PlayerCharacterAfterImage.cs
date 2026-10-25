@@ -25,6 +25,11 @@ public class PlayerCharacterAfterImage : MonoBehaviour
     private Vector2 previousPosition;
     private float sampleElapsed;
     private int next;
+    private float sourceLifetime,sourceSample,sourceWidth,sourceDistance;
+    private float lastVisualWidth=-1,lastAlpha=-1,lastTail=-1;
+    private int lastFade=-1;
+    private Color lastColor;
+    public int Capacity=>segments==null?0:segments.Length;
 
     public float Lifetime => lifetime;
     public int ActiveSegmentCount
@@ -43,10 +48,20 @@ public class PlayerCharacterAfterImage : MonoBehaviour
     {
         instance = this;
         visual = GetComponent<TrailRenderer>();
+        sourceLifetime=lifetime;sourceSample=sampleInterval;sourceWidth=segmentWidth;sourceDistance=minimumDistance;
+        ApplyTuning();
+    }
+    public void ApplyTuning()
+    {
+        ClearTrail();
+        lifetime=CursorDashTuning.Number("trail.lifetime",sourceLifetime);
+        sampleInterval=CursorDashTuning.Number("trail.sample",sourceSample);
+        segmentWidth=CursorDashTuning.Number("trail.hitWidth",sourceWidth);
+        minimumDistance=CursorDashTuning.Number("trail.distance",sourceDistance);
         if (trailCollisions == null) return;
         BoxCollider2D[] pool = trailCollisions.GetComponentsInChildren<BoxCollider2D>(true);
         int capacity = Mathf.Max(pool.Length, Mathf.CeilToInt(lifetime / sampleInterval) + 4);
-        capacity = Mathf.Clamp(capacity, 8, 256);
+        capacity = Mathf.Clamp(capacity, 8, 2048);
         segments = new Segment[capacity];
         for (int i = 0; i < capacity; i++)
         {
@@ -75,10 +90,26 @@ public class PlayerCharacterAfterImage : MonoBehaviour
             visual.Clear();
         }
         previousPosition = transform.position;
+        lastVisualWidth=-1;RefreshVisual();
+    }
+    private void RefreshVisual()
+    {
+        if(visual==null)return;
+        float width=CursorDashTuning.Number("trail.visualWidth",sourceWidth),alpha=CursorDashTuning.Number("trail.alpha",1),tail=CursorDashTuning.Number("trail.tailAlpha",.35f);
+        int fade=CursorDashTuning.Integer("trail.fade",1);
+        Color color=CursorDashTuning.ColorValue("user.trailColor",Color.white);
+        if(width==lastVisualWidth&&alpha==lastAlpha&&tail==lastTail&&fade==lastFade&&color==lastColor)return;
+        lastVisualWidth=width;lastAlpha=alpha;lastTail=tail;lastFade=fade;lastColor=color;
+        visual.startWidth=visual.endWidth=width;
+        var gradient=new Gradient();
+        gradient.SetKeys(new[]{new GradientColorKey(color,0),new GradientColorKey(color,1)},
+            new[]{new GradientAlphaKey(alpha*color.a,0),new GradientAlphaKey(tail*color.a,fade==0?.5f:fade==1?.65f:.3f),new GradientAlphaKey(0,1)});
+        visual.colorGradient=gradient;
     }
 
     private void LateUpdate()
     {
+        RefreshVisual();
         if (segments == null) return;
         foreach (Segment segment in segments)
         {

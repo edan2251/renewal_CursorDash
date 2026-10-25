@@ -12,9 +12,14 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     private Vector2 moveVector;
     private Vector2 travelDirection;
     private float travelSpeed;
+    private Vector2 lastMotionDirection;
+    private float lastMotionTime=float.NegativeInfinity;
+    public Vector2 ContactMotionDirection=>Time.time-lastMotionTime<.20f?lastMotionDirection:Vector2.zero;
     private Rigidbody2D body;
     private Vector2 minimum;
     private Vector2 maximum;
+    private SpriteRenderer cursorVisual;
+    private Color initialVisualColor;
 
     public Vector2 MoveVector
     {
@@ -25,13 +30,17 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         }
     }
 
-    public float MoveSpeed => moveSpeed;
+    public float MoveSpeed => CursorDashTuning.Number("player.speed",moveSpeed);
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         // The visible cursor lives on a child so resizing it does not shrink the body collider.
         SpriteRenderer visual = transform.Find("CursorVisual").GetComponent<SpriteRenderer>();
+        cursorVisual=visual;
+        visual.transform.localScale=Vector3.one*CursorDashTuning.Number("player.visualScale",visual.transform.localScale.x);
+        var box=GetComponent<BoxCollider2D>();
+        if(box!=null)box.size=new Vector2(CursorDashTuning.Number("player.colliderX",box.size.x),CursorDashTuning.Number("player.colliderY",box.size.y));
         if (useCharacterSettings)
         {
             CharacterSetting settings = GameManager.instance.playerData.characterSetting;
@@ -39,20 +48,27 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
             if (settings.selectColor != null) visual.color = settings.selectColor.ColorValue;
         }
         Camera camera = Camera.main;
+        initialVisualColor=visual.color;
         minimum = camera.ViewportToWorldPoint(new Vector3(viewportMargin, viewportMargin, 0f));
         maximum = camera.ViewportToWorldPoint(new Vector3(1f - viewportMargin, 1f - viewportMargin, 0f));
     }
 
     private void FixedUpdate()
     {
-        if (StageManager.instance == null || !StageManager.instance.IsPlaying)
+        if (StageManager.instance == null || !StageManager.instance.IsPlaying || CursorDashRuntimeUI.InputBlocked)
         {
             if (moveVector != Vector2.zero || travelSpeed > 0f) MoveStop();
             return;
         }
         float previousSpeed = travelSpeed;
+        Camera boundsCamera=StageManager.instance.Feedback?.Distortion?.UiCamera;
+        if(boundsCamera==null)boundsCamera=Camera.main;
+        float margin=CursorDashTuning.Number("player.margin",viewportMargin);
+        minimum=boundsCamera.ViewportToWorldPoint(new Vector3(margin,margin,0));
+        maximum=boundsCamera.ViewportToWorldPoint(new Vector3(1-margin,1-margin,0));
         Vector2 displacement = AdvanceMotion(ref travelDirection, ref travelSpeed, moveVector,
-            moveSpeed, acceleration, releaseDeceleration, turnDegreesPerSecond, Time.fixedDeltaTime);
+            MoveSpeed, CursorDashTuning.Number("player.acceleration",acceleration),CursorDashTuning.Number("player.release",releaseDeceleration),
+            CursorDashTuning.Number("player.turn",turnDegreesPerSecond), Time.fixedDeltaTime);
         if (displacement == Vector2.zero)
         {
             if (previousSpeed > 0f && body != null)
@@ -64,10 +80,14 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         }
         Vector2 position = body != null ? body.position : (Vector2)transform.position;
         Vector2 next = ClampPosition(position + displacement, minimum, maximum);
+        Vector2 actual=next-position;
+        if(actual.sqrMagnitude>.0000001f){lastMotionDirection=actual.normalized;lastMotionTime=Time.time;}
         transform.LookAt2D(position + travelDirection);
         if (body != null) body.MovePosition(next);
         else transform.position = next;
+        // Fever samples the rendered head in LateUpdate, without changing this movement or normal defense.
     }
+    private void Update(){if(cursorVisual!=null)cursorVisual.color=CursorDashTuning.ColorValue("user.cursorColor",initialVisualColor);}
 
     public static Vector2 AdvanceMotion(ref Vector2 direction, ref float speed, Vector2 input,
         float topSpeed, float acceleration, float deceleration, float turnRate, float deltaTime)
@@ -117,7 +137,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         body.MovePosition(body.position);
     }
 
-    private void OnDisable() => MoveStop();
+    private void OnDisable(){MoveStop();lastMotionDirection=Vector2.zero;lastMotionTime=float.NegativeInfinity;}
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -125,7 +145,9 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         if (!other.CompareTag("Node")) return;
         NormalNode node = other.GetComponent<NormalNode>();
         if (node == null) return;
-        node.Interaction();
+        Collider2D own=GetComponent<Collider2D>();
+        Vector2 contact=own==null?(Vector2)transform.position:other.Distance(own).pointA;
+        node.ContactAt(contact,ContactMotionDirection);
         node.ShowEffect(transform.position);
     }
 }

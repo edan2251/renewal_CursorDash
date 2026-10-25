@@ -1,0 +1,800 @@
+# 구현·회귀 검증 기준과 후속 결과
+
+## D-037 여섯 번째 회전 종료 발사 검사 (2026-10-26)
+
+- PASS 정적49: 1/3/5회 충전·5.5변형/6회종료 별도 문턱, 같은 회전시계/추가타이머없음·기준상수 공유/회전없음 대체, 기존 비행/반사·피해/취소/재사용·피버/외형/VFX·씬/프리팹/meta·설정/키/기본값 보존.
+- PASS 실제NodeRhythmMath.NET1,135단언: 1/3/5 충전 정착·멈춤/탄성, 여러 속도/정지시간에서6회 **시작에는 미발사/종료에 발사**, 5.5→6 슬롯·30/60/120Hz 수치 샘플·명목 시각/대체/퇴장끝점. 실제 Unity·DOTween·GPU/Physics 검사는 아니다.
+- PASS 참조컴파일108/12/2 오류0. 공식90개 기대값·기존회전 설정을 최신1/3/5·6종료에 갱신하고 시작과종료 구분 단언을 추가했다. 실제 공식 실행은NOT_RUN. 반사/피해/취소/시각 핵심단언 삭제·Ignore 없음.
+- NOT_RUN Unity컴파일·Shader/GPU·nativeDOTween/Physics·Play/실제표시·타이밍/모바일. 자동Play·빌드/git·배포·컴퓨터UI조작 없음. 다음은 [사용자 직접 검수](HEX_CHARGE_135_FIRE6_20261026.md)이며 확인 전 다음 단계로 진행하지 않는다.
+
+
+## D-036 2·4·6 충전 / 7회 발사 검사 (2026-10-26)
+
+- PASS 정적48: 첫회전0/2·4·6단계/6.5와7별도가드,Warning내같은회전시계·마지막반회전배분/추가대기없음·현재회전각도연결·취소/재사용,기존비행·반사·피해/파괴·원형·피버전체·씬/프리팹/meta·설정·키/기본값보존.
+- PASS 실제NodeRhythmMath.NET1,200단언: 실제이동/정지·배율.25~4,0/1회빈상태·2/4/6채움/멈춤·탄성,6.5/7문턱·마지막반이동안의morph/hold배분·명목시각/회전없음대체,30/60/120Hz샘플문턱계산. nativeDOTween·실제프레임/Unity검사가아니다.
+- PASS 참조컴파일 게임108/테스트12/Editor2오류0. 공식90작성·컴파일만/실제실행NOT_RUN. 기존충전기대값을최신2/4/6·6.5/7로교체,속도별변형슬롯검사1개추가. 실제공격이7회에나오는Play단언도추가했다. 기존모양/색·반사·취소/피해단언을유지하면서관찰용회전시간/대기시점만최신슬롯에맞췄다.
+- NOT_RUN Unity실제컴파일·Shader/GPU·nativeDOTween/Physics/Play·실제발사/접촉타이밍·화면비/모바일·시각. 이전미검수를승인으로올리지않는다.
+- NOT_RUN 자동Play·빌드·커밋/push·배포·컴퓨터UI조작. 다음은 [사용자직접검수](HEX_CHARGE_246_20261026.md)이며확인전다음단계금지다.
+
+## D-035 회전 동기화와 광학 강화 검사 (2026-10-26)
+
+- PASS 정적53: 실제소유tween진행/이동과정지시간읽기,1/3/5·7회조건/첫링대체/정지대체·일시정지/재사용가드, 기존발사·반동·반사/공유회전Sequence·일반효과/스키마·점수/수명/씬/프리팹/meta보존.
+- PASS 실제 NodeRhythmMath 소스.NET782단언: 회전배율.25~4와정지0/.15/.4, 이동중소수진행·쉼동안횟수고정,1/3/5정착·7회전환,기본.4/2.0/3.6/5.2초·5.475/5.535명목합계,0시작·잘못된duration·퇴장기존끝점. DOTween네이티브실행검사가아니다.
+- PASS 참조컴파일 게임108/테스트12/Editor2 오류0. 공식89 작성·컴파일만/실제실행NOT_RUN. 이전87중시간기반HexFill기대값을실제회전기준으로대체하고회전속도/쉼검사와Play용정지·취소·재사용검사2개추가. 기존공격/반사/VFX검사의짧은준비설정은자기링7회시간으로바꿔기존핵심단언을보존한다. 테스트삭제/Ignore없음.
+- NOT_RUN Unity컴파일·Shader/GPU·실제DOTween/Physics·Play·회전횟수/실제발사시각/광학화질/모바일·프레임부하·음향·저장. 이전D-034를포함한미검수를승인으로올리지않는다.
+- NOT_RUN 자동Play·빌드·커밋/push·배포·UI조작. 다음한작업은사용자직접Play이며확인전다음단계로넘어가지않는다.
+
+[검수 순서와 조절 위치](HEX_ROTATION_CHARGE_20261026.md): 새육각1/3/5·7회→회전배율변경후새생성→Pause·취소·재사용→피버단발·연속렌즈/수평슬립/RGB·HUD분리→일반복귀·Retry/Home/체력0. 광학호출카운터만으로실제화질통과를판정하지않는다.
+
+
+## D-034 검사와 남은 실제 검수 (2026-10-26)
+
+- PASS 정적46: 준비·변형/발사/반사코드 보존/회전미연동, 단일광학최종순서·HUD제외·임시RT해제, 기존미세왜곡0·최강필드/상한·모드/진단/사용자설정가드, 일반VFX·수명/공급/점수/기존Vector4수정 보존.
+- PASS 순수 실제소스.NET116,402단언: 기본2/3 1.28~2.23/완충2.55~3.5 각.95초 유지, 짧은준비에도3박자/기존완료시점, .55단조퇴장·2.8만료, 광학시작/끝weight. Shader픽셀·물리검증이 아니다.
+- PASS 참조컴파일 게임108/테스트12/Editor2 오류0. 공식87 작성·컴파일(85의요구변경기대값갱신/신규2), 공식실행은NOT_RUN. 이전3.5까지완충안착단언을새2.55~3.5대기단언으로수정했으며 핵심검증을삭제/무시하지 않았다.
+- NOT_RUN Unity실제컴파일·Shader/GPU/광학·전환/Physics·Play·실제타이밍·모바일성능/음향·저장. 호출카운터/Shader리소스존재만으로 실제화면성공을선언하지 않는다.
+- NOT_RUN 자동Play·빌드·커밋/push·배포. 이전미검수항목은승인으로바꾸지않는다.
+
+[사용자 순서](FEVER_OPTICS_HOLD_20261026.md): 정상육각2/3/완충정지와기존발사→피버검정원2.8수명/.55축소→FX ON/왜곡1/진단OFF에서 단발/연속피버타격(회로휘어짐/RGB·고정HUD)→진단ON에서는왜곡우회/원래접촉좌표→일시정지/모드종료·취소/Retry/Home/체력0. 일반원형/육각파괴·넥서스최종은새로튜닝하지않았다.
+
+## D-033 표시 퇴장·육각3박자 검사 (2026-10-26)
+
+- PASS 정적41: 준비 종료/공격/반사 코드·직렬화 기본값, 점수/피해/생성/수명/기존 VFX·Vector4수정 보존. 검정 원 공유 root scale, 일반 퇴장 render-only 복사/실제 위협 즉시 Reset/finally, 중지·자원 정리 확인.
+- PASS 순수 실제 NodeRhythmMath.NET161,907단언:3박자별 빠른 상승·정확한1/3/2/3멈춤·짧은 탄성·원래 완료 시점·짧은 준비시간에 재배분/3회뿐인 반응, 탄성 등장1회/최대약3%, 단조 축소·원래 만료에0.
+- PASS 참조컴파일: 게임108/공식소스12/Editor2 오류0. 공식85(82+순수곡선2+장면퇴장/일시정지1) 작성·컴파일만, 실행NOT_RUN. 기존 단언 삭제/무시 없음.
+- NOT_RUN: 실제 Unity/셰이더·GPU/메시·재질 복사 표시·Physics·이번Play/실제시간·음향/모바일·실제기록 저장. 기존3.775발사/3.835도달은 저장값 합계이며 프레임 측정 아님.
+- NOT_RUN: 자동 Play·빌드·커밋/push·배포. 이번사용자미검수 및 이전D-032검수대기를 유지한다.
+
+[수동 검수](NODE_RHYTHM_EXIT_20261026.md): 훈련에서 피버 무수집 등장/2.8만료→끝.24초 크기와 판정→피버 종료/취소→일반 노드 남긴 진입 시 공격정리+몸체축소→육각3박자·중간멈춤·기존변형/발사·방어→Pause/Retry/Home. 검정원 수명이나 생성량을 늘려 퇴장을 덮지 않았다.
+
+## D-032 후속 런타임 예외 회귀 (2026-10-26)
+
+- FAIL(사용자 실제 Unity 보고): 검정 보너스 접촉 → FeverBonusBurst.Polygon → Vector4 index 범위 초과. 나머지 D-032는 사용자 미검수다.
+- PASS(원인 재현/관리형 계산): Before의 실제 Polygon 본문을 추출하고 실제 Unity 관리형 Vector4를 사용해 같은 예외를 재현했다. 수정 AppendPolygon 본문은3/4/5/8/12변×양방향×64회전=640경우, 96,001단언 통과. 12변 면적·외곽 coverage/내부 삼각형 coverage·색인 범위·추가 append, 기존3/4변 데이터 동일성 포함. Unity 프로세스/Play/메시 업로드/GPU/Prefs 사용 없음.
+- PASS(참조컴파일): 게임107/테스트12/Editor2 오류0. 실제 Unity 컴파일 아님. 공식 다각형 회귀1개 추가해 총82 작성·컴파일, 공식 실행은 NOT_RUN.
+- PASS(정적): Vector4에는3/4채널 이하만 기록, 큰 볼록 도형 fan의 각 삼각형은 외곽1채널만 사용/공유shader불변. 노드 finally Reset/미등록 VFX 정리 후 rethrow, 보상·강도·공급/타이밍 불변.
+- NOT_RUN: 수정 후 실제 Initialize 전체·Physics·Unity·GPU/Play·다른 D-032 항목/모바일·음향·저장·빌드/git/배포. 이번 결과는 소스 수정+회귀 계산 통과이며 사용자 재검수 대기다.
+
+사용자가 Play 종료/컴파일 완료 후 새 훈련→만충→피버, 검정 원 한 개 접촉/빠른 통과/여러 개 연속 접촉에서 예외 없음·각각 점수/제거/파편1회를 확인한다. 그 뒤에만 이전 D-032의 다른 검수를 이어간다.
+
+## D-032 검사와 사용자 영상 검수 대기 (2026-10-26)
+
+- PASS(정적): 허용 경로·보존 해시/63항목. 머리만의 실제 경로, 같은 removed 가드, 개별 공급/상한·기하 배제, 올바른 글꼴 재질 소유, 공유 작은 접촉 왜곡, 기존 아트·전투·기록 보존.
+- PASS(순수 실제 소스): .NET34,512단언. 무수집 공급/상한·대기·긴프레임 비누적·정지/재개·독립 분포·응축/기존 점수·x4·피격·반올림 경로 계산. 기하 배치 성공/물리 실측이 아니다.
+- PASS(참조컴파일): 게임107/테스트12/Editor2 오류0. 공식81(76+5) 작성·컴파일. 기존 보너스 시험 하나는 동시 초기묶음 대신 실제 .32초 공급을 기다리도록 수정, 보상/중복·정리 단언 유지.
+- NOT_RUN: 공식81 실행/Unity 실제 컴파일·셰이더·GPU/이번 Play·Physics·최종 화면/음향·모바일/저장 호출. 사용자40영상은 수정 전 증거이며 머리/검정 표시 분리 및 배율 깨짐만 확인했다. 수정 후 해결 확인 아님.
+- NOT_RUN(사용자 금지): 자동 Play·빌드·커밋·push·배포. 다음 단계/D 미실행.
+
+[사용자 검수 상세](FEVER_STREAM_ALIGNMENT_20261026.md): 일반 등장 보존→피버 무수집 공급→느린 접촉/빠른 통과/급회전→첫 효과 위치·과거 잔류 구분→연속 파괴→종료/×2~4→Pause·Retry·Home·HP0. Tools/CursorDash/넥서스 수동 검수의 기본 꺼짐 ‘접촉 위치 진단’과 ‘실제 글꼴·텍스처’ 상태를 필요할 때만 사용한다. 실제 장면 검수 전 승인/해결 확인으로 올리지 않는다.
+
+## 최신 — D-031 보완 검사와 사용자 Play 대기 (2026-10-26)
+
+| 검사 | 결과 / 범위 |
+|---|---|
+| 현재30영상/31·32 PNG/참고06·07 | PASS ·실제 입력 디코딩 표본/이미지. 새 게임 화면 아님. 배경 영상은 사용자 정정으로 없음 |
+| 정적 연결·원본 보존 | PASS ·62항목. 기존 점수/전투/공격·일반VFX/씬/meta 보존, 판정/소유목록/합성/등장/시계 |
+| 순수 실제4소스.NET | PASS ·27,501단언. 기존 규칙+4000방향 연속 접점/둥근 모서리/등장·판정 배율/긴 점수 폭/다른 화면비·중심의 전체 덮임 |
+| C# 참조 컴파일 | PASS ·게임107/테스트12/Editor2 오류0. 실제 Unity 컴파일 아님 |
+| 새 metadata/프로필 참조 | PASS ·7 GUID 충돌0/Script 연결 일치. Unity 실제 임포트는 미확인 |
+| 공식76개 실행 | NOT_RUN ·기존68+새8 작성·컴파일, 관련 기존2개의 등장 시각 단언을 새 요구로 보강. 삭제/무시/무관 기대값 변경 없음 |
+| Unity/Shader/GPU/Physics·이번 Play/실제조작/오디오·폰트/기록 저장 | NOT_RUN ·사용자 직접 검수. 코드 통과를 해결 확인으로 바꾸지 않음 |
+| 빌드/웹·모바일/커밋·push·배포 | NOT_RUN ·범위 밖 |
+
+실제 사용자 순서: 일반 등장→충전/0%빈표시없음→저HP흡수/전체흰화면/HUD→실제피버접촉·1회점수/VFX/검은궤적→종료/상단배율→Pause·Retry·Home/HP0. 내부 만충·단계 진행 버튼은 실제 충돌 결과가 아니다. 공식 테스트의 기존 Prefs 보호 fixture는 보존했고 이번에는 호출하지 않았다. [예상 결과·조절 위치](FEVER_CONTACT_POLISH_20261026.md).
+
+## 최신 — D-030 검사와 사용자 검수 대기 (2026-10-26)
+
+| 검사 | 결과 | 실제 범위 |
+|---|---|---|
+| 사용자 현재 영상/이전 이미지·참고06/07 | PASS | 영상 디코딩 프레임 관찰. 새 구현의 화면 증거 아님 |
+| 정적 연결/기존 규칙·파일 보존 | PASS · 47항목 | 원형/육각/최종/HP/입력·기록/씬/meta 보존, 합성/시계/폰트 경로 |
+| 실제 순수 FeverState/FeverFlowMath .NET | PASS · 11,289단언 | 기존 규칙+x4/정지/복귀, 5원호 충전 연속/흡수 순서/회전 max·감속·정지 |
+| C# 참조 컴파일 / JS문법 | PASS | 게임103/테스트11/Editor2 오류0. Unity/GPU 컴파일 아님 |
+| 폰트 원본/문자 | PASS | 공식ZIP=Resources=Web 바이트, 두 굵기 각12,256글리프 맵/주요 한글·숫자·× 포함 |
+| 공식68개 실행 | NOT_RUN | 기존65+순수3 추가. 시각요구 변경의 기존 단언만 새 흡수 시간/전용 점선 소유로 갱신 |
+| 실제 새 Unity/GPU·폰트/알파 마스크·전투·오디오 | NOT_RUN | 자동 Play·GPU 진단 미실행. 사용자 직접 검수 |
+| 빌드·웹·모바일/커밋·배포 | NOT_RUN | 이번 요청 범위 밖 |
+
+핵심 단언/테스트를 삭제·무시하지 않았다. 새 순수 검증은5분할 합산=실제충전, 바깥 선행·양 링 최종복귀, 1,000회 이벤트 상한/정지·감속이다. 기존 점선 취소 테스트는 상수 Rotator 재활성 대신 새 전용 소유권/scale/time 복귀를 검사한다. CPU 폰트 비교 PNG는 Unity 화면이 아니다. [사용자 확인 순서](NEXUS_WHITE_FEVER_20261026.md#사용자-unity-검수).
+
+## 최신 — 피버 보너스 생성 오류 후속 (2026-10-25)
+
+| 검사 | 결과 | 범위 |
+|---|---|---|
+| 수정 전 실제 Play 진입 | FAIL (사용자 제공) | SpriteRenderer/MeshFilter 충돌 → Bind의 null 역참조 → Stage 초기화 중단 |
+| 수정 후 소스/기존 파일 보존 | PASS | Mesh 표시만 자식 분리, 기존 64테스트·게임 규칙/수치/일반 효과 보존 |
+| C# 참조 컴파일 | PASS | 게임100/테스트11/Editor2 오류0. Unity 실제 진입 검사 아님 |
+| 새 독립 EditMode 회귀 테스트 | NOT_RUN | Sprite 루트와 Mesh 자식의 실제 컴포넌트 조합·로컬변환/참조 및 2회 Spawn/Reset 재사용을 작성·컴파일만. Play fixture 없이 기본 캐시 초기화를 명시 호출 |
+| 공식65개 / 수정 후 Play·GPU | NOT_RUN | 기존64+구성검증1. 사용자 직접 재진입 필요 |
+
+이전 순수 .NET/참조 컴파일은 Unity 네이티브 AddComponent의 조합 제한을 실행하지 않아 이 결함을 검출하지 못했다. 실패 로그를 숨기거나 null 가드로 정상 처리하지 않고 생성 구조를 수정했다. 근거 `Logs/fever-bonus-bind-fix-20261025`. 새 규칙·연출 튜닝/자동 Play·빌드·커밋·배포 없음.
+
+## 최신 — D-029 C 검사와 사용자 검수 2 (2026-10-25)
+
+| 검사 | 결과 | 실제 확인 범위 |
+|---|---|---|
+| 참고 영상06/07 재검토 | PASS | 진입06 .60~4.28 / 유지07 0~4.83 / 종료07 4.70~7.69초의 실제 디코딩 프레임 |
+| 정적 연결·보존48항목 | PASS | 위협/보상 가드, 기존 효과·입력·씬/meta/설정/참고 보존, 시계/리셋/기록 경로 |
+| 실제 순수 소스 .NET 실행 | PASS | FeverState+FeverFlowMath 8,274단언: 득점/x4/정지시계/취소/응답상한/곡선 범위·연속성 |
+| C# 참조 컴파일 | PASS | 게임100/테스트11/Editor2 오류0. Unity 실제 컴파일 아님 |
+| 개발도구JS 문법 | PASS | 기존 Node --check. 브라우저 C 실행 아님 |
+| 공식 Unity64개 실행 | NOT_RUN | 기존56+순수5+전투3 작성/컴파일만. 테스트 무시/삭제 없음 |
+| C 실제 게임 화면/GPU/셰이더·오디오 | NOT_RUN | 비Play GPU 진단도 컴퓨터 사용 중단으로 미실행 |
+| 실제 접촉/후처리 순서/일시정지·Retry/Home | NOT_RUN | 사용자가 Unity에서 검수. 정적 안전 경로와 구분 |
+| 빌드/웹·실제 모바일/커밋·푸시·배포 | NOT_RUN | 이번 범위 밖 |
+
+기존 B 테스트2곳은 전환 길이 하드코딩.35 대신 실제 PhaseSeconds를 사용하도록 바꿨고 핵심 점수/배율/완료 단언은 유지했다. 새 순수5개는 시계잔여/리셋버전·재진입/그룹 상한/비대칭필드·완전복원/흡수·복귀를 검증한다. 새 전투3개는 무보상 위협정리·피해/예약 차단, 본체만 보너스1회·만료/정리무보상, 일시정지/점선복원을 실제 경로로 검사하도록 작성했으며 **실행하지 않았다**. 기존 fixture의 Play/Prefs 보호 동작은 이번에 호출하지 않았다.
+
+참고 영상 캡처와 순수 수학 검사를 실제 C GPU 장면으로 표시하지 않는다. 전체 C 시각·가독성·연속 처치/취소는 사용자 검수 대기다. [약5~10분 재현 순서](FEVER_STAGE_C_20261025.md#사용자-unity-검수--약510분). D 통합 안정화는 C 승인 후 별도다.
+
+## 현재 — D-028 A/B 검사와 Unity 검수 1 대기 (2026-10-25)
+
+| 종류 | 결과 | 범위 |
+|---|---|---|
+| 자료 역할/원문·4그림·2영상 | PASS | 스케치회전/설명가이드/영상분위기분리,오디오0 |
+| 정적36항목 | PASS | D-027한줄훅외보존/기존씬·meta·프리팹·규칙/기록키분리/전환범위 |
+| 순수 규칙 실제 소스 실행 | PASS | 독립.NET3032단언(상태·득점26+회전3006),Unity/저장없음 |
+| C#참조컴파일/JS문법 | PASS | 게임94/테스트10/수동창1오류0,Node --check |
+| 공식56개 실행 | NOT_RUN | 기존49+새순수규칙7. 작성/컴파일만 |
+| Unity/GPU·실제처치·실제저장·정지/Retry/Home | NOT_RUN | 사용자 직접Play |
+| WebGL/모바일·빌드·커밋/배포 | NOT_RUN | 이번승인밖 |
+
+새검증:실행토큰중복/이전통지·끝경계득점배율/x4유지·반복/피격점수유지/자연감소배율유지/정지·취소·중단/재충전없음/시계방향원점복귀/초문자열점수파싱금지. 기존핵심단언/무시/삭제없음. 기존Unity테스트의준비·정리는새점수2키도원래존재/값으로복원하도록작성했다. 실제저장보존확인으로과장하지않는다.
+게이지그림은계산도식이지Unity화면이아니다. [5~10분사용자검수/현재임시값](FEVER_STAGE_B_20261025.md#사용자-검수-1--약510분). B승인전C전투/전환을자동실행하지않는다.
+
+## 현재 — D-027 로컬 구현·사용자 Play 대기 (2026-10-25)
+
+| 검증 | 결과 | 범위 |
+|---|---|---|
+| 제공3영상 확인 | PASS | 전체16+문제구간24프레임씩 실제 디코딩·화면 열람. 현재 문제 자료, 목표 아님 |
+| 정적 보존/호출39항목 | PASS | B화면/파괴·일반C/D·원형돌진/규칙·씬/.meta/설정 유지 |
+| 원형32seed/선분거리24방향×4간격 모델 | PASS | 수학/소스 검사. 실제 Unity 충돌·GPU와 구분 |
+| C# 참조 컴파일 | PASS | 게임90/테스트9/수동창1파일 오류0 |
+| 공식49개 실행 | NOT_RUN | 기존48+빠른경로/무해꼬리1개 추가. 테스트 소스 작성/컴파일만 |
+| Unity Editor/셰이더/GPU/실제 전투·오디오 | NOT_RUN | 사용자가 직접 Play |
+| WebGL 빌드·웹·모바일/커밋·배포 | NOT_RUN | 검수 후 별도 요청 범위 |
+
+수정 단언: A에 옛시트/두 큰판 없음·초기넓이/초기통과축/크기 유지/파편다양성·정리, 최종 빠른 시작 후 느린 시계/방향 유지, 육각예비취소/동시반동·.01초 전체경로반환/도달1회/꼬리재반사금지. 기존 핵심 단언/테스트를 삭제·무시하지 않았다.
+아직 실제 해결/시각승인으로 표시하지 않는다. [사용자 Unity 재현 순서와 전후 시간표](IMPACT_RAIL_LOCAL_20261025.md#사용자-unity-검수-순서). 이전 D-026 빌드/공개 검증과 사용자 승인 B는 이번 Play 결과가 아니다.
+
+## 현재 — D-026 수정·빌드·공개 로딩 (2026-10-25)
+
+| 종류 | 결과 | 근거 |
+|---|---|---|
+| 정적 보존/분기30항목 | PASS | B/게임규칙·발사/형상/cur·일반C/D/최종리듬 보존, 원형 dispatch1줄/원형11기본값만 변경. static-check.json |
+| 참조 컴파일 | PASS | 런타임90/테스트9/Editor창1 오류0. 공식 실행과 다름 |
+| 실제 Editor 순수 함수/설정 읽기 | PASS | EditMode에서 최종 방향12방향, A/B화면11필드 일치. editor-build-proof.json. 초기 fallback0진단은 잘못된 기록으로 별도 보존/수정 후 재측정 |
+| Unity WebGL 빌드 | PASS | Succeeded/errors0/warnings2, 79,850,779bytes, build-result.json. 경고는 기존 NexusGameboard loop gradient |
+| 로컬/공개 파일 | PASS | 로컬19 전체해시HTTP200, 공개21HTTP200·wasm MIME·6텍스트커밋바이트, Pages40134356035 success/built/7ead4b3 |
+| 공개 런타임 메인/설정/JSON | PASS | 실제 새buildId/161키/.15/.20/.60/A-B11값일치, warn/error0. 게임시작·전투·값저장 없음 |
+| 공식48개 실행/전투VFX/여러방향/실제입력·모바일·오디오 | NOT_RUN | 사용자가 Play 수행. 자동Play/전투검수 안 함. 시각 해결/승인으로 표시하지 않음 |
+| 사용자 작업·저장 | PASS | 사전1731파일 대조/기존씬·메타·설정보존/저장7키동일·4TMPdirty동일/Play off/timeScale1 |
+
+기존 A 시트재생 테스트는 새 요구에 맞춰 Animator/Sprite재생없음·큰첫박자/통과축/양옆 파편/풀수명·정리 단언으로 바꾸고, 최종 방향 단언만 새 반전 요구에 맞췄다. B 테스트/핵심 판정은 제거하거나 무시하지 않았다. 옛 에셋8키/재생속도 검사는 원본 참고 이력으로 유지한다. [A/B비교와 여러방향 최종 Unity 검수](CIRCLE_PUNCH_RELEASE_20261025.md#사용자-검수).
+
+
+## 현재 — D-025 사건별 VFX/커서 재수정 (2026-10-25)
+
+커서 D-024 결과는 **FAIL(사용자 Unity 재현)**이다. 이번 수정 상태는 **수정 후 사용자 검수 대기**이며 해결 확인이 아니다. B 육각 반환 파괴는 **USER_APPROVED**, A/C/D/최종은 이번 사용자 시각 검수 전이다. 과거 USER_VERIFIED/공식35PASS는 이번 변경의 증거가 아니다.
+
+| 구분 | 결과 | 근거 |
+|---|---|---|
+| 정적 소스/보존42항목 | PASS | B수치/코드·육각 D도달1줄 외 동일·기존 게임규칙/경계/물리/파일 보존, `Logs/event-vfx-20261025/static-check.json` |
+| 별도 참조 컴파일 | PASS | 게임90/테스트9/수동창1파일 오류0, 동일 폴더 Compile/*.json. Unity 셰이더 컴파일과 다름 |
+| 공식48개(기존43+신규5) | NOT_RUN | 자동 Play/테스트 실행 금지. 신규 원본클립/A시트/C4방향/D단발빔/최종시간·Retry·Home 검증 소스만 추가 |
+| 최종 Game View·실제 입력·A/B/C/D/최종·GPU/오디오 | NOT_RUN | 사용자가 Unity에서 수행. 커서 테스트는 main-only 대신 두카메라+Overlay+설정까지 포함하는 실제 프레임 픽셀 검사로 강화했으나 미실행 |
+| 빌드/웹/모바일 | NOT_RUN | 이번 요청으로 실행하지 않음 |
+
+새 바깥 정지 요구에 맞춰 기존 리듬 테스트를 바깥정지+안쪽회전 보존으로 대체했다. 기존 결과 대기2곳(.6→.75초)만 새.64초 연출에 맞췄고 HP/점수/결과/Retry 단언은 유지한다. 기존 커서·원형 방향/감속·반사/발사 테스트의 핵심 단언을 제거하지 않았다. 사용자 수동 재현/진단 버튼의 내부 함수 호출/실제 Play는 구분한다. [A/B/C/D/최종 C·D별 검수표](EVENT_VFX_20261025.md#unity-사용자-검수-순서).
+
+
+## 현재 — D-024 여섯 항목 (2026-10-25)
+
+사용자 승인: 노드 형상/육각 파괴. 신규 원형 VFX·발사 예비·넥서스 리듬은 사용자 검수 대기다.
+
+| 종류 | 결과 | 실제 근거 |
+|---|---|---|
+| 소스/보존 | PASS | 승인 ImpactFragments/ImpactFlat·노드 형상·공통 수치/화면 효과·HP/경계/사망/커서 물리 보존. 육각 Fired/반사/파괴 구간 동일. `Logs/test-polish-20261025/static-check.json`, `preservation-final.json` |
+| 정적 모델 | PASS | 알파 합성 항등식1000회/오차2.3e-16미만, 원형100회×12개 앞방향·크기 상한/지수 감속, 예비.08/리듬1.54초. 실제 C#/GPU 실행 결과 아님 |
+| 별도 참조 컴파일 | PASS | 게임88파일/테스트8파일/Editor창1파일 오류0. Unity 셰이더/Editor 컴파일과 구분 |
+| 공식43개 실행 | NOT_RUN | 기존39+신규4(예비 취소·원형감속·바깥 리듬·실제 커서 픽셀). 자동 Play 금지로 실행하지 않음 |
+| 실제 화면/입력·Unity/GPU/취소/Retry·오디오 | NOT_RUN | 사용자가 Unity에서 수행. 캡처를 생성하거나 새 USER_VERIFIED로 표시하지 않음 |
+| 빌드/웹/모바일 | NOT_RUN | 이번 승인 밖 |
+
+기존 원형 테스트의 대상만 전용 CircularBreakVfx로 바꾸고 크기/섬광0/방향/개수/정리 단언을 유지한다. 육각 색 검사는 새 어두운 노랑에 맞추며 형태/회전/풀 단언은 유지한다. 기존 육각 고정 대기는 추가 예비시간만 더해 같은 발사 후 시점을 관찰한다. 레이저 속도/반사/HP 기대값은 바꾸지 않는다. 신규4개는 아직 미실행이고 C# 검사 통과를 테스트 PASS로 집계하지 않는다.
+[항목별 Unity 검수/Canvas 설명](TEST_POLISH_20261025.md).
+
+## 현재 — D-023 육각 색·넥서스 표시 (2026-10-25)
+
+사용자 **USER_APPROVED(원형·육각 형태/동작)**. 공통 타격감은 미승인·추가 튜닝 금지로 유지한다.
+
+| 구분 | 결과 | 근거 |
+|---|---|---|
+| 소스 보존/효과 식 | PASS | StageManager의 신규 표시 초기화 외 기존 규칙/경계 바이트 동일, ScoreManager/승인 공격·형상 보존, 공통 왜곡/노출 식 토큰 동일, 수치 기본값/키 동일. `Logs/nexus-presentation-20261025/static-check.json`, `preservation-final.json` |
+| HP/좌표 정적 모델 | PASS | 최대1/중간.5/낮음.15/0 안정, .04초 연속3회 최신값.7·.12초 후 눌림0, 투영/역행렬 오차2.3e-16미만·안정된 경계 정렬. 실제 Unity 실행 아님 |
+| 별도 C# 참조 컴파일 | PASS | 게임86파일/테스트7파일/수동 검수창1파일 오류0. 테스트/검수창 경고0. Unity/GPU 컴파일과 다름 |
+| 공식39개 실행 | NOT_RUN | 기존37+신규 HP/렌더연결2. 자동 Play 금지. 이전 결과 재사용 안 함 |
+| Unity 셰이더/실제 위치·크기/HP·피격·재시도/HUD/입력 | NOT_RUN | 사용자가 지정 씬·수동창에서 검수. 실제 화면 캡처를 새로 만들었다고 하지 않음 |
+| 빌드/웹/모바일 | NOT_RUN | 이번 승인 밖 |
+
+기존 CP2 수위 검증의 느린 보간/이전 높이 유지 단언을 사용자 새 규칙인 즉시HP일치 단언으로 바꿨다. 중심/반경·pause·색상 미리보기 검사는 유지한다. 육각 검증은 기존 어두운.82배 색 대신 새18% 옅은 색을 비교하며 회전/모양/재사용 단언을 유지한다. 신규2개는 즉시HP/연속교체/0/Retry, 정확한 원본3이미지 선택/경계일치/고정UI카메라/원본 표시 복원을 검사하도록 작성했으나 실행하지 않았다.
+수동 창 버튼은 **내부 함수 검수**다. 실제 공격 착탄·마우스/터치 검증과 구분하고 [절차](NEXUS_PRESENTATION_20261025.md#unity-검수-절차)의 노드 방치/입력 확인도 별도로 한다.
+
+## 현재 — D-022 육각 A 복원 / 원형 외형 승인 (2026-10-25)
+
+사용자 상태: **USER_APPROVED(원형 외형만)**. 타격감은 **미승인·개선 대기**이며 이번 튜닝/육각 전용 확장을 하지 않았다. 원형 전투/타격감/Unity 자동 검증까지 승인됐다고 확대하지 않는다.
+
+| 구분 | 결과 | 근거 |
+|---|---|---|
+| 원본 A·정적 도형 | PASS | Outside1/2 각6개/총250꼭짓점, .25원본픽셀 단순화/자가교차0/삼각분할 면적차1e-8미만. 본체 A 반경·두께·충전비 실측. `Logs/hex-originalA-20261025/original-hex-contours.json`, `artwork-check.json` |
+| 변형/에너지 방향 정적 수학 | PASS | 101변형 단계에서 비영6변·볼록성·외접반경 유지. 기존 피스톤 cut식에서 101에너지 단계 면적 단조성/뒤→앞 소모 확인. 실제 Play 검증 아님 |
+| 별도 C# 참조 컴파일 | PASS | 게임85파일/테스트6파일 오류0. 테스트 경고0. Unity 셰이더/런타임 검증과 구분 |
+| 보존/범위 | PASS | `preservation-final.json`의 사전1694파일/HEAD 대조. 원형·타격감·넥서스·씬/프리팹/기존.meta/설정/패키지 새 차이0. ArrowNode.Update/발사/반사/피해/시간·NodeFlatGraphic.Hexagon/피스톤식 보존 |
+| 공식37개·신규 역회전/풀 테스트 | NOT_RUN | 기존36개+신규1개. 자동 Play 금지로 실행하지 않음. 기존 단언 삭제/테스트 무시는 하지 않음 |
+| Unity 셰이더·회전·충전·발사·반사·일시정지/Retry·실제 화면 | NOT_RUN | 사용자가 Unity에서 수행. 정적 합성 PNG를 게임 캡처로 표시하지 않음 |
+| 빌드·웹/모바일 | NOT_RUN | 이번 승인 밖. 기존 미리보기는 이전 버전 |
+
+신규 `HexagonA_TwoInterruptedRingsCounterRotatePauseAndResetWithoutCopies`는 두 겹의 반대 회전·pause 정지·노랑 색상비·A 외곽선/충전비·풀 복원/복제 방지를 검사하도록 작성했다. 기존37개 전체를 실행했다는 뜻은 아니다. 육각 6꼭짓점/4방향 발사·피스톤 기존 테스트는 유지한다. [사용자 Unity 검수 절차](HEXAGON_ORIGINAL_A_20261025.md#unity-검수-절차).
+
+## 현재 — D-021 원형 구현, Play는 사용자 수행 (2026-10-25)
+
+| 구분 | 결과 | 실제 근거 |
+|---|---|---|
+| 정적 도형 | PASS | 다섯 원호/26·29·24·30·32꼭짓점, CCW/자가교차0/삼각분할 면적차0/생성 C# 좌표오차1e-6 이내, 중심·렌즈 연속성 검사. `Logs/circle-originalA-20261025/artwork-check.json` |
+| 별도 C# 참조 컴파일 | PASS | 게임83파일/테스트5파일 오류0. 기존 설치된 Unity DLL+Roslyn 참조 검사이며 Unity Editor 컴파일/셰이더/Play 검증과 다름. `Compile/result.json`, `tests-result.json` |
+| 보존·범위 | PASS | `preservation-final.json`의 사전1679파일 해시 대조/허용목록/HEAD. 씬·프리팹·기존.meta·원화·설정·패키지·육각/넥서스 코드 새 차이0 |
+| 공식 테스트 실행 | NOT_RUN | 현재36개(기존35+중심/풀 재사용1). 사용자 자동 Play 금지에 따라 실행하지 않음. 이전35PASS 재사용 안 함 |
+| Unity 셰이더 컴파일/실제 화면/충돌/풀/일시정지 | NOT_RUN | 사용자가 Unity에서 검수. C# 통과로 GPU 렌더 성공을 단정하지 않음 |
+| 빌드·웹·휴대폰 | NOT_RUN | 이번 승인 밖. 기존8879/8880/공개 페이지는 이번 수정 전 버전 |
+
+테스트 변경 근거: `CircleA_ArtworkSharesItsCenterAndSurvivesPoolReuse` 추가. 기존 실제 배경 검증은 가짜60선 대신 정확한 원본 이미지/alpha87·숨김/복귀를 검사한다. 밝기 **1.2배 전체 월드 노출** 기대는 요청한 **국소 마스크 이미지 밝기 증가**로 대체하며 밝아진 픽셀>2000·순밝기증가·복귀오차<.003·사용자 pause 유지 단언을 남긴다. 강도0으로 밝기만 분리 검사한다. 기존 광범위 셰이더 테스트에는 mode2 원형 렌즈의 실제 픽셀 이동>1000/NaN없음/종료 원복을 추가하고 기존 육각 단언은 유지한다. **수정된 테스트 모두 아직 미실행**이다.
+최소 수동 절차와 실패 시 전달할 항목은 [원형 Unity 검수](CIRCLE_ORIGINAL_A_20261025.md#unity-검수-절차)에 있다. D-020의 네 원호/바운딩 박스 중심 해석은 D-021 실측으로 정정한다. 이전 분석·실행 이력은 아래 보존한다.
+
+## 최신 — D-020 분석 검증 (2026-10-25)
+
+- PASS(정적): A원본GUID/부품/피벗·색·비율/회전/충전코드와B옛시트구분,실제씬프리팹20참조. 원형Outside피벗(.526316,.486702)은반알파윤곽중심과다르며정확한원호맞춤은후속검수항목이다.
+- PASS(정적): WaveFront접촉→.05정지/음→WaveEnd정산의흔들림/왜곡흐름,씬값.35/50/20·왜곡2초,profile렌즈-.75/색수차1,Wave1~3컨트롤러speed.9와clip.25/.5이벤트연결. weight등런타임변경은소스추적/계산으로구분했다.
+- PASS(영상관찰): 제공5영상총88타임스탬프프레임,보드휨·색분리·게임오버빛/원본충전형태열람. 오디오·정확한ms실측·현재Unity실행결과아님.
+- NOT_RUN: Unity실행/Play/컴파일/공식테스트/빌드/실행중Inspector/기기검수. 기존35PASS를이번재실행으로표시하지않는다. 렌즈center overrideOff로실제중심반영은사용자Unity확인필요.
+- NOT_RUN: 원형중심보정/원본복원/Background_Flash연결은확정된후속수정안이며게임파일미변경이다.
+
+최종보존검사 `Logs/original-wave-review-20261025/preservation-final.json`과 [분석/사용자검수절차](ORIGINAL_NODES_WAVE_REVIEW_20261025.md)를따른다. 앞으로Play검수는사용자가Unity에서수행한다.
+
+
+## 최신 후속 — D-019 노란 육각·파편·중앙점·전체 출렁임
+
+현재 **단일 전체 실행35 PASS / 0 FAIL / 0 SKIP**(기존32+신규3), 완료 UTC2026-10-24T15:03:50.0947244Z. 기존 Editor 정식 TestRunner 경로이며 새 JSON/XML35개 이름·상태/완료 로그와 Editor Play 종료를 확인했다. 근거 `Logs/hitfeel2-20261024-231337/Run-02-Full`이다. 신규 초기 집중3PASS도 Run-01-Focus에 보존했다.
+원형 기본 크기.05/이전 크기1 보존 시 조각 상한·방향·AA·섬광0 첫 프레임, 육각 Preparing/Warning/Fired 노란색·중앙점0/빔색, 정확한157키 보완/누락 거부 원자성을 새로 검사했다. 실제 월드 회로선60구간이 왜곡 패스에 포함되는지와 배경 밝기/복귀도 검사했다. 새 실제 배경 GPU 결과: 밝아진114,132픽셀/평균밝기1.77185559배/복귀 평균오차0. 사용자 정지는 유지됐고 UI카메라 위치는 고정됐다.
+기존 원형·육각 판정/시간/풀·Pause/Retry/Home·이동/잔상·훈련/가이드/기록 분리도 같은35개에 포함된다. 변경한 이전 기대는 중앙점.10→0,키157→161,효과복귀.50초에 맞춘 관측 대기뿐이며 핵심 전투 단언은 유지했다.
+2026-10-25 최종 로컬 WebGL PASS: nodefx-20261025-565495e82312/Succeeded/errors0/warnings0/79,685,334bytes. 입력1346개+identity 해시 일치,실행19파일HTTP200·서버/디스크SHA동일·WASM MIME. 실제 웹 기본161키·원형.05/.15/.20/.60/중앙점0,50키 시각 JSON 가져오기,훈련/Dev/원형 물리접촉/노란 육각 충전·변형·실제 반환 파괴/배경 출렁임·복귀,한국어 보고서 생성 PASS. 390×844에서161육각프레임/원형 연속프레임·패널을 열람했고 가로넘침0,최종 탭 warn/error0이다. 새 파동 입력1은 다음 타격 적용대기를 표시했으며.8복원까지 확인했다. 그 요청1의 소비 입증은 중단된 탭 때문에 미완료이며 PASS로 집계하지 않는다. 공식 신규 GPU 테스트는 실제 파동 키 소비·복귀를 별도로 통과했다.
+검증 출력은 새 run에 복사한 뒤 기존 고정13개/빌드결과를 백업으로 복원했다. 보호1655파일 누락0/승인 후 씬 저장본 그대로/저장7키 동일/최종Playoff·씬clean/TMPimported4개만dirty. 근거 test-crosscheck.json,local-build-result.json,http-checks.json,Web/browser-checks.json,final-state-comparison.json. 실기기/새 실제 이동 입력/오디오 실청/장시간 성능과 사용자 미적 승인은 NOT_RUN/대기다. 이전 USER_VERIFIED를 새 결과로 사용하지 않는다. 이번 클립보드 재검증은 하지 않았다. 
+
+## 최신 — 노드 그래픽·방향 파괴·강한 타격감 (D-018, 2026-10-24)
+
+새 외형·타격감의 사용자 승인은 아직 없다. 과거 USER_VERIFIED와 아래 공개 CP14 검증은 이번 버전의 자동/사용자 결과로 재집계하지 않는다.
+정상 Editor TestRunner 경로로 실행했고 새 JSON/XML/완료 로그와 실제 Play 종료를 교차 확인했다. 현재 세션에 Unity MCP 호출 도구가 없어 네이티브 기존 Editor 메뉴를 사용했다. 테스트 실행 거부 우회는 없다.
+
+| 구분 | 상태·근거 |
+|---|---|
+| C#·셰이더·로컬 WebGL | PASS. 최종 errors0/warnings0, buildId nodefx-20261024-a4818b5046e2,120개 입력 해시 일치 |
+| 공식 기존27+신규5 | 항목별 최신32 PASS. 전체 Run-03 31/1, 관련 Run-04 3/0, 셰이더 Run-05 1/0, 최종 영향 Run-06 2/0. 단일32개 올패스 실행이 아님 |
+| 원형·육각·기존 규칙 | PASS. .15/.05/.20/.60, 접촉/앞점피해1회·Fired잔상무시·풀·Pause/Retry/Home, 육각.06반환·방어폭/경계·피해취소 및 기존 이동/훈련/기록 분리 |
+| 새 기하·시각 | PASS. 변형101지점 볼록6각/비영 짧은 변/4발사방향·반경.1/.8/3, 뒤→앞 소모·코어 독립,4방향 파편/사건1회·수명 복원 |
+| GPU 왜곡 | PASS. 접촉점에서.25~.6화면 거리의 실제 픽셀 변위1000개 초과, 가장자리 동일/복귀·모서리 연속 슬롯상한·UI카메라 고정 |
+| 실제 비교 자료 | PASS. 변경 전138PNG와 변경 후 같은 조건 Editor 연속 캡처, 전후GIF3개·최종 웹GIF2개/시트 열람. 캡처 간격 한계/오디오 없음 명시 |
+| 실제 웹·수치/저장 | PASS. HTTP200/WASM19개, 정규→훈련/Dev·내부 원형 물리접촉/실제 빔 반환,157키 내보내기/46키 텍스트 가져오기,별도 프리셋 새로고침 후 불러오기,외곽선.05 실제 적용→.035복원,보고서 생성/전체선택 |
+| 복사 | PASS(줄바꿈 정규화). 후속 사용자 명시 승인/조작 중지 후 같은 화면 보고서 재복사→Windows Get-Clipboard -Raw 로컬 비교. exactMatch=false/newlineNormalizedMatch=true: LF/CRLF 외 문자열 동일. 클립보드 원문 출력/저장 없음. 이전 거부/BLOCKED는 이력이며 새 승인으로 정상 요청해 해소 |
+| 모바일 폭 | PASS.390×844의 실제 DOM/패널·육각177/원형27전투프레임·타임스탬프 시트 열람,가로 넘침0·표본 검은 가장자리/잔류효과 없음. 실기기 아님 |
+| 실제 새 이동 입력·실기기·오디오 | NOT_RUN. DOM도구의 canvas드래그/홀드 미지원. 휴대폰 터치/키보드/파일선택·발열/지속성능/실청은 수동 확인 |
+| 보존 | PASS. 기존 보호파일467개/미추적294개 누락0,고정출력13개/기존 빌드결과 원바이트 복원,기존씬/프리팹/설정/이미지/.meta 새차이0,최종Playoff/씬clean/TMPimported4개만dirty |
+
+신규5개와 기존 단언 변경 근거·중간 실패 원인은 [A~I 결과](NODE_GRAPHICS_RESULTS_20261024.md) D에 있다. 상세 최신 목록 `Logs/node-graphics-20261024-192424/verified-latest-cases.json`, 원 실행 `Run-01`~`Run-06`, 실제 웹 `Web/browser-checks.json`, 보존 `final-state-comparison.json`이다. 고정 `Logs/CursorDash-regression.*`는 기존 사용자 바이트로 복원했으므로 이번 최신 결과가 아니다.
+
+기존 DOTween26건은 이전 집계다. 이번 반복 실행에서 집계는 관찰되지 않았지만 전체 해결로 표시하지 않는다. 기존 Editor 폰트 참조 메시지·넥서스 왜곡 메타.006/fallback.008도 별도 후속 항목이다. 현재 실제 시안 플레이를 막는 새 컴파일/공식검증 실패는 없다.
+
+클립보드 후속 근거는 `Logs/node-graphics-20261024-192424/Clipboard-followup/comparison.json`(UTC2026-10-24T13:54:14Z)과 복사 완료 화면이다. 이는 새 공식 테스트 수에 더하지 않는다. 게임 파일·수치·빌드는 바꾸지 않았다.
+수동 최소 절차: 로컬8879→훈련→개발자 도구→강렬한 노드 시안→원형 접촉/레이저 방어 재현으로 두 시안 비교. 실제 휴대폰에서 새 입력/취소·Pause/Retry·짧은 반환과 가장자리/연속 타격·오디오·장시간 성능 및 모바일 복사 권한을 별도 검수한다.
+
+## 2026-10-24 공개 Pages 검증 (D-017)
+
+**PASS: Pages success/built, 공개 런타임 buildId 일치, 원형.15/.20/.60·141키, 실제 시작 클릭/정규/훈련·Dev, 전진.30의 다음 생성 실제 적용/ .20복원 후 새 생성, JSON 텍스트 왕복·한국어 보고서/실제 클립보드 일치.**
+21개 실행/메타 파일 HTTP200, WASM application/wasm, 수집 공개 Console warn/error0건. 데스크톱 좁은 화면 검증은 실기기와 구분한다.
+**NOT_RUN: 이번 공개 주소에서의 실기기 터치/키보드/파일·프리셋 새로고침/발열·장시간 FPS 및 독립 Claude QA.** 이전 동일 빌드의 로컬 파일/프리셋 검증과 공식27 PASS는 재사용했으며 새 공식 실행/USER_VERIFIED로 집계하지 않는다.
+관측 후속: 넥서스 왜곡 metadata.006/fallback.008의 기존 차이가 보고서에 포함됐다. 배포 범위에서 게임 코드 수정 없음.
+[항목별 결과/스크린샷](D:/renewal_CursorDash/docs/CursorDash/DEPLOYMENT_CP14_20261024.md), [실제 공개 검증 로그](D:/renewal_CursorDash/Cursor-Dash-master/Logs/deploy-cp14-20261024-131718/Public/browser-checks.json). 아래는 구현 당시 이력이다.
+
+<!-- cp14:start -->
+## 최신 검증 — CP1~CP4 구현·공식27개·로컬 WebGL (2026-10-24)
+
+**PASS: 컴파일, 공식27/0/0, Editor 전투 화면, 로컬 WebGL 빌드, 실제 웹 파일/텍스트/복사/저장 왕복과 마우스 입력. NOT_RUN: 실제 휴대폰 터치/키보드/파일 UI·발열/지속 성능.**
+이전 USER_VERIFIED는 변경 전 사용자 기준선이다. 이번 자동/내부 보조/데스크톱 입력을 새 USER_VERIFIED로 표시하지 않는다.
+
+정상 MCP `run_tests(EditMode, assembly_names=[CursorDash.EditorTests])` 최종 native 완료 UTC `2026-10-23T17:59:31.4580605Z`.
+공식 JSON/XML27개 이름/Passed·RunFinished 로그와 실제 Editor Play/compile 종료를 교차 확인했다. MCP 진행 캐시만으로 성공 처리하지 않았다.
+결과: `Logs/autonomous-cp14-20261024-011805/CP3-CP4/Run-04/CursorDash-regression.json` 및 `.xml`, `console.json`.
+[집계](D:/renewal_CursorDash/Cursor-Dash-master/Logs/autonomous-cp14-20261024-011805/tests-final-summary.json).
+최종 게임 C#은 이후 변경되지 않았다. 마지막 HTML 삭제 확인 UI 수정은 별도 WebGL 재빌드/실제 브라우저 검증을 마쳤다.
+
+| 검증군 | 결과/실제 근거 |
+|---|---|
+| 기존16개 | PASS. 이동·곡선·해제·입력 소유/포커스·충전 접촉·돌진 피해/외곽·빠른 구간·정지·비활성·반복 풀·치명피해/Retry/Home·Rotator 공유 사용처 유지 |
+| CP1 신규2개 | PASS. .15/.20/.60과 중복 배율 방지, 별도 반동/취소, 생성별 requested/effective |
+| CP2 신규3개 | PASS. 같은 빔 반환/도착 파편/무피해, 안정 경계/최신 수위 목표/정지 색 미리보기, 누적 정지 상한/독립Pause |
+| CP3 신규3개 | PASS. 실제 이동·물리 접촉·반환 파괴 성공조건, 패널 입력 소유권/독립Pause, 훈련/Dev 기록 제외 유지 |
+| CP4 신규3개 | PASS. JSON 원자 검증/프리셋/이전pref 비오염, 잔상 풀 용량/다음 라운드, 보조 재현의 실제 빔 경로·경계 |
+| WebGL 빌드 | PASS. 최종 buildId cp14-20261024-031826-fe9e3b0bcb8d, Succeeded, errors0/warnings0, 새 폴더79,591,684bytes |
+| 실제 웹 입력 | PASS. 최종 Chrome에서 cua 마우스 drag→플레이어 이동/잔상6→해제 후잔상0. 내부 MoveVector 주입과 구분 |
+| 웹 전투 보조 재현 | PASS. UI 내부 생성/실제 잔상 보조 명령→hexBlock/triangleBreak·HP3 유지·실제 왜곡 렌더35프레임. 원형 새 세대→HP3→2·실제 렌더68프레임. 수동 잔상 방어로 집계하지 않음 |
+| 실제 웹 데이터 왕복 | PASS. 프리셋 저장/불러오기/복제/선택 삭제/새로고침 후 보존·비자동Dev, 일반 설정.75 저장/재진입/1복원, 전체141키→초기화→텍스트/파일 가져오기, 잘못된 -1 거부/기존.45 유지 |
+| 내보내기·복사 | PASS. 실제 다운로드 JSON141키/buildId 확인, 변경JSON1키, 한국어 보고서 클립보드 완전 일치, 텍스트 전체 선택 대안 |
+| 반응형 | PASS(데스크톱). 390×844, 실제 패널너비380.4/폰트14px/문서가로390, decimal입력/step.01 확인. 실기기/가상키보드/멀티터치 검수 아님 |
+
+기존16개 삭제/무시 없음. 사양이 바뀐 육각 Animator 기대는 삼각 숨김/도착 파괴로 갱신했고 고정 대기는 실제 반사 이벤트+제한시간으로 바꿨다. 핵심 피해 취소·반환·파괴 순서 단언은 유지했다.
+실패/보완 이력: CP2 첫20/1→21/0, 통합 첫7/18(컴파일/도메인 혼합)→26/0→27/0→최종27/0. 이전 파일은 보존한다. tests_running/stale 진행 캐시는 내부 runner/캐시 우회로 해결하지 않았다.
+Chrome 다운로드 event timeout 및 앱 브라우저 native confirm 정체는 실패한 도구 호출로 남긴다. 사용자 취소 후 최종 HTML 인라인 확인/실제 다운로드 성공을 별도로 검증했다.
+
+이전 고정 Captures/Logs 출력13개는 시작 바이트로 복원했고 새 결과는 위 실행 폴더와 Final-TestOutputs에 보존했다. 루트 고정 회귀JSON을 최신으로 해석하지 않는다.
+현재 Editor Play/pause/compile off, Cyberpunk clean, timeScale1, prefs7항목 존재/값 및 Resource SO10 메모리 차이0. D-014 imported4개 dirty만 유지.
+최종 DOTween 집계는 관찰되지 않았으며 과거26개 전체 해결 판정은 하지 않는다. Editor 종료의 `Deleting invalid font reference.`는 원인/스택 미확정 후속 항목이다. 게임/WebGL 텍스트·셰이더 표시 오류는 관찰되지 않았다.
+
+[전체 결과·화면·미확인 목록](D:/renewal_CursorDash/docs/CursorDash/CP14_RESULTS.md), [실제 웹 검증 로그](D:/renewal_CursorDash/Cursor-Dash-master/Logs/autonomous-cp14-20261024-011805/Web-Final/browser-checks.json), [수치 도구 사용법](D:/renewal_CursorDash/docs/CursorDash/TUNING_GUIDE.md).
+<!-- cp14:end -->
+
+<!-- circle1:start -->
+## 최신 검증 — 원형 노드 1차 시안 (2026-10-24)
+
+**PASS: 컴파일·공식16개·별도 Play 화면. NOT_RUN: 이번 시안의 실제 마우스/터치 체감 검수.**
+D-015의 임시 판정이며 사용자 시각 검수 대기다. 과거 USER_VERIFIED는 변경 전 기준선으로 유지한다.
+새 자동 검증을 USER_VERIFIED로 표시하지 않는다.
+
+### 최종 공식 실행
+
+`run_tests(EditMode, assembly_names=[CursorDash.EditorTests])` 정상 경로.
+최종 Job55e1719e6fc5416fbaa66a8064739a27, 완료2026-10-23T15:44:12.908724Z.
+JSON/XML16개 이름 일치·전부Passed, Console RunFinished16/0, Interaction Mode 복원·실제 Play 종료를 확인했다.
+결과의 durationSeconds는 도메인/Play 전환을 포함한 전체 벽시계 시간으로 해석하지 않는다.
+[집계](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/tests-summary.json), [JSON](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Test-Outputs/Logs/CursorDash-regression.json),
+[XML](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Test-Outputs/Logs/CursorDash-regression.xml), [최종 Console](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/console-final.json).
+
+| 테스트 (공통 namespace CursorDashTests 생략) | 구분/핵심 단언 | 결과 |
+|---|---|---|
+| CursorDashControlFeelTests.CurveAndCoastStayCloseAcrossPhysicsStepSizes | 기존·물리 간격별 입력 곡선/감속 | PASS |
+| CursorDashControlFeelTests.FloatingOrigin_FollowsOnlyBeyondTheStickRadius | 기존·가상 조이스틱 원점 | PASS |
+| CursorDashControlFeelTests.ReleaseCoastsThenStops_AndSmallInputSetsAProportionalSpeed | 기존·해제 감속/작은 입력 | PASS |
+| CursorDashControlFeelTests.ReverseAtSpeedCurves_ButNearStopRespondsPromptly | 기존·역방향 반응 | PASS |
+| CursorDashSceneRegression.RoundLifecycle_PauseEndRetryAndHomeRestoreState | 기존·UI 콜백/정지/종료/재시도/홈 | PASS |
+| CursorDashSceneRegression.NodeRoles_OnlyFiredHexBeamCanUseLiveTrail | 기존·원형 잔상 무시/육각 기존 방어 | PASS |
+| CursorDashSceneRegression.CircularNode_MorphsUntilDash_CanBeDestroyedAndResetsForReuse | 기존 원형 계약 갱신·Warning Physics2D 접촉 제거/취소/돌진/리셋 | PASS |
+| CursorDashSceneRegression.HexNode_WarnsWithoutBodyDestruction_AndKeepsOriginalBlockRadius | 기존·육각 경고/발사/방어 반경/반환 파괴 | PASS |
+| CursorDashSceneRegression.InputOwnership_UiPauseFocusReleaseAndDiagonalMotion | 기존·입력 소유/포커스/대각 이동 | PASS |
+| CursorDashSceneRegression.OppositeInput_ChangesThePhysicalPathGradually | 기존·물리 이동 경로 | PASS |
+| CursorDashSceneRegression.OutsideRing_PivotMatchesItsMeasuredCircularCenter | 기존·테두리 중심 | PASS |
+| CursorDashControlFeelTests.CircularDash_SweptNoseStopsAtFirstEdgeEvenAcrossTheWholeCore | 신규·한 구간이 코어 전체를 건너도 첫 외곽 교차/빗나감/정지 | PASS |
+| CursorDashSceneRegression.CircularDash_DefaultPhasesAndVisibleNoseImpact | 신규·실제 저장 시간/형태/본체 이동/레이저 꺼짐/앞점 외곽/HP1회/잔상 무시 | PASS |
+| CursorDashSceneRegression.CircularDash_PreparingContactPauseDisableAndRepeatedPoolReuse | 신규·Preparing 물리 접촉/돌진 Pause·Resume/비활성화/4회 재사용/지연 피해 없음 | PASS |
+| CursorDashSceneRegression.CircularDash_LethalHitRetryHomeRetireOldVisuals | 신규·0.01초 고속 돌진/치명 피해1회/Ended/Retry/Home/파편 누수 없음 | PASS |
+| CursorDashSceneRegression.Rotator_DisableAndReuseOwnsRotation_HexAndHpRemainAnimated | 신규·3회 회전 시작/정지/재사용·육각/HP 공유 회전 유지 | PASS |
+
+기존 원형 테스트의 발사 후 beam.enabled/선 폭 기대는 D-015로 폐기된 공격 계약이었다.
+beam 꺼짐·커서 메시 표시·테두리0/숨김·collider 꺼짐·외곽 피격/1회 피해로 대체했다.
+기존 경고 중 접촉 제거·정지·취소 후 지연 공격 없음·풀 크기/위치/폭 복원과 이동/잔상 수치 단언은 유지했다.
+테스트 삭제·무시·필터로 실패 제외·핵심 단언 제거 없음. 독립 함수2개와 과거 공식11 PASS를 이번16에 더하지 않는다.
+
+### 시행 이력·도구 한계
+
+Run-01:13 PASS/3 FAIL. 외곽 단언은 피격 후 카메라 흔들림으로 변한 UI 월드 중심을 비교했고,
+사망 검증은 기본 플레이어(0,2.32)와 원형(0,2)이 겹쳐 돌진 전에 접촉 제거됐다.
+경계의 사전 좌표를 보관하고 사망 검증 플레이어를 멀리 배치했다. 게임 피해·기대값은 완화하지 않았다.
+
+Run-02:14 PASS/2 FAIL. 캡처 보조 함수가 hit-stop의 timeScale0을 기억했다가
+게임의 정지 해제 뒤 다시0으로 복원해 테스트 시계가 멎었다. 캡처에서 시간 변경을 제거했다.
+기존 원형 케이스의 반사 조회 NRE1건은 대상/멤버 진단 단언을 추가한 최종 실행에서 미재현이다.
+별도 원인은 미확정이며 게임 NRE라고 단정하지 않는다.
+Run-03:16 PASS/0 FAIL/0 SKIP. 과거 실패 JSON/XML은 Run-01, Run-02에 그대로 보존했다.
+
+MCP get_test_job은 도메인 재로드 session superseded 또는 오래된 running/completed0을 반환했다.
+정상 재요청의 tests_running은 미시작/BLOCKED 응답으로 구분했다.
+MCP 기존 TestJobManager는 재로드 때5분 이상 업데이트 없는 작업을 자체 정리하는 코드/로그가 있다
+(이번403초/358초). 에이전트가 캐시·권한·연결을 변경하거나 대체 runner/테스트 메서드를 호출하지 않았다.
+자동 정리 이후 정상 요청으로 시작된 실행만 집계했다.
+단순 진행 조회를 완료 근거로 쓰지 않는다.
+
+### 실제 화면·관찰 방식
+
+별도 정상 Play에서 기존 Execute/Retry 게임 함수로 장면을 구성하고 ScreenCapture로 실제 게임 화면을 저장·열람했다.
+원형 시간/형태 수치는 저장된 기본값 그대로이며 캡처 준비만을 위해 무작위 생성과 다른 노드를 멈췄다.
+[충전](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Play-Captures/01-charge.png),
+[흡수·중간 변형](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Play-Captures/02-absorb-morph.png),
+[커서 본체 돌진](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Play-Captures/03-cursor-dash.png),
+[넥서스 외곽 파편 폭발](D:/renewal_CursorDash/Cursor-Dash-master/Logs/circle-prototype-20261024-000641/Play-Captures/04-nose-impact.png).
+Morph-Frames의 실제 연속 프레임(progress0/0.373/0.412/0.926/1)도 확인했다.
+로그의 HP3→2, impacts1, tip=hit와 경계 반경0.3255208을 교차 확인했다.
+피격 이후 nexus 월드 좌표가 흔들리는 현상은 충돌 경계 오차와 구분한다.
+초기 캡처 시도에 남은 hp0 로그는 Ended 라운드의 준비 요청으로, 성공한 hp3→2 시퀀스와 구분한다.
+공식 최종 테스트의 별도 Captures4장도 증거 루트에 있다.
+
+| 확인 방식 | 이번 결과와 한계 |
+|---|---|
+| 실제 Physics2D 트리거 | Preparing/Warning 접촉 제거 PASS. 노드/플레이어를 프로그램으로 배치했음 |
+| 내부 함수/버튼 콜백 | Execute/Interaction, Pause/Resume, Retry/Home, 입력/잔상 기록으로 자동 검증 PASS |
+| 실제 렌더링 화면 | GameView PNG와 변형 연속 프레임 열람 PASS. 시간제어 없는 별도 Play 관찰 |
+| 코드 검토 | 원형에 잔상 방어 요청 경로 없음, 육각 NexusPosition/레이저·이동/잔상 수치 유지 |
+| 실제 사람의 마우스/터치 | NOT_RUN. 새 시안 USER_VERIFIED 없음. 기존 사용자 확인은 변경 전 이력 |
+
+### 오류·DOTween 관측
+
+최종 Console에는 컴파일/게임 예외 또는 DOTween Safe Mode 경고가 관찰되지 않았다.
+XML16개 결과에도 DOTween/경고 문구가 없다. 별도 Play Console의 Warning은 MCP의 stale job 자동 정리다.
+Saving results to XML을 MCP가 Exception으로 분류하는 기존 현상은 Test Framework LogType.Log 출력과 구분한다.
+기준선 마지막8건 대비 이번 종료 관측0건이다. 과거26건의 모든 개별 대상·재현 조합을 해결했다고 주장하지 않는다.
+이번 수정은 변형과 충돌한 Rotator 자기 트윈 수명과 새 원형 소유 트윈에 한정했다.
+HP/육각 회전 및 기존 육각 방어/반환 테스트가 통과했다.
+
+### 사용자 시각·조작 체크리스트 — 이번 시안 NOT_RUN
+
+1. 메인→시작. 원형 하나를 방치하며 약2.5초 충전→0.25초 흡수/변형→0.5초 돌진을 본다.
+   보라색 긴 커서/파인 꼬리가 흰 플레이어 및 기존 육각과 구분되고 테두리가 남지 않는지 확인한다.
+2. 다른 원형은 충전 또는 변형 중 직접 접촉해 폭발로 제거한다.
+   돌진을 시작한 원형은 접촉·잔상으로 막히지 않고 본체 앞부분이 코어 본체 외곽에 닿을 때 HP가 한 번만 줄어드는지 본다.
+3. 돌진 직전/도중 Pause→Resume, 사망→Retry, Pause→Home→시작을 한 번씩 수행한다.
+   다시 나오는 원형의 첫 모양·위치와 플레이어 입력이 정상인지 체감한다.
+
+기존 조작 전체를 처음부터 재검수하라는 목록이 아니다. 이번 시안의 시각 선호/실제 입력 체감만 사용자 확인 대기다.
+형태/속도/충돌 타이밍 피드백을 다음 한 작업으로 받으며 육각 구현은 자동 시작하지 않는다.
+보존/최종 파일 비교는 STATUS 최신 항목과 output-preservation.json/file-comparison.json을 따른다.
+시작 파일1568개 비교에서 허용된 게임6/문서5만 변경, 누락0·범위 밖 차이0이다.
+초기 캡처 경로 Logs/CirclePrototype/01-charge.png와 증거 루트의 로그/PNG/백업/JSON/XML이 생성됐다.
+이는 게임 에셋 추가가 아니며 기존 미추적240개와 테스트 출력 원본13개는 유지했다.
+<!-- circle1:end -->
+
+<!-- reload17:start -->
+## 최신 결과 — 대상 재임포트·기존11개 PASS (2026-10-23)
+
+현재 상태: `BASELINE_REIMPORT_AND_EXISTING_TESTS_PASS_WITH_KNOWN_WARNINGS`.
+기존 Unity6000.3.23f1과 MCP를 재사용했다. 게임 기능·씬·프리팹·설정·패키지 수정, 빌드·커밋·푸시·배포 없음.
+2단계 구현은 시작하지 않고 이 결과 기록 후 중단한다.
+
+### 적용된 보존 조건 — D-014
+
+사용자가 `TMP_SDF SSD.shader`·`TMP_SDF.shader`·`TMP_SDF Overlay.shader`의 Shader와
+`Fonts/LiberationSans.ttf`의 Font Texture 하위 오브젝트 **4개만** 미저장 내부 메모리 보존 조건을 해제했다.
+현재 로컬 원본/.meta/임포트 설정 기준 재생성을 허용하며 원본/기존 사용자 수정과 백업은 보존한다.
+다른 미저장 씬·프리팹·머티리얼·TMP Font .asset·별도 임포트 설정은 예외 밖이다.
+전체 저장/폐기·원본 삭제·Git 복구·TMP/Atlas 전체 초기화·Library 삭제·패키지 재설치는 금지다.
+개별 저장 API 반복·별도 메모리 추출/복원 도구·dirty 강제 해제는 하지 않는다.
+이전 “위4개 메모리 보존 저장 입증 전 차단” 조건은 D-014로 대체됐다.
+상세 범위는 DECISIONS D-014 및 MASTER_SPEC의 최신 작업 범위 예외를 따른다.
+
+### 재로드·참조·표시 확인
+
+AssetDatabase.ImportAsset(ForceUpdate|ForceSynchronousImport)를 위4개 파일에만 호출했다.
+별도 dirty importer/다른 dirty 에셋/dirty 씬·프리팹 stage가 없음을 먼저 확인했다.
+재시작/전체 Refresh/전체 저장 대신 이 경로를 선택했다.
+재임포트 뒤 Font Texture는 clean, Shader3개 dirty는 남았지만 별도 저장 입증을 반복하지 않았다.
+Shader3개+관련 Mobile Shader는 supported=true, GetShaderMessages0개(테스트 전·후).
+원본/.meta22개 해시, importer JSON, 관련 FontAsset/Material/Atlas의 GUID/localID·참조와 clean 상태를 확인했다.
+FontAsset/Material의 메모리 직렬화는 시작값과 같다. Atlas는 디스크 바이트·참조·크기로 비교했고 GPU 메모리 전체 보존을 주장하지 않는다.
+
+새 Test-Outputs/Captures의 main/play/pause/result PNG를 실제 열람했다.
+한글 시작 안내·일시정지/재시도/홈 버튼·결과 설명과 숫자가 정상 표시되고 해당 화면에 오류 재질은 관찰되지 않았다.
+이는 기존 공식 테스트가 만든 화면 검수이며 이미 USER_VERIFIED인 전투를 새 실제 입력으로 재검수한 것이 아니다.
+
+### 공식 테스트 실행·결과
+
+정상 `run_tests(EditMode, assembly_names=[CursorDash.EditorTests])` **1회 승인·실행**.
+필터 축소·테스트/기대값 변경·내부 메서드 우회 호출 없음.
+Job ID `c4f2be8b96bc45ec92ca4358e6474d8e`.
+새 native callback JSON과 XML의 완료 UTC는 `2026-10-23T14:42:28.0619936Z`,
+총11개 모두Passed, 실패0·skip0다. 개별 결과는 아래/VALIDATION 또는 결과 JSON을 따른다.
+이전 독립 검증 함수2개 PASS는 별도 이력이며 이번 공식11개와 합산하지 않는다.
+
+MCP get_test_job은 도메인 재로드 중 session superseded 오류가 있었고 이후 running/completed0 캐시를 반환했다.
+이를 완료 근거로 쓰지 않고, 새로운 native XML의11개 test-case/fullName/Passed와 JSON,
+RunFinished 11 passed/0 failed 및 Interaction Mode restored 로그, 실제 Play 종료 상태를 교차 확인했다.
+테스트 재실행이나 도구 상태 강제 조작은 하지 않았다. duration 필드는 도메인 전환을 포함한 전체 실시간으로 해석하지 않는다.
+
+| 공식 테스트 | 결과 |
+|---|---|
+| `CursorDashControlFeelTests.CurveAndCoastStayCloseAcrossPhysicsStepSizes` | PASS |
+| `CursorDashControlFeelTests.FloatingOrigin_FollowsOnlyBeyondTheStickRadius` | PASS |
+| `CursorDashControlFeelTests.ReleaseCoastsThenStops_AndSmallInputSetsAProportionalSpeed` | PASS |
+| `CursorDashControlFeelTests.ReverseAtSpeedCurves_ButNearStopRespondsPromptly` | PASS |
+| `CursorDashSceneRegression.CircularNode_WarnsUntilFire_CanBeDestroyedAndResetsForReuse` | PASS |
+| `CursorDashSceneRegression.HexNode_WarnsWithoutBodyDestruction_AndKeepsOriginalBlockRadius` | PASS |
+| `CursorDashSceneRegression.InputOwnership_UiPauseFocusReleaseAndDiagonalMotion` | PASS |
+| `CursorDashSceneRegression.NodeRoles_OnlyFiredHexBeamCanUseLiveTrail` | PASS |
+| `CursorDashSceneRegression.OppositeInput_ChangesThePhysicalPathGradually` | PASS |
+| `CursorDashSceneRegression.OutsideRing_PivotMatchesItsMeasuredCircularCenter` | PASS |
+| `CursorDashSceneRegression.RoundLifecycle_PauseEndRetryAndHomeRestoreState` | PASS |
+
+### Console·남은 이슈
+
+재임포트 직후 새 셰이더/컴파일 오류 없음.
+테스트 마지막 종료 Console에는 기존 계열 DOTween Safe Mode 집계8건 경고가 있다.
+과거26건을 해결했다고 주장하지 않으며 개별 오류의 발생 시점/대상은 아직 미확정이다.
+Safe Mode/로그 설정 변경·KillAll·게임 코드 수정 없음.
+MCP가 `Saving results to: ...xml`을 Exception으로 분류했지만 공식 Test Framework의
+ResultsWriter.cs:34는 LogType.Log/NoStacktrace로 이 문구를 출력한다. 게임 예외와 구분했다.
+
+### 보존·종료와 다음 구현 영향
+
+원래 TMP 백업22개를 유지했고 현재 로컬 파일22개도 새 Backup-Current-Disk에 보존했다.
+테스트는 기존 출력13개 중12개를 바꿨다. 새로운 PNG/JSON/XML13개는 Test-Outputs에 보관하고,
+Captures11개·기존 regression JSON/XML 원본13개는 시작 바이트로 복원했다.
+이 출력 복원은 TMP 원본/과거 TMP 백업 덮어쓰기와 관계없다.
+최고36.93275/Flame 최고 키 없음/BGM0·SFX0, 게임 ScriptableObject9개가 시작값·clean이다.
+종료는 원래 Cyberpunk clean, Play/Pause/compile 꺼짐, timeScale1이다.
+원본·참조·설정·기존 미추적240개·HEAD/main 및 전체 변경 비교는 file-comparison.json을 따른다.
+Library/Temp/사용 중 캐시·로그 전체를 해시 조사한 것은 아니다.
+
+**TMP 내부 상태 보존 입증과 공식11개 미실행이라는 기존 차단은 해소됐다.**
+다음 수치 조정 기반 작업을 막는 확정된 TMP 표시/셰이더/게임 회귀 결함은 이번 범위에서 발견하지 못했다.
+DOTween은 별도 후속 이슈로 관리하고 씬 전환·풀/트윈 수명 변경 및 최종 회귀 때 추적한다.
+MCP 진행 조회 문제는 다음 자동 검증 전에 native 실행 상태와 함께 확인할 도구 한계다.
+이미 사용자 확인한 이동/입력 해제·잔상·원형 제거/폭발·육각 방어/반사/파괴·Pause/Retry 정상은 USER_VERIFIED를 유지한다.
+이 판정은 신규 구현·빌드/배포 승인으로 확대하지 않는다.
+
+증거 루트: `D:\renewal_CursorDash\Cursor-Dash-master\Logs\tmp-reload-tests-20261023-233739`.
+주요 파일: results.json, reimport-validation.json, Test-Outputs/Logs/CursorDash-regression.json/.xml,
+Test-Outputs/Captures, output-preservation.json, file-comparison.json, generated-files.json.
+<!-- reload17:end -->
+
+---
+
+## 이전 후속 조사 이력 — 당시 보존 조건이며 현재 위4개에는 적용하지 않음
+
+
+갱신: 2026-10-23 KST.
+상태: `FOLLOWUP_TMP_PRESERVATION_UNCONFIRMED_TESTS_BLOCKED_USER_VERIFIED`.
+PASS/FAIL/BLOCKED/NOT_RUN과 **USER_VERIFIED(사용자 수동 확인)**를 구분한다.
+USER_VERIFIED는 사용자 보고의 출처 표시이며 Codex 자동검증 또는 공식 테스트 PASS가 아니다.
+
+## 이번 공식 테스트11개 — 전제 미충족으로 미실행
+
+후속 증거 루트: `D:\renewal_CursorDash\Cursor-Dash-master\Logs\baseline-followup-20261023-230507`.
+백업22개와 대상 지정 저장4회를 수행했지만 dirty4개/디스크 그대로여서 메모리 보존 완료를 입증하지 못했다.
+사용자의 “상태 보존·전제 확인 후 정상 경로로 다시 요청” 조건을 따라 이번 run_tests는 호출하지 않았다.
+새 자동 승인 거부가 있었던 것은 아니다. 이전1.5단계 거부 이력은 아래에 보존한다.
+다른 실행 경로·직접 테스트 메서드 호출·기대값/대상 수정·실패 제외는 없다.
+
+| 기존 테스트 | 이번 결과 | 실행 근거 |
+|---|---|---|
+| `CursorDashControlFeelTests.FloatingOrigin_FollowsOnlyBeyondTheStickRadius` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashControlFeelTests.ReleaseCoastsThenStops_AndSmallInputSetsAProportionalSpeed` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashControlFeelTests.ReverseAtSpeedCurves_ButNearStopRespondsPromptly` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashControlFeelTests.CurveAndCoastStayCloseAcrossPhysicsStepSizes` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.RoundLifecycle_PauseEndRetryAndHomeRestoreState` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.NodeRoles_OnlyFiredHexBeamCanUseLiveTrail` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.CircularNode_WarnsUntilFire_CanBeDestroyedAndResetsForReuse` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.HexNode_WarnsWithoutBodyDestruction_AndKeepsOriginalBlockRadius` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.OutsideRing_PivotMatchesItsMeasuredCircularCenter` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.InputOwnership_UiPauseFocusReleaseAndDiagonalMotion` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+| `CursorDashSceneRegression.OppositeInput_ChangesThePhysicalPathGradually` | BLOCKED (미실행) | TMP 보존 저장 전제 미충족 |
+
+공식 집계: 실행0/PASS0/FAIL0/BLOCKED11. BLOCKED인11개는 모두 executed=false다.
+이전 독립 함수 ValidateInput/ValidateTrailAndPatterns PASS2개는 별개이며 이번 재실행0이다.
+현재 저장값은 이전 기록과 같고 이번 Play/Prefs 쓰기/리셋/설정 토글 없음.
+보존 완료가 확인되면 기존 정상 러너로11개를 요청하며, 다시 거부되면 그 이유 그대로 BLOCKED를 유지한다.
+
+## USER_VERIFIED — 사용자 수동 확인 완료
+
+출처: 이번 대화에서 사용자가 직접 게임을 플레이하며 정상 작동을 확인했다고 보고(2026-10-23 KST).
+아래 항목은 완료로 기록하며 과거 Codex 자동 입력 미검증과 구분한다.
+
+| 사용자 확인 항목 | 상태 | 확인 주체·근거 |
+|---|---|---|
+| 플레이어 이동 및 입력 해제 | USER_VERIFIED (사용자 수동 확인) | 이번 대화에서 사용자가 직접 플레이 결과를 보고 |
+| 이동에 따른 잔상 생성 | USER_VERIFIED (사용자 수동 확인) | 동일 |
+| 원형 노드 접촉 제거 및 폭발 | USER_VERIFIED (사용자 수동 확인) | 동일 |
+| 육각 노드 레이저 방어·반사 및 파괴 | USER_VERIFIED (사용자 수동 확인) | 동일 |
+| 일시정지·재개와 재시도 후 정상 동작 | USER_VERIFIED (사용자 수동 확인) | 동일 |
+
+이미 확인한 항목을 다시 자동 조작하거나 도구 설치로 재검증하지 않았다.
+결과 폴더 manual-checklist.md는 이 완료 목록과 별도 선택 사항만 제공한다.
+실제 터치나 Result Home을 확인했다는 보고까지 임의로 확대하지 않는다.
+
+## DOTween과 다음 작업의 영향
+
+기존 로그는 집계1개·missing target or field26건이다. 동일 분류 집계이며26개의 고유 결함/대상이 아니다.
+집계는 Editor Play 종료 OnDestroy 스택에서 출력됐다.
+개별 오류가 일반 플레이/전환/종료 중 어디서 발생했는지는 기존 로그만으로 판별 불가다.
+Rotator32개(노드30/UI2)의 무한 회전 트윈과 일부 legacy fade 코드는 후보이나 원인 확정이 아니다.
+현재 Remake ResultPanel은 CanvasGroup 경로이고 RadialFill 컴포넌트는0개다.
+설정/코드 변경·추가 Play 없이 기존 로그와 소스만 조사했다.
+원인 특정에는 단계별 개별 로그/대상/생성 스택이 필요하다. 경고 숨김·Safe Mode 해제·KillAll 없음.
+
+사용자 확인된 조작/전투는 더 이상 미확인 차단으로 취급하지 않는다.
+TMP 미보존은 공식 러너와 재컴파일/재시작의 직접 차단이다.
+기존 Inspector 숫자 정의·작은 조정안 검토는 별도 승인 범위로 진행 가능하며,
+공식 테스트 미실행 위험을 명시해 실제 변경별로 판단한다.
+DOTween은 수명/씬 전환 변경 및 최종 회귀 시 반드시 추적할 별도 이슈다.
+이번에는 게임/테스트 수정·2단계 구현 없이 결과 기록 후 중단한다.
+
+---
+
+## 이전 1.5단계 검증 이력 — 당시 Codex 결과, 현재 USER_VERIFIED와 구분
+
+
+갱신: 2026-10-23 (KST). `BASELINE_1_5_PARTIAL_TESTS_BLOCKED`.
+판정은 PASS/FAIL/NOT_RUN/BLOCKED로 나눈다. 실행 증거와 코드 예상·내부 함수·실제 입력을 구분한다.
+향후 사양 체크리스트는 실행 허가가 아니다. 현재 구현 변경0, 2단계 NOT_STARTED다.
+
+## 1.5단계 실행 기준과 근거
+
+환경: `D:\renewal_CursorDash\Cursor-Dash-master`, Unity6000.3.23f1,
+main / `8ceedbb7ead4c2b97417739f62fd7904e1a51497`, 기존 MCP 인스턴스1개.
+적용 전역 빈 AGENTS/루트 AGENTS와 지정 문서4개, 기존 검증 소스/러너 저장 부작용을 다시 읽었다.
+시작 Git 미추적240/추적 변경0과 파일1588개·기존 결과13개를 기록했다.
+새 설치·연결·게임 코드/씬/에셋/설정/패키지 변경·빌드·커밋·푸시는 없다.
+
+근거 루트: `D:\renewal_CursorDash\Cursor-Dash-master\Logs\baseline-1_5-20261023-215203`.
+`verification-results.json`의 키는 아래 표에서 접두어 없이 인용한다.
+PNG8개 Game capture와 별도 Editor 화면1개를 실제 파일로 확인했고 captures-manifest.json에 크기·해시를 남겼다.
+
+| ID | 대상 / 실제 방법 | 판정 | 실제 결과와 근거 |
+|---|---|---|---|
+| B15-01 | 대상 프로젝트·씬·Console MCP 읽기 | PASS | 정확한 경로/버전, clean Cyberpunk, 시작 Console 보관 |
+| B15-02 | 기존 독립 ValidateInput | PASS | 13 assertions, 9ms; independent_validations |
+| B15-03 | 기존 독립 ValidateTrailAndPatterns | PASS | 17 assertions, 4ms; independent_validations |
+| B15-04 | 순수 EditMode4개 Test Runner | BLOCKED / NOT_RUN | 저장 부작용과 기존 TMP dirty 때문에 자동 승인 심사 거부; editmode_start |
+| B15-05 | 씬 회귀7개 Test Runner | BLOCKED / NOT_RUN | 같은 위험의 진입점 호출 안 함. 우회 없음 |
+| B15-06 | 실제 마우스 Main Start | PASS | HP3, 시간 진행, Cyberpunk; native_start / 01-main.png |
+| B15-07 | 실제 이동·잔상 | NOT_RUN / 수동 확인 필요 | drag API 성공만 확인. 유효 이동/잔상0; input_trace_drag / input_trace_keyboard |
+| B15-08 | 원형 접촉 제거 | NOT_RUN / 수동 확인 필요 | 이번 실행 증거 없음. 기존 코드 기준과 분리 |
+| B15-09 | 원형 방치 발사·자연 넥서스 피해 | PASS (내부 생성 보조) | NormalNodeGenerate로 하나 격리, Fired 선 관찰, HP1→0, score9.12976; normal_watch_outcome / normal_hit_result / 07·08 PNG |
+| B15-10 | 육각 기존 외형 | PASS (화면·객체 읽기) | Preparing 육각·회전 테두리; combat_snapshot / 06-classic-combat.png |
+| B15-11 | 육각 공격·잔상 방어/반사·파괴 | NOT_RUN / 수동 확인 필요 | 실제 발사/반사/파괴 성공 증거 없음 |
+| B15-12 | 자연 피해·게임 종료·결과 | PASS | 최초 HP0/score5.377994, 결과5.38; native_move / 03-natural-game-over.png |
+| B15-13 | 실제 Continue·HUD Pause | PASS | Paused/timeScale0와 계속 후 시간 진행; native_pause / 04-native-pause.png |
+| B15-14 | 실제 Result Retry·재시작 시간/노드 | PASS (확인 범위 한정) | 새 라운드 시간·HP 변화·노드 생성. native_retry_move / combat_snapshot |
+| B15-15 | 재시도 후 이동 입력·잔상 | NOT_RUN / 수동 확인 필요 | 버튼 응답·시간/노드 확인으로 입력 복원까지 합격 처리하지 않음 |
+| B15-16 | 실제 Pause Home | PASS | Main/Stage 없음/timeScale1, best 유지; native_home / 05-return-home.png |
+| B15-17 | Result Home / 실제 터치 | NOT_RUN / 수동 확인 필요 | 별도 실제 성공 증거 없음 |
+| B15-18 | Play 종료·원래 씬·미저장/저장값 보호 | PASS | final_editor/final_scene, game SO9개·TMP4개·Prefs4개 보존 |
+| B15-19 | 전후 파일·설정 비교 | PASS + 자동 변경 별도 보고 | 문서3개/레이아웃1개와 잠긴 로그 메타데이터를 구분; file-comparison.json |
+
+B15-02/03은 독립 함수2개 PASS이며 공식11개 테스트의 대체 통과가 아니다.
+Test Runner는 요청한 순수4개도 실행 시작 전 거부됐으므로 결과 XML/테스트 PASS를 만들지 않았다.
+이름이 Validate여도 저장/생성하는 Setup·Apply·일괄 씬 감사는 제외했다.
+
+## 입력·내부 호출·화면 해석의 한계
+
+- 실제 마우스 버튼: Start, Continue, HUD Pause, Result Retry, Pause Home.
+  Result Home은 별도 미검증이다.
+- 내부 호출: StageManager.SetPaused 진단 정지, 짧은 timeScale0.1 시도, PatternReader 비활성화/StopNodes 입력 격리,
+  기존 NormalNodeGenerate. 종료 뒤 런타임 오브젝트는 제거됐고 프로젝트 파일을 저장하지 않았다.
+- 입력 관찰기는 30초 후 스스로 해제됐다. down1/held2/up1프레임, maxMoveVector0,
+  위치 변화2.38e-7, liveTrail0. 키보드D는 관찰기 종료 뒤 전송돼 trace의 keyboardHeld0으로 키 수신 실패를 단정하지 않는다.
+- 입력 격리 라운드80.94초는 정상 패턴 생존/시간 기준이 아니다.
+  원형 단독 캡처는 기존 생성 함수를 쓴 장면이며 사람 입력 성공으로 분류하지 않는다.
+- 현재 원형 레이저·육각 외형은 변경 전 비교 기준이다. 아래 미래 돌진/변형 사양의 불일치를 현재 FAIL로 처리하지 않는다.
+- 새 컴파일 강제 요청·별도 플랫폼 컴파일·WebGL/브라우저는 이번 범위 밖이다.
+
+## 시작 로그와 이번 실행 중 로그
+
+시작 console-before.json: Input Manager deprecation1개와 이전 MCP 정보 로그4개.
+MCP는 deprecation을 Error로 분류했지만 native Console은 Warning1/Error0이었다.
+기존 Clear on Play가 시작 항목을 지웠으며 수동 Clear 도구는 호출하지 않았다.
+
+종료 consoleAfter: DOTween Safe Mode가26건을 집계한 Warning1개.
+09-editor-after.png의 native Console에는 “26 missing target or field errors”가 표시된다.
+호출 스택은 DOTweenComponent.OnDestroy → LogSafeModeReport.
+정상 메뉴/사망/재시도와 진단 정지·입력 격리·원형 생성이 같은 Play 세션에 포함됐다.
+따라서 일반 조작만의 최소 재현과 개별 트윈/대상 원인은 미확정이다. 코드 자동 수정 없음.
+입력 불확실성과 이 종료 경고를 숨기지 않으며 새 게임 변경 탓이라고 단정하지 않는다.
+
+## 보존·파일 차이와 종료 판정
+
+Play 종료/paused=false/timeScale1, 원래 Cyberpunk clean 복귀.
+기존 TMP dirty4개는 dirty 상태/메모리 해시 모두 유지했다.
+game SO9개 중 Play가 바꾼 맵 메모리2개만 원래 JSON으로 복원(SaveAssets 없음) 후 모두 시작값·clean 확인.
+Prefs 최고36.93275, Flame 키 없음, BGM0/SFX0 동일. 초기화/설정 토글 없음.
+기존 사용자 출력13개와 전역 설정 해시 동일, Git main/HEAD/미추적240/추적 변경0 유지.
+
+문서3개 외 비무시 파일 변경0. Unity 자동 레이아웃 CurrentMaximizeLayout.dwlt1개 해시 변경,
+잠긴 Worker/Shader 로그4개 메타데이터 변경, 다른 잠긴 Shader 로그1개 메타데이터 동일/내용 미검증.
+자동 변경은 되돌리지 않았다. 비교 범위는 files-before.json의1588개이며 Library/Temp 캐시는 제외한다.
+새 파일 전체 목록은 generated-files.json이다. 상세 경로는 STATUS/ENVIRONMENT를 따른다.
+
+전체 기준선 완료는 보류다. 필요한 최소 사람 확인 절차는 결과 폴더의 manual-checks.md에 있다.
+사용자 미저장 상태 보존 결정과 별도 재실행 승인 전에는 차단된 Test Runner를 다시 실행하지 않는다.
+1.5단계 결과 기록 후 중단한다. 문제 수정·2단계 구현으로 진행하지 않는다.
+
+---
+
+## 기존 검증 경로의 소스 범위 — 1단계 조사 이력
+
+- `CursorDash.EditorTests`는 Editor 전용 어셈블리이다. 소스상 테스트는 총 11개다.
+  `CursorDashControlFeelTests`의 순수 `[Test]` 4개, `CursorDashSceneRegression`의 `[UnityTest]` 6개와 `[Test]` 1개다.
+- 씬 회귀 fixture의 공통 SetUp은 선택 씬을 열고 `EnterPlayMode`를 수행한다.
+  따라서 `-testPlatform EditMode`로 실행해도 실제 Play 진입이 포함된다. pivot 검사도 같은 fixture에 속한다.
+- 회귀는 씬을 전환하고 PlayerPrefs·맵 데이터의 런타임 값을 변경·복원하며 `Captures/*.png`를 쓴다.
+  테스트 리포터는 `Logs/CursorDash-regression.json`과 `.xml`을 쓴다. 완전한 읽기 전용 작업이 아니다.
+- 독립 PlayMode 테스트 어셈블리는 발견하지 못했다. 빈 `PlayMode` 실행을 성공 근거로 사용하지 않는다.
+- `MigrationValidation.Validate()`는 모든 씬을 Single로 열어 검사한다. 현재 열린 씬에 그대로 실행하지 않는다.
+  `BuildWeb()`은 실제 `Builds/Web` 빌드이고, setup/웹 설정 Apply는 씬·설정을 수정한다.
+- 현재 파일 존재·서버 idle·과거 로그가 새 컴파일이나 테스트 통과 증거는 아니다.
+  환경 PS1 파싱·실행은 환경 목록 조사에만 해당한다. 1단계 시점 Unity 테스트는 전부 NOT_RUN이었다. 현재 판정은 위 1.5단계 결과를 따른다.
+- 향후 실행 명령과 사전 조건, 순수 EditMode / Play 동작 / 시각 검수 / WebGL 분리는 ENVIRONMENT의 미실행 초안을 따른다.
+
+## 1단계 — 문서·환경 체크리스트 (완료 이력)
+
+| ID | 확인 항목 |
+|---|---|
+| E-01 | 실제 저장소 루트·Unity 루트·HEAD·브랜치·시작 변경 목록 확인 |
+| E-02 | 기존 AGENTS/override/문서와 템플릿 충돌 확인, 사용자 변경 보존 |
+| E-03 | Unity 설치 경로와 버전 파일 구분, WebGL 모듈 존재 여부 기록 |
+| E-04 | file: 패키지 경로와 package.json 실존 확인, 오류 시 미수정 보고 |
+| E-05 | MCP의 패키지/구성/연결/도구 검증 상태를 분리 |
+| E-06 | 종료 시 허용된 문서·도구 외 게임 파일 변경 없음 |
+| E-07 | 미실행 Unity/테스트/빌드를 성공으로 기록하지 않음 |
+| E-08 | 다음 단계를 자동 실행하지 않음 |
+
+## 기존 동작 기준 — 남은 항목은 별도 재확인
+
+메인 진입/게임 시작/설정/플레이/일시정지/복귀/결과/재시도/최고기록,
+드래그·터치·창 포커스 상실, 원형 접촉 제거, 육각 잔상 방어,
+테스트/Console의 기존 실패와 새 변경으로 생긴 실패를 구분한다.
+기존 상태를 기록하지 않은 채 새 작업이 모든 실패의 원인이라고 단정하지 않는다.
+
+## 2~3단계 — 원형과 공통 기준
+
+- 충전 중 원형·게이지·회전 테두리가 유지됨.
+- 원형의 기존 레이저가 더 이상 나오지 않음.
+- 본체 전체가 커서 형태로 변형되어 이동함. 별도 탄 발사로 바뀌지 않음.
+- 공격 형태 전환 뒤 테두리가 남지 않음.
+- O-01 결정에 맞춰 변형·돌진 중 접촉 제거 여부가 일정함.
+- 넥서스 접촉 기준은 승인된 O-03과 일치. 한 공격이 피해를 중복 적용하지 않음.
+- 빠른 이동/낮은 프레임률에서 넥서스 판정을 건너뛰지 않음.
+- 충전 중 제거, 변형 직전 제거, 넥서스 도달과 다른 이벤트 동시 발생을 확인.
+- 풀 재등장 때 원형/테두리/게이지/충돌/위치/트윈/플래그가 복원됨.
+
+## 4단계 — 육각·반사
+
+- 기본 육각형에서 테두리 흡수 후 정삼각형으로 자연스럽게 이어짐.
+- 노드 본체는 제자리에 있고 레이저만 이동함.
+- 실제 발사된 공격이 살아 있는 잔상과 닿았을 때만 반사됨.
+- 반사 순간 새 선이 길이 0에서 다시 늘어나는 느낌이 남지 않음.
+- 돌아가는 공격이 삼각형에 닿은 뒤 파괴, 파편은 삼각형 형태에 맞음.
+- 노드가 사라지거나 재사용됐을 때 이전 공격의 완료 콜백이 새 노드를 파괴하지 않음.
+- 반사와 넥서스 도달이 같은 갱신에서 경합할 때 중복 성공/피해가 발생하지 않음.
+- 빔 형태·길이 변경으로 유효 방어 시간이 얼마나 달라졌는지 비교.
+- 실패 시 삼각형 처리와 기록이 O-08 결정과 일치.
+
+## 5단계 — 넥서스·통합
+
+- 가장자리 접촉/피격 시각/체력 감소 시점이 일치.
+- 논리 HP와 표시 HP가 승인된 설계대로 구분됨.
+- 연속 피해 시 최신 HP까지 이동하고 오래된 트윈이 값을 되돌리지 않음.
+- HP 0과 사망 연출·결과 전환이 일관됨.
+- 일시정지/재개/창 포커스 상실/재시도/메인 복귀에서 시간 배율과 입력 복원.
+- 두 노드 공격이 겹쳐도 형태·피해 이유·방어 성공을 구분 가능.
+- 저프레임·고속 이동·여러 번 풀 재사용에서 상태 누락 없음.
+
+## 6단계 — 튜토리얼·훈련·사용자 설정
+
+- 최초·완료·건너뛰기·중도 이탈·재진입을 결정한 저장 규칙과 대조.
+- 안내는 실제 원형 제거·육각 반사 성공을 기준으로 하는지 승인된 흐름과 대조.
+- 두 안내 뒤 자유 훈련 유지, 본 게임으로 나가는 경로 명확.
+- 수동 생성/정리/여러 번 재시도에서 정규 기록이 오염되지 않음.
+- 설정 패널 입력이 커서 이동으로 전달되지 않음.
+- 창 크기/모바일 터치에서 버튼과 패널이 필수 공격 정보를 가리지 않음.
+- 설정 복원·기본값 복귀·잘못된 저장값 처리.
+- 사용자 표시 변경이 공격 실루엣/잔상 판정 가독성을 깨지 않음.
+
+## 7~8단계 — 재미·마감·웹
+
+- 같은 패턴을 반복 재생해 수치 변경 전후 비교 가능.
+- 원형 직접 파괴와 육각 반사를 하나의 좋은 이동으로 해결하는 상황 관찰.
+- 의미 없는 원운동만으로 모든 패턴을 해결할 수 있는지 확인.
+- 처음 보는 사용자가 두 대응법과 피해 원인을 설명 가능한지 관찰.
+- 재시도까지의 흐름이 불필요하게 길지 않음.
+- 배경·글로우·흔들림이 공격 예고·잔상·피격 경계를 가리지 않음.
+- WebGL은 에디터 테스트와 별도로 실제 대상 브라우저/입력/화면/저장/포커스를 확인.
+- 로딩 성능·모바일 성능은 측정값으로 보고하고 목표값을 임의의 합격 기준으로 꾸미지 않음.
+
+## 완료 보고
+
+기능 구현, 정적 검사, Unity 컴파일, 테스트, 시각 검수, 웹 검수를 각각 보고한다.
+실제 영상이 없으면 변형·반사 연출을 눈으로 확인했다고 쓰지 않는다.
+사용자 확인이 필요한 미적 판단은 “구현됨/검토 대기”로 표시한다.

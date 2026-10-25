@@ -2596,6 +2596,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArrowNode (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6719566646809669139, guid: 04167456781364794abfd51e70545440,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4621,6 +4626,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArrowNode (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 6719566646809669139, guid: 04167456781364794abfd51e70545440,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4892,7 +4902,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5176471}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.34117648}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5895,7 +5905,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 50c1771f9f05d4cad88c1f9314e63aff, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6815,12 +6825,7 @@ MonoBehaviour:
   deathUIController: {fileID: 1628004192}
   pauseHandler: {fileID: 997604578}
   coreDeathAnimation: {fileID: 1430178614}
-  circleHitStop: 0.035
-  hexHitStop: 0.055
-  damageHitStop: 0.08
-  circleShake: 0.035
-  hexShake: 0.065
-  damageShake: 0.14
+  normalNexusSolidFraction: 0.59241706
 --- !u!4 &1040675966
 Transform:
   m_ObjectHideFlags: 0
@@ -7589,6 +7594,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ArrowNode (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6719566646809669139, guid: 04167456781364794abfd51e70545440,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10281,6 +10291,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NormalNode (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8916460361126374258, guid: a46563c05ec834c158b0ea40268a26d4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8916460361126374268, guid: a46563c05ec834c158b0ea40268a26d4,
         type: 3}
@@ -14515,7 +14530,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f5e9db3dc44594572baebbca4ff3e214, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

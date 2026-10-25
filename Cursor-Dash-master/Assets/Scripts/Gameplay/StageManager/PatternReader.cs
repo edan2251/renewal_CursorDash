@@ -20,10 +20,10 @@ public class PatternStep
     public int NodeStyle { get; set; } = -1;
     public IEnumerator Execute()
     {
-        if (WaitingTime > 0f) yield return new WaitForSeconds(WaitingTime);
-        while (StageManager.instance != null && !StageManager.instance.IsPlaying && !StageManager.instance.IsDeath)
-            yield return null;
-        if (StageManager.instance != null && StageManager.instance.IsPlaying) CurrentStepAction?.Invoke();
+        if (WaitingTime > 0f) yield return PatternReader.WaitNormalCombat(WaitingTime);
+        while (StageManager.instance != null && !StageManager.instance.IsDeath &&
+            (!StageManager.instance.IsPlaying||StageManager.instance.NormalThreatsSuppressed))yield return null;
+        if (StageManager.instance != null && StageManager.instance.IsPlaying&&!StageManager.instance.NormalThreatsSuppressed) CurrentStepAction?.Invoke();
     }
 }
 
@@ -32,8 +32,15 @@ public class PatternReader : MonoBehaviour
     private readonly List<PatternData> mainPatterns = new List<PatternData>();
     private readonly List<PatternData> subPatterns = new List<PatternData>();
     [SerializeField, Min(0f)] private float betweenPatterns = 1.4f;
+    private int selection;
+    private bool repeat;
+    private System.Random seededRandom;
     private void Start()
     {
+        if(CursorDashSession.IsPractice){enabled=false;return;}
+        betweenPatterns=CursorDashTuning.Number("spawn.interval",betweenPatterns);
+        selection=CursorDashTuning.Integer("spawn.pattern",0);repeat=CursorDashTuning.Toggle("spawn.repeat",true);
+        if(CursorDashTuning.Toggle("spawn.seedEnabled",false))seededRandom=new System.Random(CursorDashTuning.Integer("spawn.seed",1234)+1);
         Execute();
         if (mainPatterns.Count == 0 && subPatterns.Count == 0)
         {
@@ -59,16 +66,24 @@ public class PatternReader : MonoBehaviour
     {
         while (StageManager.instance != null && !StageManager.instance.IsDeath)
         {
-            yield return PlayRandom(mainPatterns);
-            yield return PlayRandom(subPatterns);
-            if (betweenPatterns > 0f) yield return new WaitForSeconds(betweenPatterns);
+            if(selection!=2)yield return PlayRandom(mainPatterns);
+            if(selection!=1)yield return PlayRandom(subPatterns);
+            if(!repeat)yield break;
+            if (betweenPatterns > 0f) yield return WaitNormalCombat(betweenPatterns);
             else yield return null;
         }
+    }
+    public static IEnumerator WaitNormalCombat(float seconds)
+    {
+        // Absolute normal-combat clock: held waits resume at the same remainder, without replay/catch-up.
+        var stage=StageManager.instance;if(stage==null)yield break;
+        double target=stage.NormalCombatTime+Mathf.Max(0,seconds);
+        while(StageManager.instance==stage&&!stage.IsDeath&&stage.NormalCombatTime<target)yield return null;
     }
     private IEnumerator PlayRandom(List<PatternData> patterns)
     {
         if (patterns.Count == 0) yield break;
-        foreach (PatternStep step in patterns[UnityEngine.Random.Range(0, patterns.Count)].PatternSteps)
+        foreach (PatternStep step in patterns[seededRandom==null?UnityEngine.Random.Range(0,patterns.Count):seededRandom.Next(patterns.Count)].PatternSteps)
         {
             if (StageManager.instance == null || StageManager.instance.IsDeath) yield break;
             yield return step.Execute();

@@ -25,8 +25,8 @@ public class VirtualJoyStick : MonoBehaviour
     private Vector2Int screenSize;
 
     public bool HasGesture => fingerId >= 0 || mouseGesture;
-    private float Radius => Mathf.Max(24f, Mathf.Min(Screen.width, Screen.height) * screenRadius);
-    private bool CanMove => StageManager.instance != null && StageManager.instance.IsPlaying;
+    private float Radius => Mathf.Max(24f, Mathf.Min(Screen.width, Screen.height) * CursorDashTuning.Number("user.stickRadius",screenRadius));
+    private bool CanMove => StageManager.instance != null && StageManager.instance.IsPlaying && !CursorDashRuntimeUI.InputBlocked;
 
     private void Awake()
     {
@@ -130,7 +130,7 @@ public class VirtualJoyStick : MonoBehaviour
 
     public bool TryBeginPointer(int id, Vector2 position, bool startsOnUI)
     {
-        if (id < 0 || startsOnUI || HasGesture) return false;
+        if (id < 0 || startsOnUI || HasGesture || !CanMove) return false;
         fingerId = id;
         mouseGesture = false;
         origin = position;
@@ -146,7 +146,8 @@ public class VirtualJoyStick : MonoBehaviour
         // Screen-space deltas stay stable while the gameplay camera shakes.
         origin = FollowOrigin(origin, position, Radius);
         Vector2 displacement = position - origin;
-        SetMovement(CalculateInput(displacement, Radius, deadZone));
+        Vector2 value=CalculateInput(displacement,Radius,CursorDashTuning.Number("user.deadZone",deadZone));
+        SetMovement(value.sqrMagnitude<.000001f?Vector2.zero:value.normalized*Mathf.Pow(value.magnitude,CursorDashTuning.Number("user.response",1)));
         if (inputCamera == null) return;
 
         Vector3 pivot = ScreenPoint(origin);
@@ -170,6 +171,7 @@ public class VirtualJoyStick : MonoBehaviour
 
     private bool IsOverButton(Vector2 point)
     {
+        if(CursorDashRuntimeUI.IsScreenPointBlocked(point))return true;
         EventSystem current = EventSystem.current;
         if (current == null) return false;
         if (pointerData == null || pointerEventSystem != current)

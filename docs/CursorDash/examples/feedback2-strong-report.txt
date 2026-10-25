@@ -1,0 +1,15 @@
+CursorDash 변경 수치 보고서
+빌드: nodefx-20261025-565495e82312 / 기본값: cp14-v2.1-20261024
+히트스톱 [fx.circleRemove.stop] 0.065 → 0.075 초 / 다음 타격 / 현재 유효: 0.075
+렌즈·파동 왜곡 강도 [fx.circleRemove.distortion] 0.045 → 0.055 화면 UV / 다음 타격 / 현재 유효: 0.055
+렌즈 왜곡 반경 [fx.circleRemove.radius] 2.2 → 2.4 짧은 변 비율 / 다음 타격 / 현재 유효: 2.4
+파편·스파크 수 [fx.circleRemove.count] 8 → 10 개 / 다음 타격 / 현재 유효: 10
+파편 크기 [fx.circleRemove.size] 0.05 → 0.045 월드 / 다음 타격 / 현재 유효: 0.045
+히트스톱 [fx.triangleBreak.stop] 0.075 → 0.085 초 / 다음 타격 / 현재 유효: 0.085
+렌즈·파동 왜곡 강도 [fx.triangleBreak.distortion] 0.05 → 0.06 화면 UV / 다음 타격 / 현재 유효: 0.06
+렌즈 왜곡 반경 [fx.triangleBreak.radius] 2.2 → 2.4 짧은 변 비율 / 다음 타격 / 현재 유효: 2.4
+파편·스파크 수 [fx.triangleBreak.count] 10 → 12 개 / 다음 타격 / 현재 유효: 12
+파편 크기 [fx.triangleBreak.size] 0.85 → 0.9 실루엣 배율 / 다음 타격 / 현재 유효: 0.9
+방향 파편 분산 [fx.circleRemove.spread] 65 → 55 ±도 / 다음 타격 / 현재 유효: 55
+파편 회전 속도 [fx.circleRemove.spin] 180 → 220 도/초 / 다음 타격 / 현재 유효: 220
+파편 회전 속도 [fx.triangleBreak.spin] 180 → 260 도/초 / 다음 타격 / 현재 유효: 260

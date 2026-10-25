@@ -102,6 +102,17 @@ public class SoundManager : MonoBehaviour
     public void PlaySFX(ClipTag tag){
         if (sfxDictionary.TryGetValue(tag, out AudioSource source) && source != null) source.Play();
     }
+    public void PlaySFX(ClipTag tag,float volume,float pitch) {
+        if(!sfxDictionary.TryGetValue(tag,out AudioSource source)||source==null)return;
+        source.volume=sfxVolume*Mathf.Clamp01(volume);source.pitch=Mathf.Clamp(pitch,.25f,3f);source.Play();
+    }
+    public void ApplyRuntimeVolumes(float bgm,float sfx) {
+        // v2 user settings do not overwrite the legacy BGM/SFX preference keys.
+        bgmVolume=Mathf.Clamp01(bgm);sfxVolume=Mathf.Clamp01(sfx);
+        if(bgmSource!=null)bgmSource.volume=bgmVolume;
+        if(sfxSource!=null)sfxSource.volume=sfxVolume;
+        foreach(var source in sfxDictionary.Values)if(source!=null)source.volume=sfxVolume;
+    }
     
     public void PullSound(AudioSource audioSource){
         StartPitch(audioSource, PullSoundCoroutine(audioSource));

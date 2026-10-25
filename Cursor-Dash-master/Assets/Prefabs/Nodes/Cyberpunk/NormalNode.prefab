@@ -428,9 +428,18 @@ MonoBehaviour:
   _deducationHp: 1
   effectObject: {fileID: 681115501795315194}
   childAniamtor: {fileID: 681115501795315193}
-  lineDuration: 0.5
+  dashDuration: 0.2
   preparationDuration: 2.5
-  warningDuration: 0.25
+  warningDuration: 0.15
+  cursorScale: 0.6
+  recoilDuration: 0.05
+  recoilDistanceRatio: 0.08
+  recoilCurve: 1
+  morphCurve: 1
+  cursorLength: 1.6
+  cursorWidth: 1.05
+  impactDuration: 0.4
+  cursorColor: {r: 0.68, g: 0.12, b: 1, a: 1}
 --- !u!58 &-2133005433628797631
 CircleCollider2D:
   m_ObjectHideFlags: 0

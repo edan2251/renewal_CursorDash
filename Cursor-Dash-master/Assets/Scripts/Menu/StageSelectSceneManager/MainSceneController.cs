@@ -14,6 +14,7 @@ public class MainSceneController : MonoBehaviour
     private bool loading;
     private float bgmVolume;
     private float sfxVolume;
+    private string bestPoints;
 
     private void Start()
     {
@@ -24,9 +25,11 @@ public class MainSceneController : MonoBehaviour
         if (mainMusic != null) { manager.soundManager.ChangeBGM(mainMusic); manager.soundManager.PlayBGM(); }
         bgmVolume = Mathf.Max(0.01f, manager.soundManager.BGMVolume > 0f ? manager.soundManager.BGMVolume : 1f);
         sfxVolume = Mathf.Max(0.01f, manager.soundManager.SFXVolume > 0f ? manager.soundManager.SFXVolume : 1f);
-        string best = Mathf.Max(map.highScore, PlayerPrefs.GetFloat("CursorDash_Best_" + map.mapName)).ToString("F2");
+        string best = bestPoints = CursorDashPointsRecord.Read(map.mapName).ToString();
         if (bestLabel != null) bestLabel.text = best;
         if (bestShadows != null) foreach (TMP_Text shadow in bestShadows) if (shadow != null) shadow.text = best;
+        foreach(var caption in FindObjectsByType<TMP_Text>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+            if(caption.text=="BEST TIME")caption.text="BEST SCORE";
         if (settingsPanel != null) settingsPanel.SetActive(false);
         RefreshSoundLabels();
     }
@@ -34,12 +37,21 @@ public class MainSceneController : MonoBehaviour
     {
         if (loading || map == null) return;
         loading = true;
+        CursorDashSession.CurrentMode=CursorDashSession.FirstGuideNeeded?CursorDashSession.Mode.Tutorial:CursorDashSession.Mode.Normal;
+        CursorDashTuning.EnableDev(false);
         GameManager.instance.MapInformation = map;
         GameManager.instance.stageIndex = map.index;
         Time.timeScale = 1f;
         SceneManager.LoadScene(map.mapName);
     }
-    public void OpenSettings() { if (settingsPanel != null) settingsPanel.SetActive(true); }
+    private void LateUpdate()
+    {
+        // Legacy menu startup/layout callbacks must not replace the integer best with a seconds placeholder.
+        if(bestPoints==null)return;
+        if(bestLabel!=null&&bestLabel.text!=bestPoints)bestLabel.text=bestPoints;
+        if(bestShadows!=null)foreach(var shadow in bestShadows)if(shadow!=null&&shadow.text!=bestPoints)shadow.text=bestPoints;
+    }
+    public void OpenSettings() { CursorDashRuntimeUI.Instance.Open(false); }
     public void CloseSettings() { if (settingsPanel != null) settingsPanel.SetActive(false); }
     public void ToggleBgm()
     {

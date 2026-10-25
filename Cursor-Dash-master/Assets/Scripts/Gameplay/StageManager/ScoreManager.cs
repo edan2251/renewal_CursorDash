@@ -9,6 +9,8 @@ public class ScoreManager : MonoBehaviour
     private Action<float> hpEditFunction;
     private Action deathFunction;
     private Action<float> timeScoreFunction;
+    public float MaxHp=>defaultHp;
+    public event Action Damaged;
 
     public float Hp
     {
@@ -18,7 +20,7 @@ public class ScoreManager : MonoBehaviour
             float previous = hp;
             hp = Mathf.Clamp(value, 0f, defaultHp);
             hpEditFunction?.Invoke(hp / defaultHp);
-            if (hp < previous) HoldAchivement.IsMaxHp = false;
+            if (hp < previous) { HoldAchivement.IsMaxHp = false;Damaged?.Invoke(); }
             if (previous > 0f && hp <= 0f) deathFunction?.Invoke();
         }
     }
@@ -29,6 +31,7 @@ public class ScoreManager : MonoBehaviour
     }
     public void Initialize()
     {
+        defaultHp=CursorDashTuning.Number("nexus.maxHp",defaultHp);
         hp = defaultHp;
         timeScore = 0f;
         HoldAchivement.IsMaxHp = true;
