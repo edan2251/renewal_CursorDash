@@ -1,1 +1,7 @@
-{"buildId":"circlefx-20261025-60e4c4e52c0d","defaultsVersion":"cp14-v2.1-20261024"}
+{
+  "buildId": "cursordash-20261026-hex6-c430e822d9a1",
+  "defaultsVersion": "cp14-v2.1-20261024",
+  "sourceCommit": "e6d297fb6e764fee06221bf294c4c39c1198d19a",
+  "unity": "6000.3.23f1",
+  "builtUtc": "2026-10-25T23:24:46.8717050Z"
+}
