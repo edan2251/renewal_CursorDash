@@ -14,6 +14,7 @@ public class NodeCreator : MonoBehaviour
     private Vector2 maximum;
     private int activeLimit;
     private System.Random seededRandom;
+    private float sourceSpawnJitter;
     private sealed class Departure
     {
         public GameObject root;public Vector3 scale;public float age,seconds;
@@ -29,12 +30,16 @@ public class NodeCreator : MonoBehaviour
         arrowNodes = nodesObject.GetComponentsInChildren<ArrowNode>(true);
         if (arrowNodes.Length == 0) arrowNodes = nodesObject.GetComponentsInChildren<LaserNode>(true);
         allNodes = nodesObject.GetComponentsInChildren<Node>(true);
-        spawnJitter=CursorDashTuning.Number("spawn.jitter",spawnJitter);
-        activeLimit=CursorDashTuning.Integer("spawn.limit",128);
-        if(CursorDashTuning.Toggle("spawn.seedEnabled",false))seededRandom=new System.Random(CursorDashTuning.Integer("spawn.seed",1234));
+        sourceSpawnJitter=spawnJitter;ResetRoundTuning();
         Camera camera = Camera.main;
         minimum = camera.ViewportToWorldPoint(new Vector3(0.12f, 0.12f, 0f));
         maximum = camera.ViewportToWorldPoint(new Vector3(0.88f, 0.88f, 0f));
+    }
+    public void ResetRoundTuning()
+    {
+        seededRandom=null;spawnJitter=CursorDashTuning.Number("spawn.jitter",sourceSpawnJitter);
+        activeLimit=CursorDashTuning.Integer("spawn.limit",128);
+        if(CursorDashTuning.Toggle("spawn.seedEnabled",false))seededRandom=new System.Random(CursorDashTuning.Integer("spawn.seed",1234));
     }
     public void CreateNode(int index)
     {
@@ -59,6 +64,7 @@ public class NodeCreator : MonoBehaviour
     }
     public Node SpawnPreviewAt(int index,Vector2 position)
     {
+        if(StageManager.instance?.Space!=null&&StageManager.instance.Space.AtmosphereActive)return null;
         if(StageManager.instance==null||StageManager.instance.IsDeath||StageManager.instance.NormalThreatsSuppressed||(!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled)||ActiveCount>=activeLimit)return null;
         Node node=GetAvailable(index==0?normalNodes:index==1?arrowNodes:null);
         if(node==null)return null;

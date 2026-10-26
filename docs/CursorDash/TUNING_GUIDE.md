@@ -1,5 +1,106 @@
 # CursorDash 수치 도구 사용법 — CP1~CP4 v2
 
+## 최신 D-053 같은 숫자·출현·공간 피격·flow (2026-10-27)
+
+기존 **VisualPrototype.asset** Inspector의 Shared main/gameplay / Confirmed Nexus health loss / Dynamic circuits를 사용한다. 별도도구·프리셋 자동덮어쓰기는 없다. 아래D-052의 `spaceBestScale/Opacity`는 숨김/호환보존/미사용이며 두숫자교차방식은폐기되었다. [모든전후값·적용시점·수동검수](SHARED_SCORE_SPACE_POLISH_20261027.md).
+
+|조절|현재값|의미|
+|---|---|---|
+|spaceStartSeconds / NexusAt / CursorAt|1.35초 / .42 / .64 유지|같은 시작시계에서 준비·실입력해제후 플레이|
+|spaceRingLead / BodyOvershoot / CursorAcceleration|.10 / .045 / .18|전체시계ring선행비율·한번body초과·커서초기가속비율, 다음시작캡처|
+|spaceRingBoost / RingDecay|780 / .30초|기존 bounded spin에 출현pulse, 평상시로감쇠|
+|spaceMainScoreScale / Opacity / Lift|.82 / .85 / .28world|같은숫자의메인시각크기·흰색alpha·Nexus위오프셋, 실제Rect4×4/Scale1유지|
+|spaceLogoWidth / LogoY|840 / .79|Canvas기준폭/anchor, 실제폭86%제한|
+|nexusDamageWaveWidth / Compression / ReleasePower|.12 / .85 / 1.4|파동폭·초기압축·감쇠곡선. width이전.075, 나머지신규|
+|nexusDamageSeconds / Flash / Chromatic / WaveStrength|.24초 / .26 / .0055 / .008 유지|실제HP감소만 plainred/게임판광학, 사용자감소설정·상한존중|
+|nexusGaugeRewindSeconds|.16초 유지|실제Gauge0과별개로표시만되감기, live새충전목표|
+|circuitAmbientInterval / Strength|3.4→2.6초 / .055→.10|기본선대비변경없이quietflow만 보완|
+|circuitAmbientTail / Head / Speed / Limit|.20 / .025 / .24 / 2|앞또렷·뒤감쇠, 경로거리/초, 하드3·묶음뒤휴지|
+
+출현값은다음시작에캡처, 메인숫자/로고표시와flow는기존매Draw/Advance에반영한다. 숫자AutoSize1~3.5는시작전/플레이에서유지하고countdown중font잠금→0뒤smooth복원하므로중간Inspector의AutoSize OFF는의도다. Height2.5를2.5배로적용하지않았다. 파편·hex·공격·피버전투값은이번튜닝대상이아니다.
+
+## 최신 D-052 공유 공간·피해·평상시 흐름 (2026-10-27)
+
+기존 **Assets/Resources/CursorDash/VisualPrototype.asset**의 `Shared main / gameplay space` / `Confirmed Nexus health loss` / `Dynamic circuits` 항목을 사용한다. 새 별도 도구·프리셋은 없으며 기존 사용자 프리셋을 자동 변경하지 않는다. [전체 값·적용시점·검수](SPACE_DAMAGE_FEEDBACK_20261027.md).
+
+|조절|필드·기본값|단위/적용|
+|---|---|---|
+|전체 시작|spaceStartSeconds **1.35**|초, 다음 시작 캡처; 빠른Retry는 .24초|
+|회로걷힘/재구축 끝|spaceRetreatEnd **.28** / spaceRebuildEnd **.82**|전체에 대한 비율; 기본.378/1.107초|
+|넥서스/커서 시작|spaceNexusAt **.42** / spaceCursorAt **.64**|전체에 대한 비율; 기본.567/.864초|
+|커서거리/최고점후퇴|spaceCursorDistance **.95**, spaceBestScale **1.5**, spaceBestOpacity **.52**|world/배/alpha; 다음시작, Main alpha즉시|
+|충전손실 되감기|nexusGaugeRewindSeconds **.16**|초; 실제값초기화는 즉시, 다음 실제피해|
+|피해 플래시/RGB|nexusDamageSeconds **.24**, Flash **.26**, Tint **(1,.04,.08,1)**, Chromatic **.0055**|다음실제HP감소; 기존 user효과/접근성존중|
+|피해 이동파동|nexusDamageWaveEnabled **true**, Strength **.008**, Width **.075**, Speed **2.6**, Range **.72**|짧은화면축 정규화/초; 변위.018·RGB.006상한|
+|평상시 flow|circuitAmbientInterval **4.5→3.4초**, Strength **.025→.055**|속도.24/동시2·타격1.65/.18은 유지|
+
+기존 넥서스 수동 검수창에 공유씬 상태·생존초/최고/현재·시작진행·원호되감기·피해광학 상태를 추가했다. 실제 검수는 사용자가 Play/훈련에서 수행한다. 훈련무적은 실제HP피해가 아니므로 붉은색 검수 시 해제한다. 검수조작/훈련·개발자모드는 기록 제외이며 결과에 이유가 표시된다. 육각/피버 전투값을 이번 작업에서 조정하지 않는다.
+
+## 최신 D-051 회로 밀도·보조 폭 (2026-10-27)
+
+기존 **VisualPrototype.asset → Dynamic circuits**에서 `circuitDensity` **8→12**(다음 라운드/화면비 재구성), `circuitSecondaryWidth` **.010185185→.013888889**(11→15px/1080, 즉시)를 사용한다. `circuitPrimaryWidth` **.018518519**(20px), 일반/피버 대비.075/.065·색/기존 흐름/타격·구축/게이지후퇴·획 가림은 그대로다. 기본12묶음/82선·4~12 범위, 기본 복원/fallback도 일치시켰다. 옛 비교 폭과 프리셋은 보존한다. [전후·검수](CIRCUIT_DENSITY_20261027.md).
+
+## 최신 D-050 회로 디자인 — 현재 기본값 (2026-10-27)
+
+**VisualPrototype.asset → Dynamic circuits**의 기존 항목만 사용한다. `circuitDensity`10→**8**(다음 라운드), `circuitPrimaryWidth`.021296296→**.018518519**(주20px/1080), `circuitSecondaryWidth`.011111111→**.010185185**(보조11px/1080, 폭은 즉시). 기본 대비/색/흐름·타격·구축/복원·게이지 후퇴/획마스크 값은 D-049 그대로다. 절대 시험값을 한 번 저장한 것이며 반복 감소하지 않는다.
+
+현재 새 경로는8묶음/56선,4~12 조절/상한66선. 직각 L/T와 큰 원 없이 대각 Y분기·선폭의 둥근 끝을 사용한다. 두 단계 폭OFF는 새 경로에 이전23/12 폭을 비교한다. 이전3폭 필드는 호환용으로 보존한다. 별도 도구나 제어 항목은 추가하지 않았다. [전후/보존/사용자 검수](CIRCUIT_DIAGONAL_DESIGN_20261027.md).
+
+## 최신 D-049 게이지 회로 퇴장·점수 획 가림 (2026-10-27)
+
+**VisualPrototype.asset → Dynamic circuits**를 사용한다. 회로 중앙 흡입은 대체되어 실행하지 않으며, 검정 노드/공간/링의 기존 종료는 유지한다.
+
+|조절|필드·현재 절대 시험값|적용|
+|---|---|---|
+|주회로/보조 두께|circuitPrimaryWidth **.021296296** / SecondaryWidth **.011111111**|23/12px(1080기준). 즉시. 옛46.5/28/10·12의 비율을 반복 곱하지 않음|
+|일반/피버 기본 대비|NormalContrast **.075** / FeverContrast **.065**|기본알파×.8. 이벤트 추가강도는 별도|
+|일반/피버 RGB|NormalTint **(.40,.47,.52)** / FeverTint **(.18,.19,.20)**|점수/배경 색은 변경하지 않음|
+|후퇴 시작/분산|RetreatStart **.18** / Spread **.30**|실제 피버 진행비율. 다음 피버 진입 캡처|
+|후퇴 곡선/읽기|RetreatPower **1.35** / ReadHold **.06**|경로별 고정 차이/구축 후 최소 읽기. 완료는.58~1분산·Gauge0 전부0|
+|숫자 획 가림|ScoreMaskStrength **1**, Padding **.65**, Softness **.75**|숫자 표시알파와 독립·여유/경계는 게임판 렌더픽셀. 즉시|
+|은은한 흐름|AmbientStrength **.025**, Interval **4.5초**|속도.24/동시2·분기 감쇠와 휴지기는 유지|
+
+기존 검수창에서 **게이지 회로 후퇴(다음 피버)**/점수 획 가림/두 단계 굵기/은은한 흐름을 개별 비교한다. 토글은 현재 라운드 임시이며 후퇴만 다음 피버에 캡처한다. 후퇴OFF는 정적 구축 비교이며 중앙 흡입을 되살리지 않고 Gauge0에서 제거한다. 두 단계OFF는 보존된 옛3폭 비교다. 프로필 기본값 복원은 회로45필드(옛 숨김8 포함)만 Undo/dirty하며 자동 저장하지 않는다. 임시 override는 Retry/새 라운드에서 초기화된다. 원본PNG 비교는 정적 원본 보존용이며 새 경로 후퇴/획 마스크 적용 대상과 구분한다.
+
+실제 Unity/GPU·SDF/웹·모바일은 검수 대기다. [마스크 구현·수치 전후·수동 순서](CIRCUIT_GAUGE_RETREAT_GLYPH_MASK_20261027.md).
+
+## 최신 D-048 회로 접합·흐름·개별 흡입 (2026-10-27)
+
+기존 **VisualPrototype.asset → Dynamic circuits**에서 조절한다. 큰 원 장식 필드는 호환 보존/숨김이며 이제 그리지 않는다. 구도/밀도10과 기존 PNG 비교는 유지한다. 폭의 단위는 짧은 화면축1이다.
+
+|조절|필드·현재값|적용|
+|---|---|---|
+|굵은 주회로|circuitMainWidth **.043055556**|60/1080에서77.5%로 한 번 낮춘46.5/1080 시험값|
+|중간 / 가는 폭|circuitLineWidth **.025925926** / circuitBranchWidth **.009259259**|이전과 동일. 즉시|
+|일반 / 피버 기본 색|circuitNormalTint **(.46,.55,.60)** / circuitFeverTint **(.18,.19,.20)**|RGB만 편집·알파 별도|
+|일반 / 피버 불투명도|circuitNormalContrast **.1125** / circuitFeverContrast **.12**|시작 .15/.16의75%. 반복 곱셈하지 않음|
+|느린 평상시 흐름|circuitAmbientSpeed **.24**, Interval **4.5초**, Strength **.035**, Limit **2**|다음 흐름 간격은.85~1.50배로 분산·휴지기/동시상한0~3. Limit0=끔|
+|실제 타격|circuitTransferSpeed **1.65**, HitDecay **.26**, MaxEmphasis **.18**, TipEmphasis **.14**|이전 값 유지. 기본 대비와 별개|
+|개별 선 흡입|circuitRecallBend **.65**, RecallPower **2.6**, RecallStagger **.12**|다음 종료에 캡처. 시차는 기존B구간 내 비율|
+
+구축/컬러 복원/바깥 퇴장 속도·회로 외의 배경/점수/피버 값을 변경하지 않는다. 현재값 복원 버튼은 회로32필드만 Undo/dirty로 복원하고 자동 저장하지 않는다. 임시 대비 토글은 기본OFF/현재 라운드만이다. 실제 GPU/휴대폰 검수 전인 시험값이며 [전후값·레이어·검수 절차](CIRCUIT_JOINTS_INTAKE_FLOW_20261027.md)를 따른다.
+
+## 최신 D-047 회로 주선·가지·접점 조절 (2026-10-27)
+
+기존 **Assets/Resources/CursorDash/VisualPrototype.asset → Dynamic circuits**에서 조절한다. 공간 단위는 화면 짧은 축1이다. 기본10묶음/62선·9단자(밀도4~12)이며 밀도만 다음 라운드/실제 화면비 변경부터 적용한다. 그 외 아래 크기·대비는 즉시 반영하며 타격 때 리소스를 만들지 않는다.
+
+|필드|현재 값|조절 대상|
+|---|---:|---|
+|circuitLineWidth|.025925926|주회로 기준28/1080. 넓은 버스는 작성된60/28 비율|
+|circuitBranchWidth|.009259259|가는 가지/평행선10/1080, 일부12/10 비율|
+|circuitContactRadius|.02962963|원형 단자 반경32/1080|
+|circuitContactStroke|.006481481|단자 테두리 실제 굵기7/1080|
+|circuitNormalContrast / circuitFeverContrast|.15 / .16|일반/흰 피버 기본 대비. 별도 색면 설정은 보존|
+|circuitTipEmphasis|.14|구축/후퇴 등 이동하는 선끝만 강조|
+
+타격 전달/감쇠/상한·구축/복원/밀려남·휘어짐/후퇴 값과 전환 캡처 시점은 D-046과 같다. 기존 검수창의 동적 회로OFF/ON은 원본PNG/새경로를 번갈아 표시한다. 새 **회로 대비 검수**는 현재 라운드 임시1.8배/알파 .42 상한/기본OFF, 저장값을 바꾸지 않는다. ‘회로 프로필 기본값만 복원’은 회로23필드만 Undo/dirty 처리하며 자동 저장하지 않는다. 기존 JSON/사용자 프리셋·다른 승인 설정을 덮어쓰지 않는다. [전후값·원본 근거·검수](CIRCUIT_ORIGINAL_LAYOUT_20261027.md). 실제 화면/모바일 두께와 성능은 사용자 검수 대기다.
+
+## D-046 동적 회로 조절 (2026-10-27)
+
+기존 `Assets/Resources/CursorDash/VisualPrototype.asset → Dynamic circuits`를 사용한다. 밀도8루트/40선·굵기.0026·일반/피버 대비.12/.13, 국소 범위.13·전달1.65·거리감쇠.26·지속.24초·추가강조.18·동시4(하드8), 구축/복원1.8/2.1·시차.018초, 밀려남.075·휘어짐.65, 후퇴1.6·시차.018초가 첫 시안이다. 길이/속도의 공간 단위는 화면 짧은 축1이며, 판정이나 게임 규칙 값이 아니다.
+
+밀도는 다음 라운드/실제 화면비·카메라 크기 변경 때, 구축·밀려남은 다음 진입, 복원·흡입은 다음 종료, 후퇴는 마지막 타격 시작에 캡처한다. 굵기/대비·타격 값은 즉시 클램프 반영하되 리소스를 재생성하지 않는다. 기존 넥서스 검수창의 동적 회로/국소 타격 토글은 **현재 라운드 임시**로 PNG/타격 비교에 사용한다. 기본 복원 버튼은 **회로 프로필19값만** Undo/dirty 처리하고 저장하지 않는다. 임시 토글은 별개라 다시 켜거나 Retry한다. 기존 JSON171/사용자 프리셋/승인된 다른 시각 설정은 자동 변경하지 않는다. [전체 필드·적용 시점·수동 검수](DYNAMIC_CIRCUITS_20261027.md).
+
 ## 최신 — D-044 배경 점수 World 단위·상단 총점 제거 (2026-10-27)
 
 최신 사용자 스크린샷/글과 후속 ‘화면 위 하얀색 점수텍스트 제거’를 반영했다. `Projected total score`는 **Local Scale(1,1,1) / Rect Width4·Height4 / TMP Auto Size ON·Min1·Max3.5**이며 화면 중앙(.5,.5)을 유지한다. D-043의200×250/50~150을 대체한다.

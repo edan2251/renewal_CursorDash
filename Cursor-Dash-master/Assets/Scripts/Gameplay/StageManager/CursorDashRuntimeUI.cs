@@ -55,7 +55,7 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
     public void Close(){PanelOpen=false;webFocus=webCapture=false;StageManager.instance?.SetPanelPaused(false);ResetInput();nextSnapshot=0;}
     private static void ResetInput(){FindFirstObjectByType<VirtualJoyStick>()?.ResetInput();PlayerCharacterController.instance?.MoveStop();}
     public static bool IsScreenPointBlocked(Vector2 screen){if(InputBlocked)return true;if(Instance==null||Instance.htmlReady)return false;float scale=Mathf.Max(1,Screen.width/900f);float height=StageManager.instance?.GetComponent<CursorDashPractice>()!=null?165:52;return new Rect(0,0,Screen.width,height*scale).Contains(new Vector2(screen.x,Screen.height-screen.y));}
-    private void Load(CursorDashSession.Mode mode,bool home=false){Close();CursorDashSession.CurrentMode=mode;if(mode==CursorDashSession.Mode.Normal)CursorDashTuning.EnableDev(false);if(StageManager.instance!=null)StageManager.instance.ChangeScene(home?"01.StageSelectScene":"Cyberpunk");else SceneManager.LoadScene(home?"01.StageSelectScene":"Cyberpunk");}
+    private void Load(CursorDashSession.Mode mode,bool home=false){Close();CursorDashSession.CurrentMode=mode;CursorDashSession.EnterGameOnLoad=!home;if(mode==CursorDashSession.Mode.Normal)CursorDashTuning.EnableDev(false);var stage=StageManager.instance;if(stage?.Space!=null){if(home)stage.ReturnHome();else stage.Space.LaunchSelectedMode();}else if(stage!=null)stage.ChangeScene(home?"01.StageSelectScene":"Cyberpunk");else SceneManager.LoadScene("Cyberpunk");}
     public void SafeTrial(){
         var stage=StageManager.instance;if(stage==null||!CursorDashTuning.DevEnabled){Message="개발자 전투 장면에서 실행하세요";return;}
         // Safe rebuild is explicit. Existing in-flight attacks are removed, never silently retimed.
@@ -84,7 +84,7 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
             case "reflectTrial":RequireDev();if(stage!=null){reflectionTrial=stage.NodeCreator.SpawnPreviewAt(1,new Vector2(0,2.3f)) as ArrowNode;Close();Message="내부 잔상 생성으로 실제 빔 방어를 재현합니다. 실제 손가락 입력 검증은 아닙니다.";}break;
             case "circleTrial":RequireDev();if(stage!=null&&PlayerCharacterController.instance!=null){stage.NodeCreator.SpawnPreviewAt(0,PlayerCharacterController.instance.transform.position);Close();Message="플레이어 위치에 원형을 생성해 실제 접촉 판정을 재현합니다.";}break;
             case "userPause":stage?.SetPaused(true);break;case "userResume":stage?.SetPaused(false);break;
-            case "hp":if((practice!=null||CursorDashTuning.DevEnabled)&&stage!=null){double hp=(double)q["value"];if(double.IsNaN(hp)||double.IsInfinity(hp)||hp<0||hp>stage.scoreManager.MaxHp)throw new Exception("HP 범위 오류");stage.DisqualifyRecord();stage.scoreManager.Hp=(float)hp;}break;
+            case "hp":if((practice!=null||CursorDashTuning.DevEnabled)&&stage!=null&&(stage.Space==null||!stage.Space.AtmosphereActive)){double hp=(double)q["value"];if(double.IsNaN(hp)||double.IsInfinity(hp)||hp<0||hp>stage.scoreManager.MaxHp)throw new Exception("HP 범위 오류");stage.DisqualifyRecord();stage.scoreManager.Hp=(float)hp;}break;
             case "pause":if(CursorDashTuning.DevEnabled)stage?.SetDevPaused(true);else stage?.SetPaused(true);break;
             case "resume":if(CursorDashTuning.DevEnabled)stage?.SetDevPaused(false);else stage?.SetPaused(false);break;
             case "devOff":CursorDashTuning.EnableDev(false);DeveloperPanel=false;Message="Dev 해제. 현재 라운드의 기록 제외는 유지됩니다.";break;

@@ -29,6 +29,7 @@ public sealed class FeverNexusRig
     {
         spin.Pulse(damage);
     }
+    public void EntryPulse(float strength,float seconds)=>spin.EntryPulse(strength,seconds);
     public void Begin(){recall=null;SetOpacity(1);spin.Begin();}
     public void BeginExit(FeverExitMotion motion){recall=motion;spin.Clear();Draw(FeverState.Phase.Exiting,0,0);}
     private void SetOpacity(float opacity){if(dottedImage==null)return;var color=dottedImage.color;color.a=initialAlpha*opacity;dottedImage.color=color;}

@@ -10,6 +10,8 @@ public sealed class FeverGaugeView : MonoBehaviour
     private readonly Transform[] segments=new Transform[5];
     private bool frameReplaced;private float displayCharge,velocity,closingStart,previousGauge,chargePulse;
     private uint seenReset;private FeverState.Phase lastPhase=FeverState.Phase.Stopped;
+    private readonly NexusGaugeRewind rewind=new NexusGaugeRewind();
+    public bool Rewinding=>rewind.Active;
     public float GapDegrees=>fever==null?4:Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeGapDegrees,4,1),1,8);
     public float HeadTurn {get;private set;}
     public float Radius {get;private set;}
@@ -36,9 +38,16 @@ public sealed class FeverGaugeView : MonoBehaviour
         if(root==null||fever.Model==null)return;var m=fever.Model;bool visible=!stage.IsDeath&&m.Current!=FeverState.Phase.Stopped;
         root.SetActive(visible);if(!visible)return;
         Radius=stage.NexusRadius*1.86f;root.transform.SetPositionAndRotation(stage.NexusPosition,Quaternion.identity);root.transform.localScale=Vector3.one*Radius;
-        if(seenReset!=m.ResetVersion){seenReset=m.ResetVersion;displayCharge=(float)m.Gauge;velocity=0;HeadTurn=0;}
-        if(lastPhase!=m.Current){if(m.Current==FeverState.Phase.Closing)closingStart=HeadTurn;if(m.Current==FeverState.Phase.Normal){displayCharge=(float)m.Gauge;velocity=0;}lastPhase=m.Current;}
-        if(m.Current==FeverState.Phase.Normal&&Time.deltaTime>0)displayCharge=Mathf.SmoothDamp(displayCharge,(float)m.Gauge,ref velocity,(float)FeverSettings.Safe(fever.Settings.gaugeSmoothSeconds,.06,.015),Mathf.Infinity,Time.deltaTime);
+        if(seenReset!=m.ResetVersion){
+            seenReset=m.ResetVersion;velocity=0;
+            if(m.LastReset=="NexusHit")rewind.Begin(displayCharge,fever.Visuals==null?.16:fever.Visuals.nexusGaugeRewindSeconds);
+            else{rewind.Clear();displayCharge=(float)m.Gauge;HeadTurn=0;}
+        }
+        if(lastPhase!=m.Current){if(m.Current==FeverState.Phase.Closing)closingStart=HeadTurn;if(m.Current==FeverState.Phase.Normal&&!rewind.Active){displayCharge=(float)m.Gauge;velocity=0;}lastPhase=m.Current;}
+        if(m.Current==FeverState.Phase.Normal){
+            if(rewind.Active)displayCharge=(float)rewind.Tick(m.Gauge,stage.IsPlaying?Time.unscaledDeltaTime:0);
+            else if(Time.deltaTime>0)displayCharge=Mathf.SmoothDamp(displayCharge,(float)m.Gauge,ref velocity,(float)FeverSettings.Safe(fever.Settings.gaugeSmoothSeconds,.06,.015),Mathf.Infinity,Time.deltaTime);
+        }else rewind.Clear();
         if(m.Current==FeverState.Phase.Normal&&m.Gauge>previousGauge+.0001)chargePulse=1;
         previousGauge=(float)m.Gauge;chargePulse=Mathf.Max(0,chargePulse-Time.deltaTime/ .14f);
         float head=displayCharge,tail=0,arrow=displayCharge>.001f?1:0;
@@ -63,6 +72,6 @@ public sealed class FeverGaugeView : MonoBehaviour
     private void ReplaceFrame(){if(original==null||frameReplaced)return;var tint=originalTint;tint.a=0;original.color=tint;frameReplaced=true;}
     private void RestoreFrame(){if(original!=null&&frameReplaced)original.color=originalTint;frameReplaced=false;}
     private void OnEnable(){if(root!=null)ReplaceFrame();}
-    private void OnDisable(){if(root!=null)root.SetActive(false);RestoreFrame();chargePulse=velocity=0;}
+    private void OnDisable(){if(root!=null)root.SetActive(false);RestoreFrame();chargePulse=velocity=0;rewind.Clear();}
     private void OnDestroy(){RestoreFrame();if(root!=null)Destroy(root);if(mesh!=null)Destroy(mesh);if(material!=null)Destroy(material);}
 }

@@ -21,7 +21,7 @@ public sealed class CursorDashLivingBackground : MonoBehaviour
     private void LateUpdate()
     {
         if(quad==null)return;
-        float delta=stage.IsPlaying?Time.deltaTime:0;
+        float delta=stage.IsPlaying?Time.deltaTime:stage.AtmosphereActive?Time.unscaledDeltaTime:0;
         if(stage.NormalThreatsSuppressed)hitEnergy=0;
         float recovery=profile==null?.38f:Mathf.Clamp(profile.backgroundHitRecovery,.08f,.6f);
         if(delta>0){clock+=delta*(1+hitEnergy*(profile==null?2.6f:Mathf.Clamp(profile.backgroundHitSpeed,0,3)));hitEnergy*=Mathf.Exp(-delta/recovery);drift*=Mathf.Exp(-delta/recovery);}

@@ -1,5 +1,53 @@
 # 근거와 참고 자료
 
+## D-053 073054 현재 영상·실제 소스/화면 근거 (2026-10-27)
+
+실제자료는 `D:/renewal_CursorDash/_incoming/references/녹음 2026-10-27 073054.mp4`4,487,070bytes다. 요청의형제 CursorDash_incoming 경로대신 이파일을기존MediaPlayer에서확인했다. 제목/약13초길이·0/4/8/9/11초부근표본과짧은재생을실제관람했고 전체프레임/오디오 검수는아니다. 목표레퍼런스가아닌현재문제자료다.
+
+실제Cyberpunk CameraFlash.flashImage의 SpriteGUID5af4148e1d2c44c78b822b07b0cb022c→`Assets/Art/Backgrounds/Cyberpunk/Remake/Cyberpunk_Background_Flash.png`의회로그림을열어붉은선원인을추적했다. 성공원본/공격선·동적회로는그대로다. StageHP확정통지/기존최종Built-inshader·실제Nexus투영·같은TMP획마스크/ActualRect4×4Scale1Auto1~3.5·PointsRecord/모델경로를직접읽었다.
+
+새근거는 대상Unity6000.3.23f1/DX11 정상집중30검사 JSON/XML·실GPU픽셀·Play내부호출·GameView24PNG다. `Logs/space-polish-20261027/review-captures.png`는실캡처표본비교판/연속녹화아님, best20자리는메모리presentation검수값/실기록변경없음. source/DLL해시·전후Editor/prefs·파일보존근거도같은폴더에있다. 손플레이/모바일/WebGL·성능으로확대인용하지않는다. [관찰범위·구현근거](SHARED_SCORE_SPACE_POLISH_20261027.md).
+
+## D-052 최신90자료 — 미관람/소스 근거 (2026-10-27)
+
+최신 `D:/renewal_CursorDash/_incoming/references/90_current_full_review.mp4` 존재·18,105,166bytes/SHA256 `76aa4167ea4fb7cb6ef2537994c6d49ec7f3299085f8b6aa1447dc769533ec13`만 확인했다. 전달된 형제 CursorDash_incoming 경로에는 없었다. 브라우저 디코딩2회timeout(재요청은 사용자 재승인 후), WPF스크립트 기존 실행정책 차단/우회없음, nativeplayer 접근은 fresh physical Escape 중단이다. **영상 프레임·오디오는 읽지 못했다.**36/최고0과 현재 문제는 사용자 서술이며 영상 자체 관찰로 인용하지 않는다.
+
+직접 읽은 근거는 기존 Stage/HP통지·CameraFlash/LocalImpact/Nexus/Fever 최종합성·실제 UI원본/카메라경로·회로/점수메시/PointsRecord·scene/build목록·메뉴/훈련/설정/Retry/Home 호출·실제 직렬화 설정이다. 원본 로고는 Cyberpunk와 legacy 메뉴의 실제 Sprite GUID를 따라 `Assets/Art/UI/Branding/Logo.png`로 확인했다. 최초 대상 Editor 읽기진단의 씬dirty=false/Assets imported6개를 기록했다. 실제 수정 화면은 보지 못했다. [근거·계획대체·미확인](SPACE_DAMAGE_FEEDBACK_20261027.md), `Logs/space-feedback-20261027/{editor-before,video-review-status}.json`.
+
+## D-051 첨부 원본PNG 밀도 참고 (2026-10-27)
+
+`C:/Users/molph/AppData/Local/Temp/codex-clipboard-866983c3-68f9-4de5-b821-1ebe20f5400c.png`(1080×1920)를 실제 열었다. SHA256 `4bd22971e3eda2b1ffbbd47b45bf88624361d342612ca872c90265bf74bf1fd1`으로 보존된 `Assets/Art/Backgrounds/Cyberpunk/Original/Cyberpunk_Background_Flash.png`와 같다. 긴 평행선/끝 깊이·밀도 참고이며 큰 원단자/색블록·직각을 복제하는 지시는 아니다. 실제 Unity/신규 영상은 확인하지 않았다. 실제 전후 그래프 JSON의 도형은 오프라인 형태 검토용이다. [근거·한계](CIRCUIT_DENSITY_20261027.md).
+
+## D-050 회로 디자인 문제 이미지와 실제 경로 (2026-10-27)
+
+실제 열람한 최신 근거는 `C:/Users/molph/AppData/Local/Temp/codex-clipboard-6a2c2f69-f9ae-4565-b877-9ce47dd04200.png`(167×430/SHA256 `b515158d81b7242b0a0ecf81d83b1de954fb1f5b86d7ec8a99a3f527446eec34`)다. 현재 직각 가지/굵은 꺾임을 보여주는 **문제 근거**이며 목표 디자인이 아니다. 이번에 영상·실제 Unity 화면은 읽지 않았다.
+
+실제 CircuitPathGraph 작성좌표/렌더 폭과 이전 Before/JSON을 비교해 전후 오프라인 도형을 생성하고 열었다. 대각 Y/8묶음·20/11px는 구현 시안이며 사용자 최종 시각 승인 전이다. 기존 PNG는 보존·비교 자원으로 유지한다. [근거/도형/미확인 범위](CIRCUIT_DIAGONAL_DESIGN_20261027.md).
+
+## D-049 최신042144와 실제 점수 경로 (2026-10-27)
+
+최신 `C:/Users/molph/Downloads/녹음 2026-10-27 042144.mp4`(39.4333초/484×858)의0.4/18/20/24/26/28/30/34/38초를 구간 디코딩/갱신 대기 후 읽었다. 일반 게임/흰 피버/큰 점수 획 뒤 회로/컬러 복귀가 관찰 범위다.040532는 읽거나 근거로 사용하지 않았다. 전체 연속 프레임/오디오·수정 후 게임 화면은 미확인이다. 파일 해시/범위는 Logs/circuit-fever-retreat-scoremask-20261027/glyph-source-result.json.
+
+FeverScoreHud의 실제 World TMP 메시/OnPreRenderText 펄스·fontSharedMaterial, CursorDashTypography의 런타임 SDF/실제 Bold.ttf, 프로젝트 TMP_SDF/TMP_SDF-Mobile의 face weight·UV0.w 식을 읽었다. 글자 마스크는 표시 알파를 복제하지 않고 실제 메시·아틀라스를 읽는 구현 선택이다. TTF 오프라인6예제는 Native SDF/GPU 증거가 아니다. [대체된 요구·현재 근거/한계](CIRCUIT_GAUGE_RETREAT_GLYPH_MASK_20261027.md).
+
+## D-048 현재 회로 자료·원인 구분 (2026-10-27)
+
+출처는 최신 사용자 요청과 실제 `_incoming/references/70_current_circuit.mp4`/71_issue_circuit_absorption.png/72_issue_circuit_joints.png다. 이미지를 직접 열어 전체 배치 동시 압축/겹친 접합·큰 원을 관찰했다. 영상628×1114/41.966633초의17시점 디코딩 표본은 타이틀 화면이었으므로 영상에서 피버 회수를 봤다고 주장하지 않는다. 전체 연속 영상/오디오는 미확인이다. 파일 해시/역할/표본은 Logs/circuit-joints-flow-20261027/reference-evidence.json에 기록했다.
+
+코드에서 스트립 SrcAlpha 중첩/빈 큰 링+받침·모든 점의 중심 비례 Recall/선폭 축소를 확인했다. 구성 경로와 PNG 원본은 보존하고 합성·끝 처리/개별 경로 운반만 바꿨다. 새 값과 오프라인 도형은 구현 시안이며 실제 Unity/GPU 검증이 아니다. [설계 선택·유지 범위](CIRCUIT_JOINTS_INTAKE_FLOW_20261027.md).
+
+## D-047 실제 원본 PNG의 형태·단면 (2026-10-27)
+
+최신 사용자 회로 요청에 따라 실제 씬 RemakeHUD/Background_Flash → GUID f04ddfcc3b07b4bdfb99d6eef12f15e7 → `Assets/Art/Backgrounds/Cyberpunk/Original/Cyberpunk_Background_Flash.png`를 추적하고 이미지를 열어 확인했다. 1080×1920/RGBA/중앙 투명, 씬 알파87/255·기본 UI 재질·전체화면 늘림이다. Remake 동명 에셋과 구분했다. 원본 해시4bd22971e3eda2b1ffbbd47b45bf88624361d342612ca872c90265bf74bf1fd1을 보존한다.
+
+알파를 고려한 픽셀 단면에서 중간 주선의 강한 코어16~21px/넓은 좌측 버스59px/가는 오른쪽 선10px, 원형 단자 위치·대각 꺾임/평행선을 확인했다. 또렷한 시안 폭28/60/10·12px와 단자지름64px/선7px는 원본의 블러 외곽까지 그대로 복제한 것이 아닌 구현 선택이다. 실제 PNG/새 경로의 오프라인 도형 비교를 했으며 Unity/GPU/Play·모바일 화면 증거는 아니다. [측정·선택·적용 범위](CIRCUIT_ORIGINAL_LAYOUT_20261027.md), 근거 Logs/circuit-original-layout-20261027/png-measurements.json.
+
+## D-046 승인 회로 요청·기준 영상 (2026-10-27)
+
+최신 사용자 요청문으로 지정된 붙여넣은 텍스트(첨부84b50aca-4fe9-4d5b-94c8-874d60a8c487)와 실제 `_incoming/references/60_approved_before_circuits.mp4`를 근거로 삼았다. 영상은 결함/새 디자인 목표가 아닌 현재 화면 보존 기준이며26.6333초 중7프레임을 디코딩/육안 확인했다. 요청의 CursorDash_incoming 경로는 없었고 실제 작업 루트의 _incoming 동명 파일을 사용했다. 원본은 변경하지 않았으며 오디오·새 게임 GPU 화면은 미확인이다.
+
+실제 씬 Image의 GUID f04ddfcc3b07b4bdfb99d6eef12f15e7/알파87을 따라 Original/Cyberpunk_Background_Flash.png와 기존 합성 코드를 확인했다. Remake 동명 PNG와 구분했고 중앙 투명 RGBA/분리된 LivingBackground 색면을 확인했다. 노드의 기존 메시/AA 방식은 참고만 하고 수정하지 않았다. 새 경로 수/굵기/구축 속도는 구현 시안이며 영상에서 내부 공식/코드 구조를 추정하지 않았다. [근거 범위·시안값·인계](DYNAMIC_CIRCUITS_20261027.md).
+
 ## D-042 제공영상·최신 사용자 요구 (2026-10-26)
 
 근거는 최신 사용자 글의종료 A/B/C·거리기반흡입/공간압축·배경총점/획득량반응과보존범위다. 50_current_fever_exit.mp4는현재문제,51_reference_background_score.mp4는배치·대비·반응참고이며목표내부구현/공식증거가아니다. 실제_incoming/references에서동명파일을찾아원본해시·메타데이터와디코딩샘플을보관했다. 50의28~30초구간을읽었고수정후실게임검증은하지않았다.

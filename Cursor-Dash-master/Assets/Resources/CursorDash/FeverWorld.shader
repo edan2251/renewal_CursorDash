@@ -9,9 +9,9 @@ Shader "CursorDash/FeverWorld"
    #include "UnityCG.cginc"
    #include "FeverFlow.cginc"
    #include "WorldImpact.cginc"
-   sampler2D _MainTex,_ElementsTex,_CircuitTex,_DotTex;
+   sampler2D _MainTex,_ElementsTex,_CircuitTex,_DotTex,_DynamicCircuits;
    float4 _FeverCenterAspect,_FeverFlow,_Pulses[6],_CircuitImage,_CircuitSprite,_DotU,_DotV,_DotRect,_CoreTint;
-   float _CoreRadius,_CoreVisible,_Level,_Press,_HasElements,_CircuitVisible,_DotVisible,_Light,_Warp,_FlowClock,_VisualBodyScale,_BonusGain;
+   float _CoreRadius,_CoreVisible,_Level,_Press,_HasElements,_CircuitVisible,_DotVisible,_Light,_Warp,_FlowClock,_VisualBodyScale,_BonusGain,_DynamicCircuitVisible;
    float circuit(float2 uv){
     float2 local=(uv-_CircuitImage.xy)/max(.0001,_CircuitImage.zw);float inside=step(0,local.x)*step(local.x,1)*step(0,local.y)*step(local.y,1);
     float4 c=tex2D(_CircuitTex,_CircuitSprite.xy+saturate(local)*_CircuitSprite.zw);return saturate(max(max(c.r,c.g),c.b)*c.a*2*_CircuitVisible*inside);
@@ -32,7 +32,8 @@ Shader "CursorDash/FeverWorld"
     float radius=max(.001,_CoreRadius*_VisualBodyScale),r=length(p),aa=max(fwidth(r),.0001);float3 color=source.rgb;
     if(_FeverFlow.x>.5){
     float element=tex2D(_ElementsTex,boardUV).a*_HasElements;
-    float3 whiteWorld=lerp(float3(1,1,1),float3(.80,.82,.84),circuit(CDFRecallCircuitUV(i.uv,_FeverCenterAspect,_FeverFlow)));
+    float3 whiteWorld=lerp(float3(1,1,1),float3(.80,.82,.84),_FeverFlow.x==3?0:circuit(i.uv)); // PNG comparison stays static; no legacy circuit intake on exit.
+    if(_DynamicCircuitVisible>.5){float4 circuitUnion=tex2D(_DynamicCircuits,boardUV);whiteWorld=whiteWorld*(1-circuitUnion.a)+circuitUnion.rgb;}
     whiteWorld=lerp(whiteWorld,float3(.008,.010,.014),element);
     float body=(1-smoothstep(radius-aa,radius+aa,r))*_CoreVisible;
     float water=lerp(-radius,radius,_Level)-_Press*radius*2*saturate(4*_Level*(1-_Level));

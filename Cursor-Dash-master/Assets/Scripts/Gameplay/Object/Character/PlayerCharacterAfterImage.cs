@@ -29,6 +29,7 @@ public class PlayerCharacterAfterImage : MonoBehaviour
     private float lastVisualWidth=-1,lastAlpha=-1,lastTail=-1;
     private int lastFade=-1;
     private Color lastColor;
+    private Vector3 entryLast;private bool entryHasPoint;
     public int Capacity=>segments==null?0:segments.Length;
 
     public float Lifetime => lifetime;
@@ -199,8 +200,11 @@ public class PlayerCharacterAfterImage : MonoBehaviour
         return (w + u * s - v * t).magnitude;
     }
 
+    public void DrawEntryPoint(){if(visual!=null&&(!entryHasPoint||(entryLast-transform.position).sqrMagnitude>.000001f)){visual.emitting=false;visual.AddPosition(transform.position);entryLast=transform.position;entryHasPoint=true;}}
+    public void FinishEntry(){previousPosition=transform.position;sampleElapsed=0;entryHasPoint=false;}
     public void ClearTrail()
     {
+        entryHasPoint=false;
         if (segments != null)
             foreach (Segment segment in segments)
             {

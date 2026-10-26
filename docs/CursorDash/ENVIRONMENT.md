@@ -1,5 +1,59 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-053 기존 대상 Unity native QA 완료 (2026-10-27)
+
+기존 Unity6000.3.23f1/Cyberpunk/DX11 인스턴스만 사용했다. 정상 Refresh/컴파일·정상 TestRunner집중30/30·실GPU pixel검사/Play내부호출·ScreenCapture24장을 수행했다. 새Unity/다른프로젝트종료/설치·Volume·카메라·패키지·연결·전역설정 변경은 없다. 마지막 실제 DLL08:08:48KST→JSON/XML08:09:52KST→읽기진단08:15:52KST를 교차확인했다. D-052의 과거도구중단은 현재차단이 아니다.
+
+전후 Cyberpunkdirty=false·PlayOFF·timeScale1, Assets imported6개(TMP Shader3·LiberationSans/이사만루Medium/Bold FontTexture3)와 읽기진단prefs 동일. 미저장 상태를 저장/폐기/재임포트하지 않았고D-014를 확대하지 않는다. 외부 `Backups/space-feedback-20261027`34파일 유지, 이번시작1880파일 manifest/Before·근거는 `Logs/space-polish-20261027`. Git main/HEAD1d11743/빈index·기존미커밋/미추적 보존.
+
+기존Python/.NET/실제Unity csproj참조로 runtime112/tests14/editor2 오류0·기존134경고/순수4,668,342단언. 실제마우스/터치·모바일/WebGL/성능·재실행기록저장은NOT_RUN이며 전체공식검사가 아니라집중30이다. 073054영상은 기존MediaPlayer일부시점관람, 전체정밀/오디오 아님. [환경·실제범위/파일](SHARED_SCORE_SPACE_POLISH_20261027.md).
+
+## D-052 기존 Unity 읽기와 중단·외부 백업 (2026-10-27)
+
+기존 Unity6000.3.23f1/대상 프로젝트·Cyberpunk/비Play/비컴파일/씬dirty=false는 기존 읽기 전용 진단으로 확인했다. imported Assets6개(TMP Shader3·LiberationSans/이사만루Medium/Bold Font Texture3)는 미저장 상태였으며 저장·폐기·재임포트하지 않았다. D-014를 확장하지 않는다. Unity/Play QA는 사용자 승인 범위이나 재승인 후 fresh Computer Use 호출도 physical Escape stop을 반환해 이후 입력을 중단했다. 새 Editor/다른 프로젝트 종료/Play·저장/공식테스트 실행은 없다. 파일 검사와 native 실행을 구분한다.
+
+구조 변경 전 씬/meta·ProjectSettings34파일은 Unity 프로젝트 밖 `D:/renewal_CursorDash/Backups/space-feedback-20261027`와 manifest로 보존했다. 메모리 상태를 대신하는 백업이 아니다. main1d11743/빈index·시작1872파일/사용자 미커밋을 유지하며 기존 씬·프리팹/meta를 수정하지 않는다. canonical 시작 순서만 Cyberpunk→legacy01로 변경했다. 별도 카메라/Volume/패키지/설치·새연결·전역 변경은 없다.
+
+참조 C#112/14/Editor2 오류0·기존134경고/테스트271참조(게임직접0), 순수.NET4,655,320단언. native DLL은 수정 소스보다 이전이므로 새 Unity 컴파일 PASS가 아니다.90영상 읽기는 브라우저timeout/WPF기존정책 차단·최종 UI중단으로 실패했고 우회하지 않았다. 임시 영상 서버는 종료했다. [정확한 자원·관찰 한계/검수](SPACE_DAMAGE_FEEDBACK_20261027.md), 로그 `Logs/space-feedback-20261027`.
+
+## D-051 회로 밀도 로컬 검사 (2026-10-27)
+
+기존 Python/.NET/읽기 전용 Unity 참조만 사용해 C#110/13/Editor2 오류0·기존경고134를 확인했다. Unity실행/Play·공식 실행·Shader/GPU/모바일/WebGL성능 NOT_RUN. 기존3메시/4재질/RT2 상한과 생성/해제를 재사용하며 기본 선56→82의 실제 성능은 미측정이다. main1d11743/시작1870파일·빈 스테이징 보존, 설치/새 연결·컴퓨터UI/저장폐기·빌드/Git게시 없음. [기록](CIRCUIT_DENSITY_20261027.md).
+
+## D-050 로컬 회로 디자인 검사 범위 (2026-10-27)
+
+Unity를 열거나 조작하지 않고 기존 Python/.NET/Roslyn·읽기 전용 Unity 참조DLL로 검사했다. 게임110/테스트13파일/Editor2 오류0/기존경고134. 별도 테스트 어셈블리는 저장된 csproj271참조·게임 직접참조0을 유지한다. 실제 Editor 재컴파일/Shader·GPU/Physics/Play·공식 실행/모바일·WebGL은 NOT_RUN이다.
+
+main1d11743/빈 스테이징·시작1869파일 기준 보존. 새 게임 리소스/설치·전역변경·연결/씬 저장·폐기/빌드/Git 변경 없다. 이번 디자인은 기존3메시/4재질/지속RT2·1536상한·콜백/해제와 같은 알고리즘을 재사용하며 매타격/프레임 재질 생성은 추가하지 않았다. [검사/오프라인 도형 한계](CIRCUIT_DIAGONAL_DESIGN_20261027.md), 로그 `Logs/circuit-design-45-20261027`.
+
+## D-049 기존 리소스·마스크 경로 (2026-10-27)
+
+main/HEAD1d11743·시작1866파일/기존 미커밋·씬/미추적을 보존했다. 기존 .NET/Python/Pillow와 실제 Unity-generated 테스트 참조만 사용했다. 최신042144 파일 한 개를 루프백 전용 브라우저에서 읽고 탭/서버를 종료했다.040532는 읽지 않았다. 설치/새 연결/전역 변경·Unity 실행/Play/저장폐기는 없다.
+
+회로 리소스는 재사용 메시3개/재질4개·지속 RGBA RT2개(각 긴축1536 이하)다. 점수 실제 메시/아틀라스와 카메라 직전 행렬을 읽는 마스크1재질/1RT만 추가했다. 실제 Native/GPU·SDF/RT방향·모바일/WebGL 부하는 NOT_RUN이다. 참조 C#110/13/Editor2 오류0·기존 경고134/테스트 실제271참조·게임 직접참조0 유지. [마스크 선택·정리/검수](CIRCUIT_GAUGE_RETREAT_GLYPH_MASK_20261027.md), 근거 Logs/circuit-fever-retreat-scoremask-20261027.
+
+## D-048 기존 도구/보존 상태 (2026-10-27)
+
+시작 main/HEAD1d11743·기존1863파일 해시/미커밋 목록을 보존했다. 설치/새 MCP·전역 변경·Unity 실행/Play/저장·폐기 없이 기존 .NET/Python/저장된 Unity 참조로 검사했다. 영상 한 파일만 루프백 전용 임시 브라우저로 디코딩했고 탭/서버는 종료했다. 실제 자료는 `_incoming/references/70~72`이며 전달 경로 CursorDash_incoming은 없었다.
+
+합집합 표시용 정적 사각 메시/재질1·지속 RGBA RT1(긴축1536 이하)을 기존 회로에 추가했다. 원본 PNG fallback/비교는 보존한다. 이 경로의 실제 Unity/Shader·GPU/UV/모바일/WebGL 성능은 NOT_RUN, 참조 C#110/13/Editor2 오류0/기존 경고134다. 테스트는 실제 csproj271참조/게임 직접참조0을 유지했다. [조절값/리소스·검수 인계](CIRCUIT_JOINTS_INTAKE_FLOW_20261027.md), 근거 Logs/circuit-joints-flow-20261027.
+
+## D-047 회로 원본 조사·로컬 검사 (2026-10-27)
+
+새 설치/연결·Unity 실행/조작 없이 기존 Python/Pillow와 .NET/Roslyn/저장된 Unity 참조를 사용했다. 실제 씬 Sprite GUID를 따라 Original/Cyberpunk_Background_Flash.png/기본 UI 재질·알파87·전체화면 Rect와 기존 비교 합성을 확인했다. 원본·임포트/meta/씬은 변경하지 않았다. 로컬 Before1859파일/HEAD1d11743을 기록하고 현재 미커밋 작업을 이어갔다.
+
+참조 컴파일은 게임110/테스트13/Editor2 오류0(런타임 기존 경고134). 테스트는 Unity-generated CursorDash.EditorTests.csproj의271참조를 그대로 사용하고 게임 DLL을 인위적으로 추가하지 않았다. 실제 Unity/Shader 컴파일·GPU·Play·공식 실행·모바일/WebGL 성능은 NOT_RUN이다. 도형 비교 이미지는 오프라인 정지 검사이며 게임 실행 화면이 아니다. 근거는 Logs/circuit-original-layout-20261027, [현재 인계](CIRCUIT_ORIGINAL_LAYOUT_20261027.md). Git 저장/게시·빌드·미저장 사용자 상태 저장/폐기 없음.
+
+## D-046 후속 테스트 참조 검사 정정 (2026-10-27)
+
+사용자의 CS0246 보고로 기존 검사의 한계를 확인했다. 이전 참조 컴파일 스크립트는 게임 DLL을 임시로 테스트 참조에 추가하여 실제 EditorTests asmdef의 게임 직접 참조 불가를 가렸다. 앞으로 테스트 참조에 게임 DLL을 인위적으로 추가하지 않는다. 이번에는 Unity가 이미 생성한 CursorDash.EditorTests.csproj의 HintPath271개를 읽기 전용으로 사용해 이전 동일 오류/수정 후13소스 오류0·경고0을 재현했다. csproj·asmdef·게임/씬·전역 설정은 수정하지 않았다. Unity실행/조작·Play/저장·폐기·공식 테스트 실행은 없다. 근거 Logs/circuit-test-assembly-fix-20261027/assembly-result.json.
+
+## D-046 회로 구현·읽기/검사 범위 (2026-10-27)
+
+기준main/1d11743·기존1850파일 Before/해시와 빈 스테이징을 보존했다. 기존 설치 Python/.NET/Roslyn/Unity 참조 DLL만 사용하고 설치/전역/패키지/연결을 변경하지 않았다. 제한된 셸의 Unity 프로세스0 조회와 실제 앱 목록의 대상 Unity 창을 구분하며, 내부 dirty 상태는 조회하지 못했다. Unity 창 조작/실행·Play·저장/폐기·강제 임포트는 없다.
+
+앱 내 임시 탭과 루프백 전용 서버는 제공60 승인 영상의 디코딩 표본 읽기에만 사용했고 서버/정상 탭을 종료했다. 게임 브라우저 검증이 아니다. 실제 순수 회로 검사/참조 컴파일110·13·Editor2 오류0/기존 경고134. 공식 실행/실GPU·Shader/Physics/모바일/성능·빌드·새 커밋/수정·push/배포는 NOT_RUN. [구현·근거·사용자 검수](DYNAMIC_CIRCUITS_20261027.md).
+
 ## D-042 구현·영상 읽기·검사 환경 (2026-10-26)
 
 main/HEAD8c357b8·기존dirty/미추적1847파일의해시/Before를기준으로작업했다. 사용자변경씬/복구·보관파일 유지/메모리dirty상태 조회나저장·폐기없음. Unity실행·Play·빌드/git게시 없음. 기존설치.NET/Roslyn·Unity참조DLL·번들Python/Node만사용/설치·패키지·전역·연결변경없음.

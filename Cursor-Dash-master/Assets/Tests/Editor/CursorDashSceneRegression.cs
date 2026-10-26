@@ -25,9 +25,9 @@ namespace CursorDashTests
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            SessionState.SetBool(Prefix+"CapturedThisRun",false);
+            for(int n=0;n<SceneManager.sceneCount;n++)Assert.IsFalse(SceneManager.GetSceneAt(n).isDirty,"검수 전에 사용자 미저장 씬을 먼저 보존하세요. 테스트는 저장·폐기하지 않습니다.");
             foreach(string key in V2Keys){SessionState.SetBool(Prefix+key+".exists",PlayerPrefs.HasKey(key));SessionState.SetString(Prefix+key,PlayerPrefs.GetString(key,""));}
-            PlayerPrefs.SetString("CursorDash.v2.user","{}");PlayerPrefs.SetString("CursorDash.v2.presets","{}");
-            PlayerPrefs.SetString("CursorDash.v2.tutorial","skipped");
             foreach (string key in PreferenceKeys)
             {
                 SessionState.SetBool(Prefix + key + ".exists", PlayerPrefs.HasKey(key));
@@ -39,7 +39,9 @@ namespace CursorDashTests
                 SessionState.SetFloat(Prefix + mapName + ".score", (float)Get(map, "highScore"));
                 SessionState.SetBool(Prefix + mapName + ".unlock", (bool)Get(map, "isUnlock"));
             }
-            EditorSceneManager.OpenScene("Assets/Scenes/01.StageSelectScene.unity", OpenSceneMode.Single);
+            SessionState.SetBool(Prefix+"CapturedThisRun",true);
+            PlayerPrefs.SetString("CursorDash.v2.user","{}");PlayerPrefs.SetString("CursorDash.v2.presets","{}");PlayerPrefs.SetString("CursorDash.v2.tutorial","skipped");
+            EditorSceneManager.OpenScene("Assets/Scenes/Cyberpunk.unity", OpenSceneMode.Single);
             yield return new EnterPlayMode();
             yield return null;
             yield return null;
@@ -49,6 +51,7 @@ namespace CursorDashTests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            if(!SessionState.GetBool(Prefix+"CapturedThisRun",false))yield break;
             Time.timeScale = 1f;
             foreach (string key in PreferenceKeys)
             {
@@ -67,6 +70,7 @@ namespace CursorDashTests
             foreach(string mapName in new[]{"Cyberpunk","Flame"}){Object map=AssetDatabase.LoadAssetAtPath<Object>("Assets/Resources/Maps/"+mapName+".asset");Set(map,"highScore",SessionState.GetFloat(Prefix+mapName+".score",0));Set(map,"isUnlock",SessionState.GetBool(Prefix+mapName+".unlock",false));}
             foreach(string key in V2Keys){if(SessionState.GetBool(Prefix+key+".exists",false))PlayerPrefs.SetString(key,SessionState.GetString(Prefix+key,""));else PlayerPrefs.DeleteKey(key);}
             PlayerPrefs.Save();
+            SessionState.SetBool(Prefix+"CapturedThisRun",false);
         }
 
         [UnityTest]
@@ -93,7 +97,7 @@ namespace CursorDashTests
         public IEnumerator CP3_TrainingAndDevNeverRecoverCurrentRoundRecordEligibility()
         {
             var ui=Find("CursorDashRuntimeUI");Call(ui,"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;var stage=Find("StageManager");Assert.IsFalse((bool)Get(stage,"RecordEligible"));var score=(Component)Get(stage,"scoreManager");float best=PlayerPrefs.GetFloat("CursorDash_Best_Cyberpunk");Set(score,"TimeScore",best+100);Call(stage,"Death");Assert.AreEqual(best,PlayerPrefs.GetFloat("CursorDash_Best_Cyberpunk"));
-            Call(ui,"BrowserCommand","{\"cmd\":\"normal\"}");yield return WaitRealtime(.2f);stage=Find("StageManager");DisablePatterns();Assert.IsTrue((bool)Get(stage,"RecordEligible"),"Fresh default round qualifies.");
+            Call(ui,"BrowserCommand","{\"cmd\":\"normal\"}");yield return WaitForScene("Cyberpunk");stage=Find("StageManager");DisablePatterns();Assert.IsTrue((bool)Get(stage,"RecordEligible"),"Fresh default round qualifies.");
             Call(ui,"Open",true);Call(ui,"BrowserCommand","{\"cmd\":\"devOff\"}");Call(ui,"Close");Assert.IsFalse((bool)Get(stage,"RecordEligible"));
         }
         [UnityTest]
@@ -128,7 +132,8 @@ namespace CursorDashTests
         [UnityTest]
         public IEnumerator RoundLifecycle_PauseEndRetryAndHomeRestoreState()
         {
-            Assert.IsNotNull(Find("MainSceneController"));
+            Assert.IsNotNull(Find("CursorDashSpaceFlow"));
+            Assert.AreEqual("Main",Get(Find("StageManager"),"State").ToString());
             ScreenCapture.CaptureScreenshot("Captures/main-runtime.png");
             yield return WaitRealtime(0.15f);
             Click("RemakeMenu/Start");
@@ -193,8 +198,9 @@ namespace CursorDashTests
             Call(stage, "SetPaused", true);
             Click("RemakeHUD/PausePanel/Home");
             yield return WaitForScene("01.StageSelectScene");
-            Assert.IsNull(Find("StageManager"));
-            Assert.IsNotNull(Find("MainSceneController"));
+            Assert.AreSame(stage,Find("StageManager"));
+            Assert.AreEqual("Main",Get(stage,"State").ToString());
+            Assert.AreEqual("Cyberpunk",SceneManager.GetActiveScene().name);
             Assert.AreEqual(1f, Time.timeScale);
         }
 
@@ -1053,8 +1059,16 @@ namespace CursorDashTests
         }
         private static IEnumerator WaitForScene(string name)
         {
+            // Deferred tool commands get one update before inspecting the in-scene transition state.
+            yield return null;
             float deadline = Time.realtimeSinceStartup + 10f;
-            while (SceneManager.GetActiveScene().name != name)
+            bool Ready(){
+                var stage=Find("StageManager");var space=Find("CursorDashSpaceFlow");
+                if(space!=null&&name=="01.StageSelectScene")return SceneManager.GetActiveScene().name=="Cyberpunk"&&(bool)Get(space,"IsMenu");
+                if(space!=null&&name=="Cyberpunk")return SceneManager.GetActiveScene().name==name&&stage!=null&&Get(stage,"State").ToString()=="Playing";
+                return SceneManager.GetActiveScene().name==name;
+            }
+            while (!Ready())
             {
                 Assert.Less(Time.realtimeSinceStartup, deadline, "Scene transition timed out: actual="+SceneManager.GetActiveScene().name+" target="+name+" Stage="+(Find("StageManager")!=null));
                 yield return null;
@@ -1065,6 +1079,10 @@ namespace CursorDashTests
         }
         private static void Click(string path)
         {
+            if(path=="RemakeMenu/Start"&&Find("CursorDashSpaceFlow")!=null){
+                var space=Find("CursorDashSpaceFlow");Assert.IsTrue((bool)Get(space,"IsMenu"));
+                Assert.IsTrue((bool)Call(space,"RequestStart",new Vector2(Screen.width*.5f,Screen.height*.5f)));return;
+            }
             GameObject item = GameObject.Find(path);
             Assert.IsNotNull(item, path);
             Component button = item.GetComponent(TypeFor("UnityEngine.UI.Button"));

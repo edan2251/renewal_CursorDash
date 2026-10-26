@@ -7,7 +7,7 @@ Shader "CursorDash/FeverImpact"
    #pragma fragment frag
    #pragma target 3.0
    #include "UnityCG.cginc"
-   sampler2D _MainTex;float4 _LensAspect,_Optics,_OpticalPulses[6],_ExitOptics,_ExitCenter;float _LensRadius;
+   sampler2D _MainTex,_DamageTextMask;float4 _LensAspect,_Optics,_OpticalPulses[6],_ExitOptics,_ExitCenter,_NexusDamage,_DamageField,_DamageCore,_DamageShape;float _LensRadius;
    fixed4 frag(v2f_img i):SV_Target {
     float2 aspect=max(.001,_LensAspect.xy),bend=0;float strongest=0,inkSplit=0;
     [unroll]for(int n=0;n<6;n++)if(_OpticalPulses[n].w>0){
@@ -32,6 +32,22 @@ Shader "CursorDash/FeverImpact"
      float2 pull=(axis*(-.45-.55*exp(-r*r/.12))+side*.18)*_ExitOptics.z;
      float2 offset=(pull+shake)*pressure;offset*=min(1,_ExitCenter.w/max(.000001,length(offset)));
      uv=clamp(i.uv+offset/aspect,.0002,.9998);chroma=(axis*.85+float2(.15,0))*min(.006,_ExitOptics.x*pressure)/aspect;
+    }
+    if(_NexusDamage.w>0){
+     float2 delta=(i.uv-_NexusDamage.xy)*aspect;float radius=length(delta),age=saturate(_NexusDamage.z);
+     float2 axis=delta/max(.006,radius);
+     float front=_DamageCore.x+min(_DamageField.w,age*_DamageCore.z*_DamageField.z);
+     float width=max(.03,_DamageField.y),x=(radius-front)/width;
+     float envelope=pow(1-age,_DamageShape.y),band=exp(-x*x)*envelope;
+     // One compression then one outward release. No colored line/ring or repeated sinusoidal vibration.
+     float core=exp(-pow(radius/max(.08,_DamageCore.x+width*2),2))*exp(-age*15)*_DamageShape.x;
+     float release=-x*exp(-x*x)*envelope;
+     float protect=smoothstep(_DamageCore.x*.88,_DamageCore.x*1.65,radius)*(1-saturate(tex2D(_DamageTextMask,i.uv).a));
+     float2 wave=axis*(-core+release*1.7)*_DamageField.x*_NexusDamage.w*protect;wave*=min(1,.018/max(.000001,length(wave)));
+     // Strongest field wins. Texture displacement affects the actual background/circuit content, never draws geometry.
+     if(dot(wave,wave)>dot((uv-i.uv)*aspect,(uv-i.uv)*aspect))uv=clamp(i.uv+wave/aspect,.0002,.9998);
+     float splitDamage=min(.006,_DamageCore.y*(core*.25+band*.75)*(1-age)*_NexusDamage.w*protect);
+     if(splitDamage>length(chroma*aspect))chroma=axis*splitDamage/aspect;
     }
     fixed4 center=tex2D(_MainTex,uv);
     float red=tex2D(_MainTex,clamp(uv+chroma,.0002,.9998)).r;

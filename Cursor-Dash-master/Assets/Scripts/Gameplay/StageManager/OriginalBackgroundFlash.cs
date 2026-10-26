@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Renders the existing Background_Flash image in the game camera; no generated circuit artwork.</summary>
+/// <summary>Preserved PNG comparison/fallback compositor. The optional path layer suppresses only this decoration.</summary>
 [RequireComponent(typeof(Camera))]
 public sealed class OriginalBackgroundFlash : MonoBehaviour
 {
@@ -15,6 +15,8 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
     private Image source;
     private bool previousEnabled;
     public Image SourceImage => source;
+    public bool DynamicCircuits {get;set;}
+    public bool Ready {get {Bind();return material!=null&&source!=null&&source.sprite!=null&&source.gameObject.activeInHierarchy;}}
     public int ActiveFlashCount => flashes.Count;
     public const float FlashSeconds = .25f;
 
@@ -43,7 +45,7 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
     }
     public bool CanComposite
     {
-        get { Bind(); return material != null && source != null && source.sprite != null && source.gameObject.activeInHierarchy; }
+        get { return !DynamicCircuits&&Ready; }
     }
     public void Hit(Vector3 point)
     {

@@ -17,6 +17,13 @@ public sealed class CursorDashNexusReview : EditorWindow
         try{
         EditorGUILayout.HelpBox("사용자가 Play → 훈련에 진입한 뒤 버튼으로 검수합니다. 체력 조작은 현재 훈련 라운드에만 적용됩니다.",MessageType.Info);
         var stage=StageManager.instance;
+        if(EditorApplication.isPlaying&&stage?.Space!=null){
+            EditorGUILayout.LabelField("공유 씬 상태",stage.State+" / 생존 "+stage.scoreManager.TimeScore.ToString("0.000"));
+            EditorGUILayout.LabelField("최고 / 현재 점수",stage.Space.BestText+" / "+stage.Fever.Model.PointsText);
+            EditorGUILayout.LabelField("시작 진행 / 직전 길이",stage.Space.StartProgress.ToString("0.000")+" / "+stage.Space.LastStartSeconds.ToString("0.000")+"초");
+            EditorGUILayout.LabelField("피격 원호 되감기",stage.Fever.View.Rewinding?"진행":"없음");
+            EditorGUILayout.LabelField("실제 피해 광학",(stage.Fever.World.DamageActive?"진행 ":"없음 ")+stage.Fever.World.DamageViewportCenter);
+        }
         bool available=EditorApplication.isPlaying&&stage!=null&&CursorDashSession.IsPractice;
         using(new EditorGUI.DisabledScope(!available))
         {
@@ -67,6 +74,23 @@ public sealed class CursorDashNexusReview : EditorWindow
             if(fever!=null&&fever.Model!=null){
                 var model=fever.Model;
                 bool projected=EditorGUILayout.Toggle("배경 큰 점수 (현재 라운드)",fever.BackgroundScoreVisible);if(projected!=fever.BackgroundScoreVisible)fever.BackgroundScoreVisible=projected;
+                var circuits=fever.Circuits;
+                if(circuits!=null){
+                    bool visible=EditorGUILayout.Toggle("동적 회로 (현재 라운드)",circuits.Enabled);if(visible!=circuits.Enabled)circuits.Enabled=visible;
+                    bool hits=EditorGUILayout.Toggle("회로 국소 타격 (현재 라운드)",circuits.HitsEnabled);if(hits!=circuits.HitsEnabled)circuits.HitsEnabled=hits;
+                    bool retreat=EditorGUILayout.Toggle("게이지 회로 후퇴 (다음 피버)",circuits.RetreatEnabled);if(retreat!=circuits.RetreatEnabled)circuits.RetreatEnabled=retreat;
+                    bool scoreMask=EditorGUILayout.Toggle("점수 획 뒤 회로 가림",circuits.ScoreMaskEnabled);if(scoreMask!=circuits.ScoreMaskEnabled)circuits.ScoreMaskEnabled=scoreMask;
+                    bool twoWidths=EditorGUILayout.Toggle("회로 두 단계 굵기",circuits.TwoTierWidths);if(twoWidths!=circuits.TwoTierWidths)circuits.TwoTierWidths=twoWidths;
+                    bool ambient=EditorGUILayout.Toggle("회로 은은한 흐름",circuits.AmbientEnabled);if(ambient!=circuits.AmbientEnabled)circuits.AmbientEnabled=ambient;
+                    circuits.ContrastPreview=EditorGUILayout.Toggle("회로 대비 검수 (임시·기본 꺼짐)",circuits.ContrastPreview);
+                    EditorGUILayout.LabelField("회로 연결 / 경로 / 반응",(circuits.Active?"동적 메시":"원본 PNG 비교/미지원")+" / "+circuits.EdgeCount+" / "+circuits.ReactionCount);
+                    EditorGUILayout.LabelField("회로 평상시 흐름",circuits.AmbientCount.ToString()+" / 독립 상한·Pause 공유");
+                    EditorGUILayout.LabelField("점수 실제 획 마스크",circuits.ScoreMaskReady?"현재 메시·아틀라스 연결":"꺼짐/점수 숨김/셰이더 확인");
+                    EditorGUILayout.HelpBox("토글은 현재 라운드 임시입니다. 게이지 후퇴는 다음 피버 진입 때 캡처하고 중앙 흡입은 실행하지 않습니다. VisualPrototype에서 주/보조 두께·대비·후퇴/읽기/분산·점수 획 여유/경계를 조절합니다. 숫자 표시 자체는 바꾸지 않습니다.",MessageType.None);
+                    if(fever.Visuals!=null&&GUILayout.Button("회로 프로필 기본값만 복원 (프로젝트 값)")){
+                        Undo.RecordObject(fever.Visuals,"Reset circuit profile only");fever.Visuals.ResetCircuitDefaults();EditorUtility.SetDirty(fever.Visuals);
+                    }
+                }
                 EditorGUILayout.LabelField("배경 점수 / 아틀라스",fever.BackgroundScoreText+" / "+(fever.BackgroundScoreAtlasMatches?"일치":"확인 필요"));
                 EditorGUILayout.Space();EditorGUILayout.LabelField("피버 C — 전투·곡선 흑백 전환 (사용자 검수 대기)",EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("점수 / 배율",model.PointsText+" / "+model.MultiplierText+" (최대 x4)");

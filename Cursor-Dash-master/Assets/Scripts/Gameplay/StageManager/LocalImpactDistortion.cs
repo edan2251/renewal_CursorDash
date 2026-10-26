@@ -61,7 +61,7 @@ public class LocalImpactDistortion : MonoBehaviour
         if(close>=0)pulses[close]=pulse;
         else {if(pulses.Count>=cap)pulses.RemoveAt(0);pulses.Add(pulse);}
     }
-    public void Clear() { pulses.Clear();originalBackground?.Clear(); }
+    public void Clear() { pulses.Clear();originalBackground?.Clear();FeverPresentation?.ClearDamage(); }
     private void OnRenderImage(RenderTexture source,RenderTexture destination)
     {
         pulses.RemoveAll(p=>Time.unscaledTime-p.started>=p.duration);

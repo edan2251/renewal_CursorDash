@@ -3,6 +3,7 @@ public static class CursorDashSession
 {
     public enum Mode { Normal, Tutorial, Training }
     public static Mode CurrentMode=Mode.Normal;
+    public static bool EnterGameOnLoad;
     public static bool IsPractice => CurrentMode!=Mode.Normal;
     public static string LastSaveError {get;private set;}="";
     public static bool FirstGuideNeeded => CursorDashStorage.Get(CursorDashTuning.TutorialKey,"new")=="new";

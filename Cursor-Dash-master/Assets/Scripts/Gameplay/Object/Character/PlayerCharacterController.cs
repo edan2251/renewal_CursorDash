@@ -21,6 +21,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     private Vector2 maximum;
     private SpriteRenderer cursorVisual;
     private Color initialVisualColor;
+    private float sourceVisualScale;private Vector2 sourceColliderSize;
 
     public Vector2 MoveVector
     {
@@ -39,9 +40,9 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         // The visible cursor lives on a child so resizing it does not shrink the body collider.
         SpriteRenderer visual = transform.Find("CursorVisual").GetComponent<SpriteRenderer>();
         cursorVisual=visual;
-        visual.transform.localScale=Vector3.one*CursorDashTuning.Number("player.visualScale",visual.transform.localScale.x);
+        sourceVisualScale=visual.transform.localScale.x;
         var box=GetComponent<BoxCollider2D>();
-        if(box!=null)box.size=new Vector2(CursorDashTuning.Number("player.colliderX",box.size.x),CursorDashTuning.Number("player.colliderY",box.size.y));
+        if(box!=null)sourceColliderSize=box.size;ApplyRoundTuning();
         if (useCharacterSettings)
         {
             CharacterSetting settings = GameManager.instance.playerData.characterSetting;
@@ -136,6 +137,20 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         body.linearVelocity = Vector2.zero;
         // Cancel a MovePosition queued before pause, cancellation or scene change.
         body.MovePosition(body.position);
+    }
+
+    // Only the start presentation writes this pose. Normal movement/rotation/collision math is unchanged.
+    public void PresentEntry(bool visible,Vector2 position,Vector2 direction)
+    {
+        moveVector=travelDirection=lastMotionDirection=Vector2.zero;travelSpeed=0;lastMotionTime=float.NegativeInfinity;
+        if(cursorVisual!=null)cursorVisual.enabled=visible;
+        if(body!=null){body.linearVelocity=Vector2.zero;body.position=position;body.MovePosition(position);}transform.position=position;
+        if(direction.sqrMagnitude>.001f)transform.LookAt2D(position+direction);
+    }
+    public void ApplyRoundTuning()
+    {
+        if(cursorVisual!=null)cursorVisual.transform.localScale=Vector3.one*CursorDashTuning.Number("player.visualScale",sourceVisualScale);
+        var box=GetComponent<BoxCollider2D>();if(box!=null)box.size=new Vector2(CursorDashTuning.Number("player.colliderX",sourceColliderSize.x),CursorDashTuning.Number("player.colliderY",sourceColliderSize.y));
     }
 
     private void OnDisable(){MoveStop();lastMotionDirection=Vector2.zero;lastMotionTime=float.NegativeInfinity;}

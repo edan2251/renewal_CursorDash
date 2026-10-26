@@ -18,6 +18,8 @@ public class MainSceneController : MonoBehaviour
 
     private void Start()
     {
+        // Compatibility entry only. The visible main and gameplay now live in Cyberpunk together.
+        if(map!=null&&map.mapName=="Cyberpunk"){GameManager.instance.MapInformation=map;CursorDashSession.CurrentMode=CursorDashSession.Mode.Normal;CursorDashSession.EnterGameOnLoad=false;SceneManager.LoadScene(map.mapName);return;}
         Time.timeScale = 1f;
         GameManager manager = GameManager.instance;
         manager.CurrentSceneType = GameManager.SceneType.NotInGame;

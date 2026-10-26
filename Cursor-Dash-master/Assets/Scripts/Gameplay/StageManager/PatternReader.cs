@@ -35,10 +35,15 @@ public class PatternReader : MonoBehaviour
     private int selection;
     private bool repeat;
     private System.Random seededRandom;
+    private float sourceBetweenPatterns;private bool configured;
     private void Start()
+    {if(StageManager.instance?.Space==null)StartRound();}
+    public void StartRound()
     {
+        StopAllCoroutines();enabled=true;seededRandom=null;
         if(CursorDashSession.IsPractice){enabled=false;return;}
-        betweenPatterns=CursorDashTuning.Number("spawn.interval",betweenPatterns);
+        if(!configured){configured=true;sourceBetweenPatterns=betweenPatterns;}
+        betweenPatterns=CursorDashTuning.Number("spawn.interval",sourceBetweenPatterns);
         selection=CursorDashTuning.Integer("spawn.pattern",0);repeat=CursorDashTuning.Toggle("spawn.repeat",true);
         if(CursorDashTuning.Toggle("spawn.seedEnabled",false))seededRandom=new System.Random(CursorDashTuning.Integer("spawn.seed",1234)+1);
         Execute();

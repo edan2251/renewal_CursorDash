@@ -73,6 +73,7 @@ public sealed class FeverRingSpin
     private double decay=.22;
     public void Pulse(bool damage){Boost=Math.Min(950,Math.Max(Boost,damage?780:420));decay=damage ? .30 : .20;}
     public void Begin(){Boost=Math.Max(Boost,800);decay=.30;}
+    public void EntryPulse(double strength,double seconds){Boost=Math.Min(950,Math.Max(0,strength));decay=Math.Max(.08,Math.Min(.5,seconds));}
     public double Advance(double delta,FeverState.Phase phase,double progress)
     {
         if(delta<=0||double.IsNaN(delta)||double.IsInfinity(delta))return 0;

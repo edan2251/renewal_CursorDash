@@ -14,10 +14,23 @@ public sealed class FeverWorldTransition : MonoBehaviour
     public int OpticsFrames {get;private set;}
     public bool OpticsSupported=>optics!=null;
     private readonly Vector4[] opticalPulses=new Vector4[6];
+    private float damageAt=float.NegativeInfinity,damageSeconds;private Vector4 damageField;private float damageChroma;
+    private Vector4 damageShape;
+    public bool DamageActive=>damageSeconds>0&&Time.unscaledTime-damageAt<damageSeconds;
+    public Vector2 DamageViewportCenter {get;private set;}
+    public void NexusDamaged(float seconds,bool wave=true)
+    {
+        if(!CursorDashTuning.Toggle("fx.enabled",true))return;var v=fever.Visuals;
+        damageAt=Time.unscaledTime;damageSeconds=Mathf.Clamp(seconds,.1f,.5f);damageChroma=Mathf.Clamp(v==null?.0055f:v.nexusDamageChromatic,0,.008f);
+        damageField=new Vector4(wave&&(v==null||v.nexusDamageWaveEnabled)?Mathf.Clamp(v==null?.008f:v.nexusDamageWaveStrength,0,.018f):0,Mathf.Clamp(v==null?.12f:v.nexusDamageWaveWidth,.03f,.18f),Mathf.Clamp(v==null?2.6f:v.nexusDamageWaveSpeed,.4f,4),Mathf.Clamp(v==null?.72f:v.nexusDamageWaveRange,.2f,1.2f));
+        damageShape=new Vector4(Mathf.Clamp(v==null?.85f:v.nexusDamageCompression,0,1.2f),Mathf.Clamp(v==null?1.4f:v.nexusDamageReleasePower,.6f,2.4f),0,0);
+    }
+    public void ClearDamage(){damageAt=float.NegativeInfinity;damageSeconds=0;if(optics!=null)optics.SetVector("_NexusDamage",Vector4.zero);}
     public bool ShouldRenderOptics
     {
         get {
             if(optics==null||fever?.Model==null||fever.ContactDiagnostics||!CursorDashTuning.Toggle("fx.enabled",true))return false;
+            if(DamageActive&&(damageField.x>0||damageChroma>0)&&CursorDashTuning.Number("user.distortion",1)>0)return true;
             if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null)return fever.Exit.Pressure(fever.Model.Elapsed)>0&&((CursorDashTuning.Number("user.distortion",1)>0&&(fever.Exit.Chromatic>0||fever.Exit.Lens>0))||(CursorDashTuning.Number("user.shake",1)>0&&PlayerPrefs.GetString("OnVibe","true")=="true"&&fever.Exit.Shake>0));
             if(fever.Model.Current!=FeverState.Phase.Fever||CursorDashTuning.Number("user.distortion",1)<=0)return false;
             var v=fever.Visuals;if((v==null?.0008f:v.feverChromaticAmbient)>0)return true;
@@ -49,7 +62,7 @@ public sealed class FeverWorldTransition : MonoBehaviour
         var driver=GetComponent<LocalImpactDistortion>();if(driver!=null)driver.FeverPresentation=this;
     }
     public void Hit(Vector2 point){points[next]=point;started[next]=fever.Clock;next=(next+1)%points.Length;count=Mathf.Min(count+1,points.Length);}
-    public void Clear(){count=next=0;if(optics!=null)optics.SetVector("_ExitOptics",Vector4.zero);}
+    public void Clear(){count=next=0;ClearDamage();if(optics!=null)optics.SetVector("_ExitOptics",Vector4.zero);}
     public static float Extent(Vector2 center,float ax,float ay){float x=Mathf.Max(center.x,1-center.x)*ax,y=Mathf.Max(center.y,1-center.y)*ay;return Mathf.Sqrt(x*x+y*y);}
     public void SetFlow(Material target,int width,int height)
     {
@@ -79,12 +92,13 @@ public sealed class FeverWorldTransition : MonoBehaviour
             if(Mathf.Abs(u.x*v.y-u.y*v.x)<1e-10f)return;
             var sprite=image.sprite;var rect=sprite.textureRect;var tex=sprite.texture;
             material.SetTexture("_DotTex",tex);material.SetVector("_DotRect",new Vector4(rect.x/tex.width,rect.y/tex.height,rect.width/tex.width,rect.height/tex.height));
-            material.SetVector("_DotU",new Vector4(a.x,a.y,u.x,u.y));material.SetVector("_DotV",v);material.SetFloat("_DotVisible",image.color.a);return;
+            material.SetVector("_DotU",new Vector4(a.x,a.y,u.x,u.y));material.SetVector("_DotV",v);material.SetFloat("_DotVisible",image.color.a*presentation.EntryRingAlpha);return;
         }
     }
     private void SetCircuit()
     {
         material.SetFloat("_CircuitVisible",0);var source=GetComponent<LocalImpactDistortion>()?.OriginalBackground?.SourceImage;
+        if(stage.Fever.Circuits!=null&&stage.Fever.Circuits.Active)return;
         if(source==null||source.sprite==null)return;
         source.rectTransform.GetWorldCorners(corners);var canvas=source.canvas;var camera=canvas.renderMode==RenderMode.ScreenSpaceOverlay?null:canvas.worldCamera;
         Vector2 a=RectTransformUtility.WorldToScreenPoint(camera,corners[0]),b=RectTransformUtility.WorldToScreenPoint(camera,corners[2]);
@@ -96,14 +110,17 @@ public sealed class FeverWorldTransition : MonoBehaviour
     public void Composite(RenderTexture source,RenderTexture destination,Vector4[] hits,Vector4[] shapes,Vector4[] responses,float cap,bool success)
     {
         if(material==null||stage==null||fever?.Model==null){Graphics.Blit(source,destination);return;}
-        SetFlow(material,source.width,source.height);bool active=flow.x>.5f&&flow.y>.0001f;RenderTexture mask=null;
+        SetFlow(material,source.width,source.height);bool active=flow.x>.5f&&flow.y>.0001f;RenderTexture mask=null,circuits=null;
         try{
+            bool dynamic=fever.Circuits!=null&&fever.Circuits.Active;material.SetFloat("_DynamicCircuitVisible",dynamic?1:0);
+            if(active&&dynamic){circuits=RenderTexture.GetTemporary(source.width,source.height,0,RenderTextureFormat.ARGB32);fever.Circuits.RenderFever(circuits);material.SetTexture("_DynamicCircuits",circuits);}
+            else material.SetTexture("_DynamicCircuits",Texture2D.blackTexture);
             if(active){mask=RenderTexture.GetTemporary(source.width,source.height,0,RenderTextureFormat.ARGB32);elements.Draw(board,mask);material.SetTexture("_ElementsTex",mask);}
             else material.SetTexture("_ElementsTex",Texture2D.blackTexture);
             material.SetFloat("_HasElements",active?1:0);
             Vector2 edge=board.WorldToViewportPoint(stage.NexusPosition+Vector2.right*stage.NexusRadius);
-            material.SetFloat("_CoreRadius",Mathf.Max(.001f,Mathf.Abs(edge.x-centerAspect.x)*centerAspect.z));material.SetFloat("_CoreVisible",stage.IsDeath?0:1);
-            material.SetFloat("_VisualBodyScale",(float)FeverFlowMath.BodyScale(fever.Model.Current,fever.Model.Progress,fever.Visuals==null?.115:fever.Visuals.feverGatherCompression));
+            material.SetFloat("_CoreRadius",Mathf.Max(.001f,Mathf.Abs(edge.x-centerAspect.x)*centerAspect.z));material.SetFloat("_CoreVisible",stage.IsDeath?0:stage.NexusPresentation==null?1:stage.NexusPresentation.FinaleAlpha*stage.NexusPresentation.EntryBodyAlpha);
+            material.SetFloat("_VisualBodyScale",(float)FeverFlowMath.BodyScale(fever.Model.Current,fever.Model.Progress,fever.Visuals==null?.115:fever.Visuals.feverGatherCompression)*(stage.NexusPresentation==null?1:stage.NexusPresentation.FinaleScale*stage.NexusPresentation.EntryBodyScale));
             material.SetFloat("_Level",stage.Energy.DisplayedLevel);material.SetFloat("_Press",stage.Energy.SurfacePress);
             material.SetColor("_CoreTint",CursorDashTuning.ColorValue("nexus.color",new Color(.04f,.7f,.9f)));
             bool fx=CursorDashTuning.Toggle("fx.enabled",true);material.SetFloat("_Light",fx&&PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0);material.SetFloat("_Warp",fx?CursorDashTuning.Number("user.distortion",1):0);
@@ -112,12 +129,18 @@ public sealed class FeverWorldTransition : MonoBehaviour
             material.SetFloat("_SuccessActive",success?1:0);material.SetFloat("_OffsetCap",cap);
             material.SetFloat("_BonusGain",fever.BonusImpactGain);
             material.SetVectorArray("_Pulses",pulses);Graphics.Blit(source,destination,material);RenderedFrames++;
-        }finally{if(mask!=null)RenderTexture.ReleaseTemporary(mask);}
+        }finally{if(mask!=null)RenderTexture.ReleaseTemporary(mask);if(circuits!=null)RenderTexture.ReleaseTemporary(circuits);}
     }
     // After actual foreground cursor, before the independent HUD camera. Colors survive the white/black pass.
     public void FinishBoard(RenderTexture source,RenderTexture destination)
     {
         if(!ShouldRenderOptics){Graphics.Blit(source,destination);return;}
+        Vector2 damageCenter=board.WorldToViewportPoint(stage.NexusPosition),damageEdge=board.WorldToViewportPoint(stage.NexusPosition+Vector2.right*stage.NexusRadius);
+        if(DamageActive)DamageViewportCenter=damageCenter;
+        float damageUser=Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1));
+        optics.SetVector("_NexusDamage",DamageActive?new Vector4(damageCenter.x,damageCenter.y,Mathf.Clamp01((Time.unscaledTime-damageAt)/damageSeconds),damageUser):Vector4.zero);
+        optics.SetVector("_DamageField",damageField);optics.SetVector("_DamageCore",new Vector4(Mathf.Abs(damageEdge.x-damageCenter.x)*source.width/Mathf.Max(1,Mathf.Min(source.width,source.height)),damageChroma,damageSeconds,0));
+        optics.SetVector("_DamageShape",damageShape);optics.SetTexture("_DamageTextMask",fever.Circuits==null?Texture2D.blackTexture:fever.Circuits.ScoreGlyphMask);
         if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null){
             var exit=fever.Exit;float pressure=(float)exit.Pressure(fever.Model.Elapsed),distort=Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1));
             float exitShort=Mathf.Max(1,Mathf.Min(source.width,source.height));Vector2 center=board.WorldToViewportPoint(stage.NexusPosition);
@@ -136,7 +159,7 @@ public sealed class FeverWorldTransition : MonoBehaviour
         }
         float shorter=Mathf.Max(1,Mathf.Min(source.width,source.height));
         optics.SetVector("_LensAspect",new Vector4(source.width/shorter,source.height/shorter,0,0));
-        float weight=(float)FeverFlowMath.OpticsWeight(fever.Model.Elapsed,fever.Model.PhaseSeconds-fever.Model.Elapsed);
+        float weight=fever.Model.Current==FeverState.Phase.Fever?(float)FeverFlowMath.OpticsWeight(fever.Model.Elapsed,fever.Model.PhaseSeconds-fever.Model.Elapsed):0;
         float user=Mathf.Clamp(CursorDashTuning.Number("user.distortion",1),0,2);
         optics.SetVector("_Optics",new Vector4(Mathf.Clamp(v==null?.0175f:v.feverLensStrength,0,.025f),Mathf.Clamp(v==null?.0042f:v.feverChromaticHit,0,.006f),Mathf.Clamp(v==null?.0008f:v.feverChromaticAmbient,0,.0015f),weight*user));
         optics.SetFloat("_LensRadius",v==null?.58f:Mathf.Clamp(v.feverLensRadius,.2f,.9f));

@@ -107,7 +107,7 @@ namespace CursorDashTests
             yield return WaitRealtime(.72f);
             Assert.IsTrue(((Component)Get(stage,"deathUIController")).gameObject.activeInHierarchy,"Result follows the complete .64s finale.");
             Assert.IsNull(Get(stage,"Finale"));Assert.AreEqual(1,Time.timeScale);
-            Call(stage,"ReturnHome");yield return WaitForScene("01.StageSelectScene");Assert.IsNull(Find("StageManager"));Assert.AreEqual(1,Time.timeScale);
+            Call(stage,"ReturnHome");yield return WaitForScene("01.StageSelectScene");Assert.AreSame(stage,Find("StageManager"));Assert.AreEqual("Main",Get(stage,"State").ToString());Assert.AreEqual(1,Time.timeScale);
         }
     }
 }

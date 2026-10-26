@@ -12,6 +12,7 @@ public sealed class CursorDashTypography : MonoBehaviour
     private Font boldSource,mediumSource;private TMP_FontAsset bold,medium;
     private readonly HashSet<int> assigned=new HashSet<int>();
     public static TMP_FontAsset Bold=>Ensure().bold;
+    public static TMP_FontAsset Medium=>Ensure().medium;
     public static Font MediumFont=>Ensure().mediumSource;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] private static void ResetStatics(){instance=null;}
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] private static void Boot(){Ensure();}

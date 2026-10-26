@@ -24,11 +24,13 @@ public sealed class CursorDashFever : MonoBehaviour
     public double BackgroundScorePulse=>projection?.Pulse??0;
     public bool BackgroundScoreAtlasMatches=>projection!=null&&projection.AtlasMatches;
     public FeverWorldTransition World {get;private set;}
+    public CursorDashCircuits Circuits {get;private set;}
     public float Clock {get;private set;}
     public int ActiveBonuses=>bonus==null?0:bonus.ActiveCount;
     public int LastClearedThreats {get;private set;}
     public bool DottedControlled=>rig.Bound;
     public double DottedSpeed=>rig.Speed;
+    public float DottedRestRadius=>rig.RestRadius; // Read-only geometry for circuit intake; no ring state is changed.
     public string HudAtlasStatus=>hud==null?"대기":hud.AtlasStatus;
     public int SpawnedBonuses=>bonus==null?0:bonus.Spawned;
     public bool ContactDiagnostics {get=>bonus!=null&&bonus.Diagnostics;set{if(bonus!=null)bonus.Diagnostics=value;}}
@@ -50,11 +52,13 @@ public sealed class CursorDashFever : MonoBehaviour
         if(stage.Feedback!=null)stage.Feedback.Signaled+=OnFeedback;
         gameObject.AddComponent<CursorDashLivingBackground>().Initialize(stage);
         hud=new FeverScoreHud(this,fontSource,legacyScore);projection=new FeverBackgroundScore(this,stage,fontSource);
+        Circuits=gameObject.AddComponent<CursorDashCircuits>();Circuits.Initialize(stage,this);
     }
     public void Advance(float delta,bool paused)
     {
         Model.Paused=paused;Model.Tick(delta);
         float step=paused?0:Mathf.Max(0,delta);Clock+=step;bonus?.Tick(step);projection?.Advance(step);
+        Circuits?.Advance(step);
         rig.Advance(step,Model.Current,(float)Model.Progress,Model.Elapsed);
         if(Model.Current==FeverState.Phase.Entering&&Model.Progress>=.66&&!entryImpulse){
             entryImpulse=true;
@@ -64,6 +68,17 @@ public sealed class CursorDashFever : MonoBehaviour
             }
         }
         stage.SetTimeScore(stage.scoreManager.TimeScore);
+    }
+    public void AdvanceSpaceVisuals(float delta)
+    {
+        float step=Mathf.Max(0,delta);Clock+=step;Circuits?.Advance(step);rig.Advance(step,FeverState.Phase.Normal,0);
+    }
+    public void PulseRoundRing()=>rig.Pulse(true);
+    public void StartRingPulse(float strength,float decay)=>rig.EntryPulse(strength,decay);
+    public void ResetSpace()
+    {
+        Abort();Model.ResetRun();rig.Restore(false);Exit=null;feelGate.Reset();entryImpulse=ownsShake=false;
+        ContactDiagnostics=false;projection?.ResetRound();World?.Clear();Circuits?.ResetSpace();
     }
     private void Transition(FeverState.Phase before,FeverState.Phase after)
     {
@@ -95,6 +110,7 @@ public sealed class CursorDashFever : MonoBehaviour
     {
         if(!CursorDashTuning.Toggle("fx.enabled",true))return;
         World?.Hit(point);
+        Circuits?.Hit(point);
         rig.Pulse(false);
         float gain=BonusImpactGain;
         if(feelGate.Stop(Clock,FeverSettings.Safe(Settings.bonusStopGap,.18,.08)))stage.RequestFeedbackStop(Mathf.Clamp((float)FeverSettings.Safe(Settings.bonusStop,.012,0)*gain,0,.035f));
@@ -107,6 +123,7 @@ public sealed class CursorDashFever : MonoBehaviour
     public void Abort()=>Model?.Abort();
     public void Review(string command)
     {
+        if(stage?.Space!=null&&stage.Space.AtmosphereActive)return;
         if(stage==null||stage.IsDeath||(!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled))return;
         stage.DisqualifyRecord();
         switch(command){

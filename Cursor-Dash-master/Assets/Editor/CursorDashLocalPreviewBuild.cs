@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -69,8 +70,10 @@ public static class CursorDashLocalPreviewBuild
         Directory.CreateDirectory(Path.GetDirectoryName(statePath));
         File.WriteAllText(statePath,"{\"state\":\"building\",\"output\":"+Newtonsoft.Json.JsonConvert.SerializeObject(destination)+"}");
         try{
-            // Existing compression/template and registered scenes are read, never replaced.
-            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/Scenes/01.StageSelectScene.unity","Assets/Scenes/Cyberpunk.unity"},locationPathName=destination,target=BuildTarget.WebGL,options=BuildOptions.None});
+            // Use the approved registered order, including the shared-space Cyberpunk entry scene.
+            var scenes=EditorBuildSettings.scenes.Where(scene=>scene.enabled).Select(scene=>scene.path).ToArray();
+            if(scenes.Length==0||scenes.Any(scene=>!File.Exists(scene)))throw new InvalidOperationException("Registered build scenes must exist.");
+            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=scenes,locationPathName=destination,target=BuildTarget.WebGL,options=BuildOptions.None});
             File.WriteAllText(statePath,Newtonsoft.Json.JsonConvert.SerializeObject(new{state=report.summary.result.ToString(),output=destination,errors=report.summary.totalErrors,warnings=report.summary.totalWarnings,bytes=report.summary.totalSize,seconds=report.summary.totalTime.TotalSeconds,buildId=CursorDashTuning.BuildId,finishedUtc=DateTime.UtcNow.ToString("o")},Newtonsoft.Json.Formatting.Indented));
             Debug.Log("CP14_LOCAL_BUILD_FINISHED: "+report.summary.result+" "+destination);
         }catch(Exception e){File.WriteAllText(statePath,Newtonsoft.Json.JsonConvert.SerializeObject(new{state="Exception",error=e.ToString(),output=destination}));Debug.LogException(e);}

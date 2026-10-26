@@ -68,3 +68,81 @@ MonoBehaviour:
   backgroundScoreReaction: 0.22
   backgroundScoreScaleCap: 1.22
   backgroundScoreResponse: 0.32
+  dynamicCircuitsEnabled: 1
+  circuitHitsEnabled: 1
+  circuitDensity: 12
+  circuitMainWidth: 0.043055556
+  circuitTwoTierWidthsEnabled: 1
+  circuitPrimaryWidth: 0.018518519
+  circuitSecondaryWidth: 0.013888889
+  circuitLineWidth: 0.025925926
+  circuitBranchWidth: 0.009259259
+  circuitContactRadius: 0.02962963
+  circuitContactStroke: 0.006481481
+  circuitTipEmphasis: 0.14
+  circuitNormalTint: {r: 0.40, g: 0.47, b: 0.52, a: 1}
+  circuitFeverTint: {r: 0.18, g: 0.19, b: 0.20, a: 1}
+  circuitNormalContrast: 0.075
+  circuitFeverContrast: 0.065
+  circuitAmbientEnabled: 1
+  circuitAmbientSpeed: 0.24
+  circuitAmbientInterval: 2.6
+  circuitAmbientStrength: 0.10
+  circuitAmbientTail: 0.20
+  circuitAmbientHead: 0.025
+  circuitAmbientLimit: 2
+  circuitHitRange: 0.13
+  circuitTransferSpeed: 1.65
+  circuitHitDecay: 0.26
+  circuitHitSeconds: 0.24
+  circuitMaxEmphasis: 0.18
+  circuitReactionLimit: 4
+  circuitBuildSpeed: 1.8
+  circuitRestoreSpeed: 2.1
+  circuitPathStagger: 0.018
+  circuitEntryPush: 0.075
+  circuitRecallBend: 0.65
+  circuitRecallPower: 2.6
+  circuitRecallStagger: 0.12
+  circuitFeverRetreatEnabled: 1
+  circuitRetreatStart: 0.18
+  circuitRetreatSpread: 0.30
+  circuitRetreatPower: 1.35
+  circuitRetreatReadHold: 0.06
+  circuitScoreMaskEnabled: 1
+  circuitScoreMaskStrength: 1
+  circuitScoreMaskPadding: 0.65
+  circuitScoreMaskSoftness: 0.75
+  circuitDeathSpeed: 1.6
+  circuitDeathStagger: 0.018
+  mainLogo: {fileID: 21300000, guid: f8abf33bd82f6b742a3716e6bce57786, type: 3}
+  spaceStartSeconds: 1.35
+  spaceRetreatEnd: 0.28
+  spaceRebuildEnd: 0.82
+  spaceNexusAt: 0.42
+  spaceCursorAt: 0.64
+  spaceCursorDistance: 0.95
+  spaceBestScale: 1.5
+  spaceBestOpacity: 0.52
+  spaceRingLead: 0.10
+  spaceBodyOvershoot: 0.045
+  spaceCursorAcceleration: 0.18
+  spaceRingBoost: 780
+  spaceRingDecay: 0.30
+  spaceMainScoreScale: 0.82
+  spaceMainScoreOpacity: 0.85
+  spaceMainScoreLift: 0.28
+  spaceLogoWidth: 840
+  spaceLogoY: 0.79
+  nexusGaugeRewindSeconds: 0.16
+  nexusDamageSeconds: 0.24
+  nexusDamageFlash: 0.26
+  nexusDamageChromatic: 0.0055
+  nexusDamageWaveEnabled: 1
+  nexusDamageWaveStrength: 0.008
+  nexusDamageWaveWidth: 0.12
+  nexusDamageWaveSpeed: 2.6
+  nexusDamageWaveRange: 0.72
+  nexusDamageCompression: 0.85
+  nexusDamageReleasePower: 1.4
+  nexusDamageTint: {r: 1, g: 0.04, b: 0.08, a: 1}

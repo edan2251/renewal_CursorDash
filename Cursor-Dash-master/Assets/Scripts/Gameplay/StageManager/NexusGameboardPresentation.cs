@@ -18,6 +18,10 @@ public sealed class NexusGameboardPresentation : MonoBehaviour
     public string BindingStatus {get;private set;}="초기화 대기";
     public float FinaleScale {get;set;}=1;
     public float FinaleAlpha {get;set;}=1;
+    public float EntryBodyScale {get;set;}=1;
+    public float EntryRingScale {get;set;}=1;
+    public float EntryBodyAlpha {get;set;}=1;
+    public float EntryRingAlpha {get;set;}=1;
     public Camera GameboardCamera=>boardCamera;
     public int RenderedFrames {get;private set;}
     private static readonly string[] LayerTextures={"_Layer0Tex","_Layer1Tex","_Layer2Tex"};
@@ -30,11 +34,11 @@ public sealed class NexusGameboardPresentation : MonoBehaviour
     public float LayoutScale=>stage!=null&&stage.NexusRadius>0&&RawRadius>.000001f?stage.NexusRadius/RawRadius:1;
     public Vector2 WorldCenter=>(Vector2)MapToBoundary(RawCenter);
     public float BodyRadius=>RawRadius*LayoutScale;
-    public Vector3 MapVisualPoint(Vector3 point)=>MapToBoundary(point);
-    private Vector3 MapToBoundary(Vector3 point)
+    public Vector3 MapVisualPoint(Vector3 point)=>MapToBoundary(point,false);
+    private Vector3 MapToBoundary(Vector3 point,bool bodyLayer=true)
     {
         if(stage==null||stage.NexusRadius<=0)return point;
-        Vector3 center=RawCenter;Vector2 anchor=stage.NexusPosition;float scale=LayoutScale;
+        Vector3 center=RawCenter;Vector2 anchor=stage.NexusPosition;float scale=LayoutScale*(bodyLayer?EntryBodyScale:EntryRingScale);
         return new Vector3(anchor.x+(point.x-center.x)*scale*FinaleScale,anchor.y+(point.y-center.y)*scale*FinaleScale,point.z);
     }
 
@@ -70,12 +74,12 @@ public sealed class NexusGameboardPresentation : MonoBehaviour
         {
             Image source=sources[i];source.rectTransform.GetWorldCorners(corners);
             // Follow the existing stable gameplay circle even if CanvasScaler relayouts after a Game View resize.
-            Vector2 a=boardCamera.WorldToViewportPoint(MapToBoundary(corners[0]));
-            Vector2 u=(Vector2)boardCamera.WorldToViewportPoint(MapToBoundary(corners[3]))-a;
-            Vector2 v=(Vector2)boardCamera.WorldToViewportPoint(MapToBoundary(corners[1]))-a;
+            Vector2 a=boardCamera.WorldToViewportPoint(MapToBoundary(corners[0],source==body));
+            Vector2 u=(Vector2)boardCamera.WorldToViewportPoint(MapToBoundary(corners[3],source==body))-a;
+            Vector2 v=(Vector2)boardCamera.WorldToViewportPoint(MapToBoundary(corners[1],source==body))-a;
             foreach(Vector2 corner in new[]{a,a+u,a+v,a+u+v}){low=Vector2.Min(low,corner);high=Vector2.Max(high,corner);}
             rectU[i]=new Vector4(a.x,a.y,u.x,u.y);rectV[i]=new Vector4(v.x,v.y,0,0);
-            Color tint=source.color;tint.a*=FinaleAlpha;if(!source.gameObject.activeInHierarchy||!previousEnabled[i])tint.a=0;tints[i]=tint;
+            Color tint=source.color;tint.a*=FinaleAlpha*(source==body?EntryBodyAlpha:EntryRingAlpha);if(!source.gameObject.activeInHierarchy||!previousEnabled[i])tint.a=0;tints[i]=tint;
             Sprite sprite=source.sprite;Rect uv=sprite.textureRect;Texture texture=sprite.texture;
             textureRects[i]=new Vector4(uv.x/texture.width,uv.y/texture.height,uv.width/texture.width,uv.height/texture.height);
             material.SetTexture(LayerTextures[i],texture);

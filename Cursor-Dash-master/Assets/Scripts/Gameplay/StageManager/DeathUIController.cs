@@ -47,7 +47,11 @@ public class DeathUIController : MonoBehaviour
         if(summaryLabel!=null){
             string map=GameManager.instance.MapInformation.mapName;
             summaryLabel.text=$"최고 점수 {CursorDashPointsRecord.Read(map)}점\n생존 {survival:F2}초  ·  처치 {circles+hexes}  ·  방어 {blocks}";
+            var stage=StageManager.instance;
+            if(stage!=null&&!stage.RecordEligible)summaryLabel.text+="\n기록 제외: "+stage.RecordExclusionReason;
+            else if(!string.IsNullOrEmpty(CursorDashPointsRecord.LastError))summaryLabel.text+="\n"+CursorDashPointsRecord.LastError;
             var size=summaryLabel.rectTransform.sizeDelta;size.y=Mathf.Max(size.y,summaryLabel.fontSize*2.6f);summaryLabel.rectTransform.sizeDelta=size;
+            if(stage!=null&&!stage.RecordEligible){size.y=Mathf.Max(size.y,summaryLabel.fontSize*3.7f);summaryLabel.rectTransform.sizeDelta=size;}
         }
     }
     private void OnDisable() { tween?.Kill(); tween = null; }

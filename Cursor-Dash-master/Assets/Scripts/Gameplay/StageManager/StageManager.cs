@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(-50)]
 public class StageManager : MonoBehaviour
 {
-    public enum RoundState { Playing, Paused, Ended }
+    public enum RoundState { Playing, Paused, Ended, Main, Starting }
     public static StageManager instance;
     public ScoreManager scoreManager;
 
@@ -36,8 +36,12 @@ public class StageManager : MonoBehaviour
     private NexusGameboardPresentation nexusPresentation;
     private NexusImpactVfx finale;
     public CursorDashFever Fever {get;private set;}
+    public CursorDashSpaceFlow Space {get;private set;}
+    public bool AtmosphereActive=>IsPlaying||(Space!=null&&Space.AtmosphereActive&&!panelPaused&&!devPaused);
+    public string RecordExclusionReason {get;private set;}="";
     private Coroutine resultRoutine;
     private bool pendingLethal;
+    private bool finalDamageConfirmed;
     private Vector2 lastContact,lastIncoming;
     private NexusImpactVfx.Cause lastCause;
     public NexusImpactVfx Finale=>finale;
@@ -125,7 +129,8 @@ public class StageManager : MonoBehaviour
         manager.soundManager.InitialSoundPitch(manager.soundManager.BGMSource);
         manager.soundManager.ChangeBGM(manager.MapInformation.audioClip);
         manager.soundManager.PlayBGM();
-        if(CursorDashSession.IsPractice)gameObject.AddComponent<CursorDashPractice>();
+        if(sceneName=="Cyberpunk"){Space=gameObject.AddComponent<CursorDashSpaceFlow>();Space.Initialize(this);}
+        else if(CursorDashSession.IsPractice)gameObject.AddComponent<CursorDashPractice>();
         gameObject.AddComponent<CursorDashBoundaryView>();
         StartCoroutine(CaptureSettledBoundary());
     }
@@ -138,6 +143,7 @@ public class StageManager : MonoBehaviour
 
     private void Update()
     {
+        if(Space!=null&&Space.AtmosphereActive){Space.Advance(Time.unscaledDeltaTime);Fever?.AdvanceSpaceVisuals(AtmosphereActive?Time.unscaledDeltaTime:0);return;}
         if (IsPlaying) scoreManager.TimeScore += Time.deltaTime;
         Fever?.Advance(Time.deltaTime,!IsPlaying||Time.deltaTime<=0);
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -149,7 +155,7 @@ public class StageManager : MonoBehaviour
 
     public void SetPaused(bool paused)
     {
-        if (IsDeath) return;
+        if (IsDeath||state==RoundState.Main||state==RoundState.Starting) return;
         state = paused ? RoundState.Paused : RoundState.Playing;
         stick?.ResetInput();
         PlayerCharacterController.instance?.MoveStop();
@@ -202,7 +208,13 @@ public class StageManager : MonoBehaviour
         if(!IsPlaying||NormalThreatsSuppressed||Fever==null||!Fever.Award(source))return;
         RegisterHexReturn(point,silhouette,tint,incoming);SetTimeScore(scoreManager.TimeScore);
     }
-    private void OnNexusHealthLost()=>Fever?.NexusHit();
+    private void OnNexusHealthLost()
+    {
+        if(state==RoundState.Main||state==RoundState.Starting)return;
+        Fever?.NexusHit();
+        if(scoreManager.Hp<=0)finalDamageConfirmed=true;
+        else feedback?.ConfirmedNexusDamage();
+    }
 
     public void DamageNexus(float amount)=>DamageNexusAt(amount,NexusPosition);
     public void DamageNexusAt(float amount,Vector2 contact)
@@ -213,16 +225,17 @@ public class StageManager : MonoBehaviour
     { DamageNexusContact(amount,contact,incoming,NexusImpactVfx.Cause.Laser,tint,.38f); }
     private void DamageNexusContact(float amount,Vector2 contact,Vector2 incoming,NexusImpactVfx.Cause cause,Color tint,float life)
     {
-        if(!IsPlaying||NormalThreatsSuppressed||amount<=0)return;
+        if(!IsPlaying||NormalThreatsSuppressed||amount<=0||float.IsNaN(amount)||float.IsInfinity(amount)||scoreManager.Hp<=0)return;
         bool protectedHp=CursorDashSession.IsPractice&&PracticeInvulnerable;
         bool lethal=!protectedHp&&scoreManager.Hp>0&&amount>=scoreManager.Hp;
         lastCause=cause;lastContact=contact;lastIncoming=incoming.sqrMagnitude>.00001f?incoming.normalized:Vector2.down;
         // HP setter synchronously calls Death. Never emit the normal final hit before that callback.
-        if(!lethal)feedback.EmitNexus(cause,contact,lastIncoming,tint,life);
-        if(protectedHp){Fever?.NexusHit();return;}
+        if(protectedHp){Fever?.NexusHit();feedback.EmitNexusCommitted(cause,contact,lastIncoming,tint,life,false);return;}
+        float before=scoreManager.Hp;
         pendingLethal=lethal;scoreManager.Hp-=amount;pendingLethal=false;
+        if(!lethal&&scoreManager.Hp<before)feedback.EmitNexusCommitted(cause,contact,lastIncoming,tint,life,true);
     }
-    public void DisqualifyRecord()=>RecordEligible=false;
+    public void DisqualifyRecord(){RecordEligible=false;RecordExclusionReason="개발자 설정 또는 검수 조작";}
     private void RefreshRuntimeClock()=>ApplyTimeScale();
     public void SetPanelPaused(bool value){panelPaused=value;ResetTransientInput(value);ApplyTimeScale();}
     public void SetDevPaused(bool value){devPaused=value;ResetTransientInput(value);ApplyTimeScale();}
@@ -264,7 +277,7 @@ public class StageManager : MonoBehaviour
 
     public void Death()
     {
-        if (IsDeath) return;
+        if (IsDeath||state==RoundState.Main||state==RoundState.Starting) return;
         state = RoundState.Ended;
         StopGameplay();
         GameManager manager = GameManager.instance;
@@ -278,7 +291,7 @@ public class StageManager : MonoBehaviour
         manager.soundManager.PullSound(manager.soundManager.BGMSource);
         Vector2 point=pendingLethal?lastContact:NexusPosition;
         Vector2 incoming=pendingLethal?lastIncoming:Vector2.down;
-        feedback?.EmitFinal(point,incoming);
+        feedback?.EmitFinalCommitted(point,incoming,finalDamageConfirmed);finalDamageConfirmed=false;
         // Replace the old whole-core particle system, rather than stacking it on the final impact.
         if(coreDeathAnimation!=null)coreDeathAnimation.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
         if(CursorDashTuning.Toggle("fx.enabled",true)&&CursorDashTuning.Toggle("fx.particles",true)){
@@ -324,10 +337,37 @@ public class StageManager : MonoBehaviour
         if (pauseHandler != null) pauseHandler.gameObject.SetActive(false);
     }
 
-    public void Retry() => ChangeScene(SceneManager.GetActiveScene().name);
-    public void ReturnHome() => ChangeScene("01.StageSelectScene");
+    public void Retry(){if(Space!=null)Space.Restart();else ChangeScene(SceneManager.GetActiveScene().name);}
+    public void ReturnHome(){if(Space!=null)Space.Home();else ChangeScene("01.StageSelectScene");}
+    public void SetSpaceState(RoundState value){state=value;ApplyTimeScale();}
+    public void PrepareSpace()
+    {
+        finalDamageConfirmed=pendingLethal=false;
+        RecordEligible=false;RecordExclusionReason="메인·시작 전환";
+        PracticeInvulnerable=true;
+        if(resultRoutine!=null)StopCoroutine(resultRoutine);resultRoutine=null;CancelFinale();StopGameplay();
+        stopBurstStart=stopCooldownUntil=0;
+        cameraShake?.Reset();cameraFlash?.ResetFlash();DestroyedNodes=BlockedBeams=HexDestroyed=0;NormalNode.DefenseStreak=0;
+        if(hpBarImage!=null){hpBarImage.gameObject.SetActive(true);var center=hpBarImage.transform.parent.Find("HpCentral");if(center!=null)center.gameObject.SetActive(true);}
+        if(hpBarFrame!=null)hpBarFrame.gameObject.SetActive(true);
+        var oldPractice=GetComponent<CursorDashPractice>();if(oldPractice!=null){oldPractice.enabled=false;Destroy(oldPractice);}
+        Fever.ResetSpace();scoreManager.Initialize();deathUIController?.UICanvasOff();
+        nodeCreator?.ResetRoundTuning();PlayerCharacterController.instance?.ApplyRoundTuning();PlayerCharacterAfterImage.instance?.ApplyTuning();
+        GameManager.instance.soundManager.InitialSoundPitch(GameManager.instance.soundManager.BGMSource);
+    }
+    public void BeginSpaceGameplay()
+    {
+        RecordEligible=!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled;
+        RecordExclusionReason=RecordEligible?"":CursorDashSession.IsPractice?"훈련·가이드 모드":"개발자 모드";
+        state=RoundState.Playing;GameManager.instance.CurrentSceneType=GameManager.SceneType.InGame;
+        if(CursorDashSession.IsPractice)gameObject.AddComponent<CursorDashPractice>();else GetComponent<PatternReader>()?.StartRound();
+        stick?.ResetInput();PlayerCharacterController.instance?.MoveStop();ApplyTimeScale();
+        GameManager.instance.soundManager.BGMSource.UnPause();
+    }
     public void ChangeScene(string sceneName)
     {
+        if(Space!=null&&sceneName=="01.StageSelectScene"){ReturnHome();return;}
+        if(Space!=null&&sceneName==SceneManager.GetActiveScene().name){Retry();return;}
         if(resultRoutine!=null)StopCoroutine(resultRoutine);resultRoutine=null;CancelFinale();
         state = RoundState.Ended;
         StopGameplay();

@@ -11373,7 +11373,6 @@ MonoBehaviour:
   useCharacterSettings: 0
   acceleration: 60
   releaseDeceleration: 18
-  turnDegreesPerSecond: 540
 --- !u!212 &1727358495
 SpriteRenderer:
   serializedVersion: 2
