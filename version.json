@@ -1,7 +1,7 @@
 {
-  "buildId": "cursordash-20261026-hex6-c430e822d9a1",
-  "defaultsVersion": "cp14-v2.1-20261024",
-  "sourceCommit": "e6d297fb6e764fee06221bf294c4c39c1198d19a",
+  "buildId": "cursordash-20261027-space-e0c721d84748",
+  "defaultsVersion": "hex-timeline-v1-20261026",
+  "sourceCommit": "f6e5f8a6c9f1d10946ba35f7a4381f8088408168",
   "unity": "6000.3.23f1",
-  "builtUtc": "2026-10-25T23:24:46.8717050Z"
+  "builtUtc": "2026-10-26T23:45:31.6061280Z"
 }
