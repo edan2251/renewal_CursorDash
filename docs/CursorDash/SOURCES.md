@@ -1,5 +1,11 @@
 # 근거와 참고 자료
 
+## D-054 실제 WebGL/Pages·공개 근거 (2026-10-27)
+
+소스f6e5f8a/실빌드cursordash-20261027-space-e0c721d84748/gh-pages3195915와[Pages40422372912](https://github.com/edan2251/renewal_CursorDash/actions/runs/40422372912)를고정했다. 실제Unity전용로그/성공JSON·입력1489해시·공개25파일Git바이트HTTP/hash/wasm MIME와canonicalURL의실제IAB GameView·마우스이동/훈련·UI JSON/변경보고서새ID/브라우저오류0이근거다. 웹문서읽기도구접속은실패했으며이를화면검증으로사용하지않는다.
+
+근거는Unity루트 `Logs/release-pages-20261027`·public-main/public-training/public-report PNG·local/public-runtime-export/report/console·pages-run/result·manifest다. 로그/사적진단/참고영상은소스·Pages공개에포함하지않았다. 실휴대폰·장시간/전체전투·저장재실행/오디오관찰로확대인용하지않는다. [완료기록/미검증](RELEASE_20261027.md).
+
 ## D-053 073054 현재 영상·실제 소스/화면 근거 (2026-10-27)
 
 실제자료는 `D:/renewal_CursorDash/_incoming/references/녹음 2026-10-27 073054.mp4`4,487,070bytes다. 요청의형제 CursorDash_incoming 경로대신 이파일을기존MediaPlayer에서확인했다. 제목/약13초길이·0/4/8/9/11초부근표본과짧은재생을실제관람했고 전체프레임/오디오 검수는아니다. 목표레퍼런스가아닌현재문제자료다.

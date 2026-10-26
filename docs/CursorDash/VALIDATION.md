@@ -1,5 +1,15 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-054 누적본 WebGL·공개 배포 — 실제 결과 (2026-10-27)
+
+- **PASS:** source f6e5f8a/68파일선별·원격main push, WebGL Succeeded/오류0/경고7/326.289초·입력1489파일전후동일, 기존gh-pages3195915 정상push·Pages40422372912 completed/success/정확한head.
+- **PASS HTTP/해시:** 로컬24/공개25파일HTTP200·실제Git바이트SHA256·wasm MIME. canonical공개런타임의같은buildId `cursordash-20261027-space-e0c721d84748`를UI JSON/보고서에서교차확인.
+- **PASS 실제IAB:** Main로고/BEST/숫자·회로·시작클릭·마우스drag/안내단계진행·trail,공개훈련·Dev패널·JSON/보고서·기본값.15/.20/.60/turn1800,warn/error0,Dev해제·Main복귀. 저장/삭제·기록초기화없음. 초기CLI소켓차단은승인된읽기경로로통과했고실패빌드게시없음.
+- **보존:** 시작1881파일·미추적/Recovery/Archive/영상·다른사용자자료유지/제외. 새런타임기능수정없음·buildhelper현재등록씬순서읽기/BuildIdentity만포장변경. 이전native30PASS의생산소스해시일치, 이번suite재실행으로표시하지않음.
+- **미검증/제약:** 실제모바일/다른엔진·장시간성능/음향·전체공개전투/피버/사망/Retry·저장재실행·클립보드/파일입출력. 실제847×856의웹도구바/Pause겹침은기존이슈. summary경고7/Editor종료JobTempAlloc진단·Unity생성meta빈값공백12개는별도기록하며검사전부PASS로뭉뚱그리지않음.
+
+[정확한소스/산출물·근거/미검증·다음](RELEASE_20261027.md). 다음은사용자공개PC/모바일검수이며이번한정승인완료뒤새기능/추가빌드·Git게시자동진행없음.
+
 ## D-053 공유 숫자·등장·피격·quiet flow — 실제 결과 (2026-10-27)
 
 - **PASS 실제 Unity compile:** 대상6000.3.23f1/DX11, 최종소스보다새로운nativeDLL/Console오류0. Shader는 별도실GPU사례로 확인했다.

@@ -1,5 +1,11 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-054 WebGL·기존 Pages 릴리스 실제 실행 (2026-10-27)
+
+시작Unity프로세스/창/lock없음확인후기존6000.3.23f1 batchmode빌드만실행/정상Exit했다. 자동Play·저장폐기/다른프로젝트종료·설치/전역변경없음. 빌드입력1489파일전후해시동일·새출력cursordash-20261027-space-e0c721d84748. 기존main/gh-pages/URL유지, source f6e5f8a/pages3195915 정상push·Pages성공이다.
+
+루프백8886검수서버·실제IAB로컬/공개메인·클릭/마우스이동·훈련·Dev/JSON/보고서·새ID와승인기본값을확인했다. 로컬24/공개25HTTP/hash·wasm MIME일치/warn-error0,DevOFF/Main복귀·서버정상종료. 제한된CLI네트워크의초기소켓차단은정상승인경로로해결했고설정완화없음. 실제모바일/다른엔진/장시간성능·실저장재실행은NOT_RUN. [소스/빌드/문서커밋·경고/근거](RELEASE_20261027.md).
+
 ## D-053 기존 대상 Unity native QA 완료 (2026-10-27)
 
 기존 Unity6000.3.23f1/Cyberpunk/DX11 인스턴스만 사용했다. 정상 Refresh/컴파일·정상 TestRunner집중30/30·실GPU pixel검사/Play내부호출·ScreenCapture24장을 수행했다. 새Unity/다른프로젝트종료/설치·Volume·카메라·패키지·연결·전역설정 변경은 없다. 마지막 실제 DLL08:08:48KST→JSON/XML08:09:52KST→읽기진단08:15:52KST를 교차확인했다. D-052의 과거도구중단은 현재차단이 아니다.

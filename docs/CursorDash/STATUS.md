@@ -1,10 +1,12 @@
 # CursorDash 현재 상태와 다음 한 작업
 
-## 최신 — D-054 현재 로컬 누적본 릴리스 진행 (2026-10-27)
+## 최신 — D-054 현재 로컬 누적본 공개 배포 완료 (2026-10-27)
 
-**RELEASE_IN_PROGRESS / 아직 공개 갱신 전.** 최신 사용자 요청으로 D-046~053의 현재 로컬 구현을 선별 소스 커밋/push·WebGL 빌드·기존 Pages에 배포한다. 이전 한정 금지를 이번 릴리스에만 대체하며 새 기능/디자인/밸런스는 바꾸지 않는다. 시작 main1d11743/원격main8c357b8·gh-pages4162553, 기존 미커밋/미추적/무관 파일 보존. 실행 중 Unity Editor·미저장 메모리 상태는 없고 저장/폐기하지 않았다. 기존 build helper의 하드코딩 씬 순서만 현재 등록 순서 Cyberpunk→legacy01로 읽게 수정했다.
+**DEPLOYED_PUBLIC_RUNTIME_VERIFIED / 사용자 공개 버전 검수 대기.** 소스 main **f6e5f8a6c9f1d10946ba35f7a4381f8088408168**(선별68파일), 웹 gh-pages **3195915a14e1e06b3867ed4cc0db530f3260b81a**, [Pages 작업40422372912 성공](https://github.com/edan2251/renewal_CursorDash/actions/runs/40422372912). 공개 [https://edan2251.github.io/renewal_CursorDash/](https://edan2251.github.io/renewal_CursorDash/), buildId **cursordash-20261027-space-e0c721d84748**. D-046~053 누적본이며 새 게임/디자인/밸런스 변경은 없다. build helper의 옛 고정 씬 순서만 현재 enabled 설정 Cyberpunk→legacy01로 읽게 수정했다. [완료 결과·소스/배포 구분·미검증](RELEASE_20261027.md).
 
-buildId `cursordash-20261027-space-e0c721d84748`, 새 전용 LocalDevPreview 폴더. D-053의 집중30 nativePASS/실GPU·Play내부호출 근거와 미검증 범위는 유지한다. [릴리스 기록·진행/완료 결과](RELEASE_20261027.md). 빌드/로컬 확인 성공 전 공개 산출물을 교체하지 않는다. 다음 한 작업은 이번 릴리스의 빌드·로컬/공개 검증 완료다. 아래 이전 대기/금지는 이번 실행 권한으로 재적용하지 않는다.
+**PASS** Unity6000.3.23f1 WebGL 빌드 오류0/경고7/326.289초·입력1489파일해시전후동일, 로컬24/공개25파일 HTTP200·Git SHA256/wasm MIME일치, 실제IAB 메인·시작클릭/마우스이동·궤적/안내진행·훈련·개발자패널·JSON/보고서의같은buildId/원형.15/.20/.60·turn1800, browser warn/error0·DevOFF/메인복귀. D-053 native집중30PASS는동일게임소스해시로연결하며 이번재실행이아니다. **NOT_RUN** 실제모바일/다른브라우저·장시간성능/전체전투·정상기록재실행·실저장/클립보드/파일입출력재검증. 현재847×856에서웹도구바와게임Pause일부겹침은기존문제로보고하고수정하지않았다. 경고7/종료JobTempAlloc진단도기록했다.
+
+시작Unity Editor/lock없음·저장폐기없음, 시작1881파일/기존사용자·미추적·Recovery/Archive/참고영상등은보존·커밋제외했다. 소스/배포/사후문서커밋을구분하고 문서만추가되어게임재빌드는없다. 로컬검수서버정상종료·자기빌드프로세스종료, 다른프로젝트종료없음. **다음 한 작업:** 사용자공개PC/모바일검수(메인/입력인계·피격/회로/기존피버/Retry/Home·HUD겹침). 이번한정승인완료, 추가기능·빌드/커밋/push/배포는새지시를기다린다. 육각재검토제외·일반겹침/새Flash그림·별도사이버재구축보류유지.
 
 ## 최신 — D-053 공유 점수·등장 박자·공간 피격·회로 흐름 (2026-10-27)
 
