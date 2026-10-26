@@ -1,5 +1,28 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-042 구현·영상 읽기·검사 환경 (2026-10-26)
+
+main/HEAD8c357b8·기존dirty/미추적1847파일의해시/Before를기준으로작업했다. 사용자변경씬/복구·보관파일 유지/메모리dirty상태 조회나저장·폐기없음. Unity실행·Play·빌드/git게시 없음. 기존설치.NET/Roslyn·Unity참조DLL·번들Python/Node만사용/설치·패키지·전역·연결변경없음.
+고지후앱내임시탭/루프백전용서버로 제공50/51영상만프레임디코딩/읽기,게임조작/클립보드접근없음. 정상열람탭닫음/서버종료. 실제게임브라우저/WebGL·Unity/GPU/Physics/모바일검수아님. 요청CursorDash_incoming경로없음/실제_incoming/references동명원본사용·해시유지.
+정적31/실제순수2소스.NET3,126/JS모의DOM5+구문PASS,참조C#108/12/Editor2오류0·기존경고134/공식103컴파일만·실행NOT_RUN. 육각 소스·타이밍 사례는 순수 검사에 포함하지 않았다. 공개D-038불변. [근거/범위/검수](FEVER_EXIT_PROJECTED_SCORE_20261026.md).
+
+## D-041 로컬 구현·검사 환경 (2026-10-26)
+
+시작 main/HEAD8c357b8·기존D-039/040·미추적을Before1844파일 해시로 보호했다. 설치된.NET/Roslyn/Unity참조DLL·번들Python/Node만 사용. Unity실행/메모리dirty읽기·저장/Play·실제컴파일·Shader/GPU/Physics·브라우저/모바일·빌드/커밋/push/배포·컴퓨터UI 없음. 기존 미저장씬/TMP 상태를 저장·폐기하지 않았다.
+참조 게임108/테스트12/Editor2 오류0, 런타임경고134(시작133+과거attackDuration미사용1). 실제순수4소스+Tuning와명시적메모리어댑터2,293단언/JS모의DOM23·구문/정적28PASS. 공식99작성·컴파일만/실행NOT_RUN. 실제PlayerPrefs/localStorage/자산저장·셰이더와화면은검증하지않았다. 공개D-038불변. [Before/실행근거/제약](HEX_DEFAULTS_FEVER_RECALL_20261026.md).
+
+## D-040 도구 확장 검사 환경 (2026-10-26)
+
+기존설치.NET/Roslyn·Unity참조DLL·번들Python/Node만사용했다. 새설치/패키지·전역/연결·Unity실행/Play·씬저장·빌드·Git커밋/push·배포·컴퓨터UI조작없음. 시작main/HEAD8c357b8·기존D-039변경/미추적파일을별도Before로보존한다.
+실제타임라인수학1,277/Tuning소스+명시적메모리엔진·저장어댑터338 PASS. 실제PlayerPrefs/localStorage저장시험은아니다. tools.js실제코드를모의DOM/Unity메시지에서23검사하고구문검사PASS,실제브라우저화면검증은아니다. 참조C#108/12/2오류0,경고133=기존130+보존한과거직렬화필드3개미사용. 공식95작성·컴파일만/Unity·GPU·Physics/Play·모바일·실제저장지속성NOT_RUN.
+웹템플릿소스도같은도구에연결했으나공개웹은D-038그대로다. [실행범위/근거](HEX_TIMELINE_TOOLS_20261026.md).
+
+## D-039 로컬 수정/검사 환경 (2026-10-26)
+
+기존Unity/렌더러/패키지/전역설정/연결을바꾸지않았다. Unity실행/Play·빌드·UI조작·씬저장/미저장포괄저장폐기·Git커밋/push/배포없음. 메모리dirty상태실측은미실행이며씬을수정하지않고player.turn의실제기본경로만코드로1800에통합했다. 기존씬의540값은더이상바인딩되지않는다.
+기존설치.NET/Roslyn·Unity참조DLL로게임108/테스트12/수동Editor2소스컴파일오류0,경고130(기존동일개수). 실제세순수소스.NET5,425단언/정적21PASS. 공식93작성·컴파일만/실행과Unity컴파일·Shader/GPU/Physics/Play/모바일은NOT_RUN. python 기본별칭은실행불가여서기존번들Python을사용했으며설치하지않았다.
+최신공개는D-038 buildId cursordash-20261026-hex6-c430e822d9a1 그대로다. 이번소스/프로필만의로컬변경이며웹에반영되지않았다. [근거/Before/권한](HEX4_FEVER_EXIT_20261026.md).
+
 ## D-038 실제 빌드·배포 환경 (2026-10-26)
 
 대상Unity실행프로세스/창·프로젝트잠금이없음을확인해사용자미저장작업을저장/폐기하지않고자기빌드전용Unity6000.3.23f1을한번숨김batchmode로실행했다. 정상종료했고다른프로젝트는종료하지않았다. WebGL/Built-in/기존템플릿·압축설정을유지,새설치/패키지/전역/연결변경없음.

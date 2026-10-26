@@ -32,7 +32,7 @@ Shader "CursorDash/FeverWorld"
     float radius=max(.001,_CoreRadius*_VisualBodyScale),r=length(p),aa=max(fwidth(r),.0001);float3 color=source.rgb;
     if(_FeverFlow.x>.5){
     float element=tex2D(_ElementsTex,boardUV).a*_HasElements;
-    float3 whiteWorld=lerp(float3(1,1,1),float3(.80,.82,.84),circuit(i.uv));
+    float3 whiteWorld=lerp(float3(1,1,1),float3(.80,.82,.84),circuit(CDFRecallCircuitUV(i.uv,_FeverCenterAspect,_FeverFlow)));
     whiteWorld=lerp(whiteWorld,float3(.008,.010,.014),element);
     float body=(1-smoothstep(radius-aa,radius+aa,r))*_CoreVisible;
     float water=lerp(-radius,radius,_Level)-_Press*radius*2*saturate(4*_Level*(1-_Level));
@@ -46,14 +46,14 @@ Shader "CursorDash/FeverWorld"
     float outline=(1-smoothstep(radius*.025-aa,radius*.025+aa,abs(r-radius*.975)))*_CoreVisible;
     color=lerp(color,lerp(CDWorldLight(_CoreTint.rgb,impact.z),float3(.006,.008,.011),mono),outline);
     if(_FeverFlow.x>.5&&_FeverFlow.x!=2){
-     float field=CDFFlow(p,_FeverFlow.y,_FeverFlow.z),edge=exp(-abs(field)/max(.006,_FeverFlow.z*.018));
-     float gather=_FeverFlow.x==1?(smoothstep(.10,.52,_FeverFlow.w)*(1-smoothstep(.61,.67,_FeverFlow.w))):sin(saturate((_FeverFlow.w-.32)/.46)*3.141592654);
+     float field=_FeverFlow.x==3?CDFExitFlow(p,_FeverFlow.w,_FeverFlow.z):CDFFlow(p,_FeverFlow.y,_FeverFlow.z),edge=exp(-abs(field)/max(.006,_FeverFlow.z*.018));
+     float gather=_FeverFlow.x==1?(smoothstep(.10,.52,_FeverFlow.w)*(1-smoothstep(.61,.67,_FeverFlow.w))):sin(saturate(_FeverFlow.w)*3.141592654);
      float compressed=exp(-dot(p,p)/max(.00001,radius*radius*.36))*gather;
      color=lerp(color,lerp(float3(1,1,1),float3(.02,.025,.03),mono),saturate((edge*.34+compressed*.52)*_Light));
      // Visible inward curved streaks on exit, distinct from just shrinking a mask.
      if(_FeverFlow.x==3){
       [unroll]for(int k=0;k<7;k++){
-       float u=saturate((_FeverFlow.w-k*.025)/(.72-k*.012)),distanceIn=_FeverFlow.z*1.12*pow(1-u,1.4);
+       float u=saturate((CDFRecallProgress(_FeverFlow.w)-k*.012)/(1-k*.012)),distanceIn=_FeverFlow.z*1.12*(1-CDFRecallTravel(u));
        float angle=k*2.399963+1.8*u+.18*sin(u*3.141592654+k),size=_FeverFlow.z*(.018+.055*sin(u*3.141592654));
        float2 axis=float2(cos(angle),sin(angle)),side=float2(-axis.y,axis.x),q=p-axis*distanceIn;
        float2 curved=float2(dot(q,axis)*.85,dot(q,side)*1.2)/max(.003,size);

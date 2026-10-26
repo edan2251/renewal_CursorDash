@@ -17,7 +17,12 @@ public sealed class CursorDashFever : MonoBehaviour
     private FeverBonusField bonus;private readonly FeverNexusRig rig=new FeverNexusRig();
     private readonly FeverFeedbackGate feelGate=new FeverFeedbackGate();
     private bool entryImpulse,ownsShake;
-    private FeverScoreHud hud;
+    private FeverScoreHud hud;private FeverBackgroundScore projection;
+    public bool BackgroundScoreVisible {get=>projection!=null&&projection.Visible;set{if(projection!=null)projection.Visible=value;}}
+    public MeshRenderer BackgroundScoreRenderer=>projection?.View;
+    public string BackgroundScoreText=>projection?.Text??"";
+    public double BackgroundScorePulse=>projection?.Pulse??0;
+    public bool BackgroundScoreAtlasMatches=>projection!=null&&projection.AtlasMatches;
     public FeverWorldTransition World {get;private set;}
     public float Clock {get;private set;}
     public int ActiveBonuses=>bonus==null?0:bonus.ActiveCount;
@@ -31,8 +36,11 @@ public sealed class CursorDashFever : MonoBehaviour
     public int BonusCollections=>bonus==null?0:bonus.Collected;
     public int BonusSweepCollections=>bonus==null?0:bonus.SweptCollections;
     public IReadOnlyList<FeverBonusBurst> BonusBursts=>bonus?.Bursts;
+    public IReadOnlyList<MeshRenderer> RecallViews=>bonus?.RecallViews;
+    public int RecallingBonuses=>bonus==null?0:bonus.RecallCount;
+    public FeverExitMotion Exit {get;private set;}
     public void SweepBonuses(PlayerCharacterController player,Vector2 start,Vector2 end)=>bonus?.Sweep(player,start,end);
-    public void Initialize(StageManager owner,Image outer,TMP_Text fontSource)
+    public void Initialize(StageManager owner,Image outer,TMP_Text fontSource,Text legacyScore=null)
     {
         stage=owner;Visuals=Resources.Load<CursorDashVisualProfile>("CursorDash/VisualPrototype");Model=new FeverState(settings);Model.ResetRun();
         View=gameObject.AddComponent<FeverGaugeView>();View.Initialize(owner,this,outer,fontSource);
@@ -41,13 +49,13 @@ public sealed class CursorDashFever : MonoBehaviour
         Model.Transitioned+=Transition;
         if(stage.Feedback!=null)stage.Feedback.Signaled+=OnFeedback;
         gameObject.AddComponent<CursorDashLivingBackground>().Initialize(stage);
-        hud=new FeverScoreHud(this,fontSource);
+        hud=new FeverScoreHud(this,fontSource,legacyScore);projection=new FeverBackgroundScore(this,stage,fontSource);
     }
     public void Advance(float delta,bool paused)
     {
         Model.Paused=paused;Model.Tick(delta);
-        float step=paused?0:Mathf.Max(0,delta);Clock+=step;bonus?.Tick(step);
-        rig.Advance(step,Model.Current,(float)Model.Progress);
+        float step=paused?0:Mathf.Max(0,delta);Clock+=step;bonus?.Tick(step);projection?.Advance(step);
+        rig.Advance(step,Model.Current,(float)Model.Progress,Model.Elapsed);
         if(Model.Current==FeverState.Phase.Entering&&Model.Progress>=.66&&!entryImpulse){
             entryImpulse=true;
             if(CursorDashTuning.Toggle("fx.enabled",true)){
@@ -65,10 +73,16 @@ public sealed class CursorDashFever : MonoBehaviour
             float retire=Mathf.Min(Visuals==null?.18f:Visuals.feverThreatRetireSeconds,(float)FeverSettings.Safe(Settings.enterSeconds,1.05,.001)*.55f);
             stage.NodeCreator.RetireForFever(retire);bonus?.ClearNodes();rig.Begin();entryImpulse=false;
         }else if(after==FeverState.Phase.Fever){stage.NodeCreator.ClearFeverDepartures();rig.Draw(after,0);feelGate.Reset();bonus?.Begin();}
-        else if(after==FeverState.Phase.Exiting)bonus?.ClearNodes();
+        else if(after==FeverState.Phase.Exiting){
+            Exit=Visuals==null?new FeverExitMotion():Visuals.CaptureExit();settings.exitSeconds=Exit.Total;
+            rig.BeginExit(Exit);World?.Clear();
+            if(ownsShake){stage.GetComponent<CameraShake>()?.Reset();ownsShake=false;}
+            bonus?.BeginRecall(Exit,stage.NexusPosition,rig.RestRadius>0?rig.RestRadius:stage.NexusRadius*1.38f);
+        }
         else if(after==FeverState.Phase.Normal||after==FeverState.Phase.Stopped){
             stage.NodeCreator.ClearFeverDepartures();bonus?.ClearNodes();bonus?.ClearEffects();rig.Restore(before==FeverState.Phase.Exiting&&after==FeverState.Phase.Normal&&Model.LastReset!="Cancelled"&&Model.LastReset!="NexusHit");World?.Clear();
             if(ownsShake){stage.GetComponent<CameraShake>()?.Reset();ownsShake=false;}
+            Exit=null;if(after==FeverState.Phase.Stopped)projection?.Clear();
         }
     }
     public bool Award(Node source)=>source!=null&&Model.Kill(source.GetInstanceID(),source.ExecutionId);
@@ -105,9 +119,9 @@ public sealed class CursorDashFever : MonoBehaviour
         stage.SetTimeScore(stage.scoreManager.TimeScore);
     }
     private void OnFeedback(HitFeedback.EventInfo hit){if(!CursorDashTuning.Toggle("fx.enabled",true))return;if(hit.kind=="circleRemove"||hit.kind=="triangleBreak")rig.Pulse(false);else if(hit.kind=="nexusDamage")rig.Pulse(true);}
-    private void LateUpdate(){hud?.Draw();bonus?.SweepHead();}
+    private void LateUpdate(){hud?.Draw();bonus?.SweepHead();projection?.Draw();}
     private void OnGUI()=>bonus?.DrawDiagnostics(); // After score updates and CanvasScaler layout, before rendering.
-    private void OnDisable(){if(Model!=null)Abort();rig.Release();hud?.Restore();}
+    private void OnDisable(){if(Model!=null)Abort();rig.Release();hud?.Restore();projection?.Clear();}
     private void OnEnable(){if(stage!=null)rig.Bind(stage.NexusPresentation);}
-    private void OnDestroy(){if(Model!=null)Model.Transitioned-=Transition;if(stage!=null&&stage.Feedback!=null)stage.Feedback.Signaled-=OnFeedback;rig.Release();bonus?.Dispose();if(World!=null)Destroy(World);hud?.Dispose();}
+    private void OnDestroy(){if(Model!=null)Model.Transitioned-=Transition;if(stage!=null&&stage.Feedback!=null)stage.Feedback.Signaled-=OnFeedback;rig.Release();bonus?.Dispose();projection?.Dispose();if(World!=null)Destroy(World);hud?.Dispose();}
 }

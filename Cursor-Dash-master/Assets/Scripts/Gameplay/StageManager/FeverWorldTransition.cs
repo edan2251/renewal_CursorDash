@@ -17,7 +17,9 @@ public sealed class FeverWorldTransition : MonoBehaviour
     public bool ShouldRenderOptics
     {
         get {
-            if(optics==null||fever?.Model==null||fever.Model.Current!=FeverState.Phase.Fever||fever.ContactDiagnostics||!CursorDashTuning.Toggle("fx.enabled",true)||CursorDashTuning.Number("user.distortion",1)<=0)return false;
+            if(optics==null||fever?.Model==null||fever.ContactDiagnostics||!CursorDashTuning.Toggle("fx.enabled",true))return false;
+            if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null)return fever.Exit.Pressure(fever.Model.Elapsed)>0&&((CursorDashTuning.Number("user.distortion",1)>0&&(fever.Exit.Chromatic>0||fever.Exit.Lens>0))||(CursorDashTuning.Number("user.shake",1)>0&&PlayerPrefs.GetString("OnVibe","true")=="true"&&fever.Exit.Shake>0));
+            if(fever.Model.Current!=FeverState.Phase.Fever||CursorDashTuning.Number("user.distortion",1)<=0)return false;
             var v=fever.Visuals;if((v==null?.0008f:v.feverChromaticAmbient)>0)return true;
             float seconds=v==null?.30f:Mathf.Clamp(v.feverOpticsSeconds,.1f,.6f);
             for(int i=0;i<count;i++)if(fever.Clock-started[i]<seconds)return true;
@@ -28,10 +30,12 @@ public sealed class FeverWorldTransition : MonoBehaviour
     {
         if(board==null||fever?.Model==null||stage==null)return 0;
         var m=fever.Model;if(!m.SuppressesThreats)return 0;if(m.Current==FeverState.Phase.Fever)return 1;
-        float t=(float)(m.Current==FeverState.Phase.Entering?FeverFlowMath.EntrySpread(m.Progress):FeverFlowMath.ExitRemaining(m.Progress));
+        var exit=fever.Exit;double u=exit==null?0:exit.Suction(m.Elapsed);
+        float t=(float)(m.Current==FeverState.Phase.Entering?FeverFlowMath.EntrySpread(m.Progress):exit==null?0:1-FeverExitMotion.Travel(u,exit.Power));
         if(t<=0)return 0;if(t>=1)return 1;Vector2 center=board.WorldToViewportPoint(stage.NexusPosition);
         float ax=Mathf.Max(1,board.aspect),ay=Mathf.Max(1,1/board.aspect);
-        double d=FeverFlowMath.SignedField((uv.x-center.x)*ax,(uv.y-center.y)*ay,t,Extent(center,ax,ay));
+        double x=(uv.x-center.x)*ax,y=(uv.y-center.y)*ay,extent=Extent(center,ax,ay);
+        double d=m.Current==FeverState.Phase.Exiting?FeverFlowMath.RecallField(x,y,u,extent,exit.Power,exit.Twist):FeverFlowMath.SignedField(x,y,t,extent);
         return 1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(-.006f,.006f,(float)d));
     }
     public void Initialize(CursorDashFever owner,StageManager game)
@@ -45,16 +49,18 @@ public sealed class FeverWorldTransition : MonoBehaviour
         var driver=GetComponent<LocalImpactDistortion>();if(driver!=null)driver.FeverPresentation=this;
     }
     public void Hit(Vector2 point){points[next]=point;started[next]=fever.Clock;next=(next+1)%points.Length;count=Mathf.Min(count+1,points.Length);}
-    public void Clear()=>count=next=0;
+    public void Clear(){count=next=0;if(optics!=null)optics.SetVector("_ExitOptics",Vector4.zero);}
     public static float Extent(Vector2 center,float ax,float ay){float x=Mathf.Max(center.x,1-center.x)*ax,y=Mathf.Max(center.y,1-center.y)*ay;return Mathf.Sqrt(x*x+y*y);}
     public void SetFlow(Material target,int width,int height)
     {
         if(stage==null||fever?.Model==null){target.SetVector("_FeverFlow",Vector4.zero);return;}
         var m=fever.Model;Vector2 center=board.WorldToViewportPoint(stage.NexusPosition);float shorter=Mathf.Min(width,height),ax=width/shorter,ay=height/shorter;
         float mode=m.Current==FeverState.Phase.Entering?1:m.Current==FeverState.Phase.Fever?2:m.Current==FeverState.Phase.Exiting?3:0;
-        float spread=mode==1?(float)FeverFlowMath.EntrySpread(m.Progress):mode==2?1:mode==3?(float)FeverFlowMath.ExitRemaining(m.Progress):0;
-        centerAspect=new Vector4(center.x,center.y,ax,ay);flow=new Vector4(mode,spread,Extent(center,ax,ay),(float)m.Progress);
+        var exit=fever.Exit;double u=exit==null?0:exit.Suction(m.Elapsed);
+        float spread=mode==1?(float)FeverFlowMath.EntrySpread(m.Progress):mode==2?1:mode==3&&exit!=null?(float)(1-FeverExitMotion.Travel(u,exit.Power)):0;
+        centerAspect=new Vector4(center.x,center.y,ax,ay);flow=new Vector4(mode,spread,Extent(center,ax,ay),mode==3?(float)u:(float)m.Progress);
         target.SetVector("_FeverCenterAspect",centerAspect);target.SetVector("_FeverFlow",flow);
+        target.SetVector("_RecallSettings",new Vector4((float)(exit?.Power??3.2),(float)(exit?.Twist??.90),(float)(exit?.SpacePull??.65),0));
         Vector2 rim=board.WorldToViewportPoint(stage.NexusPosition+Vector2.right*stage.NexusRadius);
         target.SetFloat("_FeverCoreRadius",Mathf.Abs(rim.x-center.x)*ax);
         for(int i=0;i<6;i++){
@@ -112,6 +118,16 @@ public sealed class FeverWorldTransition : MonoBehaviour
     public void FinishBoard(RenderTexture source,RenderTexture destination)
     {
         if(!ShouldRenderOptics){Graphics.Blit(source,destination);return;}
+        if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null){
+            var exit=fever.Exit;float pressure=(float)exit.Pressure(fever.Model.Elapsed),distort=Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1));
+            float exitShort=Mathf.Max(1,Mathf.Min(source.width,source.height));Vector2 center=board.WorldToViewportPoint(stage.NexusPosition);
+            float worldShort=2*board.orthographicSize*Mathf.Min(1,board.aspect),cap=Mathf.Clamp(CursorDashTuning.Number("fx.distortionCap",.025f),0,.018f);
+            float shake=PlayerPrefs.GetString("OnVibe","true")=="true"?Mathf.Min((float)exit.Shake,CursorDashTuning.Number("fx.shakeCap",.2f)/Mathf.Max(.001f,worldShort))*Mathf.Clamp01(CursorDashTuning.Number("user.shake",1)):0;
+            optics.SetVector("_Optics",Vector4.zero);optics.SetVector("_LensAspect",new Vector4(source.width/exitShort,source.height/exitShort,0,0));
+            optics.SetVector("_ExitOptics",new Vector4((float)exit.Chromatic*distort,shake,(float)exit.Lens*distort,pressure));
+            optics.SetVector("_ExitCenter",new Vector4(center.x,center.y,(float)(fever.Model.Elapsed-exit.Impact),cap));Graphics.Blit(source,destination,optics);OpticsFrames++;return;
+        }
+        optics.SetVector("_ExitOptics",Vector4.zero);
         var v=fever.Visuals;float seconds=v==null?.30f:Mathf.Clamp(v.feverOpticsSeconds,.1f,.6f);
         for(int i=0;i<6;i++){
             opticalPulses[i]=Vector4.zero;if(i>=count)continue;

@@ -91,7 +91,7 @@ public class StageManager : MonoBehaviour
         energy=gameObject.AddComponent<NexusEnergy>();energy.Initialize(hpBarImage,fraction);
         nexusPresentation=gameObject.AddComponent<NexusGameboardPresentation>();nexusPresentation.Initialize(hpBarImage,hpBarFrame,fraction,feedback.Distortion);
         if(hpBarFrame!=null)hpBarFrame.gameObject.AddComponent<NexusRingRhythm>().Initialize(hpBarFrame.GetComponent<Rotator>());
-        Fever=gameObject.AddComponent<CursorDashFever>();Fever.Initialize(this,hpBarFrame,timeScoreLabel);
+        Fever=gameObject.AddComponent<CursorDashFever>();Fever.Initialize(this,hpBarFrame,timeScoreLabel,timeScoreText);
         scoreManager.Damaged+=OnNexusHealthLost;
         scoreManager.SetHpEditAction(SetHpImage);
         scoreManager.SetDeathAction(Death);

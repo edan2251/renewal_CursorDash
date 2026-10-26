@@ -13,10 +13,11 @@ public sealed class FeverScoreHud
     private readonly List<(Graphic graphic,Color tint)> pause=new List<(Graphic,Color)>();
     private readonly Material scoreMaterial,multiplierMaterial;private readonly Material originalMaterial;private readonly TMP_FontAsset originalFont;
     private readonly Vector3[] corners=new Vector3[4];private int lastMultiplier=1;private float pulseAt=-100;
-    private readonly bool bound;
-    public FeverScoreHud(CursorDashFever owner,TMP_Text source)
+    private readonly bool bound;private readonly bool scoreEnabledBefore,legacyEnabledBefore;private readonly Text legacyScore;
+    public FeverScoreHud(CursorDashFever owner,TMP_Text source,Text legacy=null)
     {
-        fever=owner;score=source;if(source==null)return;
+        fever=owner;score=source;legacyScore=legacy;legacyEnabledBefore=legacy!=null&&legacy.enabled;if(legacy!=null)legacy.enabled=false;
+        if(source==null)return;scoreEnabledBefore=source.enabled;source.enabled=false;
         rect=source.rectTransform;parent=rect.parent as RectTransform;canvas=source.canvas;
         if(parent==null||canvas==null)return;
         originalFont=source.font;originalMaterial=source.fontSharedMaterial;
@@ -46,6 +47,7 @@ public sealed class FeverScoreHud
     }
     public void Draw()
     {
+        if(legacyScore!=null)legacyScore.enabled=false;if(score!=null)score.enabled=false;
         if(!bound||score==null||multiplier==null||parent==null)return;
         // Restore() is reversible for disable/Home. Rebind on re-enable and after the typography scene scan.
         if(score.font!=multiplier.font)score.font=multiplier.font;
@@ -57,8 +59,8 @@ public sealed class FeverScoreHud
         float factor=.60f,pulse=1+.16f*Mathf.Sin(Mathf.Clamp01((fever.Clock-pulseAt)/.20f)*Mathf.PI);
         Vector2 safeMin,safeMax;var safe=Screen.safeArea;Camera camera=canvas.renderMode==RenderMode.ScreenSpaceOverlay?null:canvas.worldCamera;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,safe.min,camera,out safeMin);RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,safe.max,camera,out safeMax);
-        float available=Mathf.Max(1,(safeMax.x-safeMin.x)*.68f),gap=shown?fontSize*.22f:0;
-        float scoreWidth=score.GetPreferredValues(model.PointsText).x*Mathf.Max(.001f,fontSize)/Mathf.Max(.001f,score.fontSize);
+        float available=Mathf.Max(1,(safeMax.x-safeMin.x)*.68f),gap=0;
+        float scoreWidth=0; // Hidden total reserves no width; the remaining multiplier stays centered.
         multiplier.fontSize=fontSize*factor;float multWidth=shown?multiplier.GetPreferredValues(multiplier.text).x*1.17f:0;
         float fit=(float)FeverFlowMath.ScoreFit(available,scoreWidth,multWidth,gap),total=(scoreWidth+multWidth+gap)*fit;
         float center=(safeMin.x+safeMax.x)*.5f-parent.rect.center.x,y=safeMax.y-parent.rect.center.y-Mathf.Max(fontSize*.85f,(safeMax.y-safeMin.y)*.055f);
@@ -87,16 +89,85 @@ public sealed class FeverScoreHud
             foreach(var c in corners){var q=RectTransformUtility.WorldToScreenPoint(ui,c);lo=Vector2.Min(lo,q);hi=Vector2.Max(hi,q);}
             return Rect.MinMaxRect(lo.x-pad,lo.y-pad,hi.x+pad,hi.y+pad).Contains(pixel);
         }
-        if(Covers(rect)||(multiplier.gameObject.activeSelf&&Covers(multiplier.rectTransform)))return true;
+        if(multiplier.gameObject.activeSelf&&Covers(multiplier.rectTransform))return true;
         foreach(var item in pause)if(item.graphic!=null&&Covers(item.graphic.rectTransform))return true;
         return false;
     }
     public void Restore()
     {
+        if(legacyScore!=null)legacyScore.enabled=legacyEnabledBefore;if(score!=null)score.enabled=scoreEnabledBefore;
         if(!bound)return;
         if(multiplier!=null)multiplier.gameObject.SetActive(false);
         if(score!=null){rect.anchorMin=anchorMin;rect.anchorMax=anchorMax;rect.pivot=pivot;rect.anchoredPosition=position;rect.sizeDelta=size;score.fontSize=fontSize;score.color=tint;score.alignment=alignment;score.textWrappingMode=wrapping;score.font=originalFont;if(originalMaterial!=null)score.fontSharedMaterial=originalMaterial;}
         foreach(var item in pause)if(item.graphic!=null)item.graphic.color=item.tint;
     }
     public void Dispose(){Restore();if(multiplier!=null)Object.Destroy(multiplier.gameObject);if(scoreMaterial!=null)Object.Destroy(scoreMaterial);if(multiplierMaterial!=null)Object.Destroy(multiplierMaterial);}
+}
+
+/// <summary>Exact total projected into the existing world render/mask path. No Canvas, collider, reward or new manager.</summary>
+public sealed class FeverBackgroundScore
+{
+    private readonly CursorDashFever fever;private readonly Camera board;
+    private readonly TextMeshPro text;private readonly Material material;private readonly GameObject root;
+    private readonly ScoreProjectionPulse pulse=new ScoreProjectionPulse();private bool? visibleOverride;private float glyphScale=1;
+    public MeshRenderer View {get;}
+    public bool Visible {get=>visibleOverride??(fever.Visuals==null||fever.Visuals.backgroundScoreEnabled);set{visibleOverride=value;if(!value)Clear();}}
+    public string Text=>text==null?"":text.text;
+    public double Pulse=>pulse.Value;
+    public bool AtlasMatches=>text!=null&&text.font!=null&&material!=null&&material.mainTexture==text.font.atlasTexture;
+    public FeverBackgroundScore(CursorDashFever owner,StageManager game,TMP_Text source)
+    {
+        fever=owner;board=Camera.main;
+        var font=CursorDashTypography.Bold??source?.font;if(board==null||font==null||font.material==null){Debug.LogWarning("CursorDash: projected score camera/font unavailable; stable HUD retained.");return;}
+        root=new GameObject("Projected total score"){hideFlags=HideFlags.DontSave,layer=game.gameObject.layer};root.transform.SetParent(game.transform,false);
+        text=root.AddComponent<TextMeshPro>();text.font=font;text.fontStyle=FontStyles.Normal;
+        root.transform.localScale=Vector3.one;
+        text.rectTransform.sizeDelta=new Vector2(4,4);text.rectTransform.pivot=Vector2.one*.5f;
+        text.fontSize=3.5f;text.fontSizeMin=1;text.fontSizeMax=3.5f;text.enableAutoSizing=true;text.isOrthographic=board.orthographic;text.alignment=TextAlignmentOptions.Center;text.textWrappingMode=TextWrappingModes.NoWrap;text.overflowMode=TextOverflowModes.Overflow;
+        text.margin=Vector4.zero;text.characterSpacing=0;text.wordSpacing=0;text.richText=false;text.raycastTarget=false;
+        material=new Material(font.material){hideFlags=HideFlags.DontSave};material.mainTexture=font.atlasTexture;
+        if(material.HasProperty("_OutlineWidth"))material.SetFloat("_OutlineWidth",0);
+        if(material.HasProperty("_GlowPower"))material.SetFloat("_GlowPower",0);
+        material.DisableKeyword("GLOW_ON");text.fontSharedMaterial=material;text.OnPreRenderText+=PulseGlyphs;
+        View=text.GetComponent<MeshRenderer>();View.sortingOrder=-900; // Existing living color field=-1000; gameplay bodies and Nexus are later.
+        text.text=owner.Model.PointsText;owner.Model.PointsAwarded+=OnAward;Draw();
+    }
+    private void OnAward(System.Numerics.BigInteger delta,System.Numerics.BigInteger total)
+    {
+        if(text==null)return;
+        text.text=total.ToString(System.Globalization.CultureInfo.InvariantCulture); // Exact and immediate, independent of pulse grouping.
+        if(Visible&&CursorDashTuning.Toggle("fx.enabled",true))pulse.Award(delta);
+    }
+    public void Advance(float delta)
+    {
+        if(!Visible||fever.Model.Current==FeverState.Phase.Stopped||!CursorDashTuning.Toggle("fx.enabled",true)){pulse.Clear();return;}
+        pulse.Advance(delta,fever.Visuals==null?.32:fever.Visuals.backgroundScoreResponse);
+    }
+    private static float Value(float n,float fallback,float low,float high)=>float.IsNaN(n)||float.IsInfinity(n)?fallback:Mathf.Clamp(n,low,high);
+    public void Draw()
+    {
+        if(text==null||View==null)return;
+        bool show=Visible&&fever.isActiveAndEnabled&&fever.Model.Current!=FeverState.Phase.Stopped;View.enabled=show;if(!show){pulse.Clear();return;}
+        if(text.text!=fever.Model.PointsText){text.text=fever.Model.PointsText;pulse.Clear();} // ResetRun is not an award.
+        if(text.fontSharedMaterial!=material)text.fontSharedMaterial=material;
+        var v=fever.Visuals;float x=Value(v==null?.5f:v.backgroundScoreX,.5f,.15f,.85f),y=Value(v==null?.5f:v.backgroundScoreY,.5f,.15f,.85f);
+        glyphScale=(float)pulse.Scale(Value(v==null?.22f:v.backgroundScoreReaction,.22f,0,.4f),Value(v==null?1.22f:v.backgroundScoreScaleCap,1.22f,1,1.4f));
+        root.transform.position=(Vector2)board.ViewportToWorldPoint(new Vector3(x,y,0));root.transform.rotation=Quaternion.identity;
+        root.transform.localScale=Vector3.one; // World-unit Rect/TMP controls are authoritative; no screen-fit transform.
+        Color color=v==null?new Color(.36f,.76f,.84f):v.backgroundScoreTint;
+        float rest=Value(v==null?.105f:v.backgroundScoreOpacity,.105f,0,.22f),boost=Value(v==null?.14f:v.backgroundScoreOpacityBoost,.14f,0,.3f),maximum=Value(v==null?.24f:v.backgroundScoreOpacityCap,.24f,.05f,.35f);
+        boost*=PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)):0;
+        // The existing white-world alpha mask turns this low-alpha text into low-contrast grey per pixel.
+        color.a=(float)pulse.Opacity(rest,boost,maximum);text.color=color;
+        text.ForceMeshUpdate(); // Fresh base geometry each frame prevents vertex-pulse accumulation.
+    }
+    private void PulseGlyphs(TMP_TextInfo info)
+    {
+        if(Mathf.Abs(glyphScale-1)<.00001f||info.meshInfo==null)return;
+        Vector3 center=text.rectTransform.rect.center;
+        foreach(var part in info.meshInfo){var vertices=part.vertices;if(vertices==null)continue;
+            for(int i=0;i<part.vertexCount&&i<vertices.Length;i++)vertices[i]=center+(vertices[i]-center)*glyphScale;}
+    }
+    public void Clear(){pulse.Clear();glyphScale=1;if(View!=null)View.enabled=false;}
+    public void Dispose(){fever.Model.PointsAwarded-=OnAward;if(text!=null)text.OnPreRenderText-=PulseGlyphs;Clear();if(root!=null)Object.Destroy(root);if(material!=null)Object.Destroy(material);}
 }

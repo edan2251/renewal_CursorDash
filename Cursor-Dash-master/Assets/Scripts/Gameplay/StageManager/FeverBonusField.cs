@@ -12,6 +12,12 @@ public sealed class FeverBonusField
     private readonly CursorDashFever fever;private readonly StageManager stage;
     private Mesh quad;private Material material;private GameObject root;private int spawnSerial;private readonly FeverSupplyClock supply=new FeverSupplyClock();
     private bool sampledHead;private Vector2 previousHead;
+    private sealed class Recall {public MeshRenderer view;public Vector2 start;public Vector3 worldScale;public float arrival,opacity;public int index;public MaterialPropertyBlock properties;}
+    private readonly List<Recall> recalls=new List<Recall>();
+    private readonly List<MeshRenderer> recallViews=new List<MeshRenderer>();
+    public IReadOnlyList<MeshRenderer> RecallViews=>recallViews;
+    public int RecallCount=>recalls.Count;
+    private FeverExitMotion recallMotion;private Vector2 recallCenter;private float recallRadius;
     public int Spawned {get;private set;}
     public bool Diagnostics {get;set;}
     private Vector2 lastContact,lastOrigin;private float diagnosticUntil;
@@ -41,6 +47,7 @@ public sealed class FeverBonusField
     {
         if(delta<=0)return;
         for(int i=bursts.Count-1;i>=0;i--){if(bursts[i]==null)bursts.RemoveAt(i);else bursts[i].Advance(delta);}
+        if(fever.Model.Current==FeverState.Phase.Exiting){AdvanceRecall(fever.Model.Elapsed);return;}
         if(!CanCollect)return;
         foreach(var item in nodes)if(item.gameObject.activeSelf)item.Advance(delta);
         var profile=fever.Visuals;
@@ -123,7 +130,50 @@ public sealed class FeverBonusField
         fever.BonusFeel(contact,incoming);
         return true;
     }
-    public void ClearNodes(){sampledHead=false;supply.Reset();foreach(var node in nodes)if(node!=null&&node.gameObject.activeSelf)node.ResetObject();}
+    public void BeginRecall(FeverExitMotion motion,Vector2 center,float ringRadius)
+    {
+        ClearRecall();sampledHead=false;supply.Reset();recallMotion=motion;recallCenter=center;recallRadius=ringRadius;
+        float maximum=0;FeverBonusNode last=null;
+        foreach(var node in nodes)if(node!=null&&node.gameObject.activeSelf){float distance=Vector2.Distance(node.transform.position,center);if(distance>=maximum){maximum=distance;last=node;}}
+        int index=0;
+        try{
+            foreach(var node in nodes)if(node!=null&&node.gameObject.activeSelf){
+                var source=node.RecallSource;if(source==null||!source.enabled)continue;
+                var go=new GameObject("Fever visual recall"){hideFlags=HideFlags.DontSave,layer=source.gameObject.layer};go.transform.SetParent(root.transform,false);go.transform.position=source.transform.position;
+                go.AddComponent<MeshFilter>().sharedMesh=quad;var view=go.AddComponent<MeshRenderer>();view.sharedMaterial=material;view.sortingLayerID=source.sortingLayerID;view.sortingOrder=source.sortingOrder;
+                var props=new MaterialPropertyBlock();source.GetPropertyBlock(props);
+                var item=new Recall{view=view,start=source.transform.position,worldScale=source.transform.lossyScale,properties=props,opacity=props.GetFloat("_Opacity"),index=index++,arrival=(float)FeverExitMotion.Arrival(Vector2.Distance(node.transform.position,center),maximum,index,node==last)};
+                recalls.Add(item);recallViews.Add(view);ApplyRecall(item,0);
+            }
+        }finally{
+            // Physics roots end now. Copies have no Node/Collider, never call Collect/Award/BonusFeel.
+            foreach(var node in nodes)if(node!=null&&node.gameObject.activeSelf)node.ResetObject();
+        }
+    }
+    private void ApplyRecall(Recall item,double progress)
+    {
+        double arrivalRadius=recallRadius*recallMotion.RingScale(recallMotion.Appear+recallMotion.Absorb*item.arrival);
+        recallMotion.Position(item.start.x,item.start.y,recallCenter.x,recallCenter.y,arrivalRadius,progress,item.index,out double x,out double y);
+        item.view.transform.position=new Vector3((float)x,(float)y,0);
+        float initial=Vector2.Distance(item.start,recallCenter),targetRadius=Mathf.Min((float)arrivalRadius,initial*.8f);
+        float remaining=Mathf.Clamp01((Vector2.Distance(item.view.transform.position,recallCenter)-targetRadius)/Mathf.Max(.00001f,initial-targetRadius));
+        float scale=(float)recallMotion.SizeAtDistance(remaining),stretch=(float)recallMotion.StretchAt(FeverExitMotion.Travel(progress,recallMotion.Power));
+        recallMotion.Position(item.start.x,item.start.y,recallCenter.x,recallCenter.y,arrivalRadius,System.Math.Min(1,progress+.0001),item.index,out double nx,out double ny);
+        item.view.transform.rotation=Quaternion.Euler(0,0,Mathf.Atan2((float)(ny-y),(float)(nx-x))*Mathf.Rad2Deg);
+        Vector3 parent=item.view.transform.parent.lossyScale;
+        item.view.transform.localScale=new Vector3(item.worldScale.x*stretch/Mathf.Max(.00001f,Mathf.Abs(parent.x)),item.worldScale.y/Mathf.Sqrt(stretch)/Mathf.Max(.00001f,Mathf.Abs(parent.y)),1)*scale;
+        item.properties.SetFloat("_Opacity",item.opacity*(float)FeverFlowMath.Smooth(remaining/(recallMotion.NodeShrinkStart*.55)));item.view.SetPropertyBlock(item.properties);
+    }
+    public void AdvanceRecall(double elapsed)
+    {
+        if(recallMotion==null)return;
+        if(elapsed>=recallMotion.Impact){ClearRecall();return;}
+        double u=recallMotion.Suction(elapsed);
+        for(int i=recalls.Count-1;i>=0;i--){var item=recalls[i];double p=FeverFlowMath.Clamp(u/item.arrival);
+            if(p>=1||item.view==null){if(item.view!=null){item.view.enabled=false;recallViews.Remove(item.view);Object.Destroy(item.view.gameObject);}recalls.RemoveAt(i);continue;}ApplyRecall(item,p);}
+    }
+    public void ClearRecall(){foreach(var item in recalls)if(item.view!=null){item.view.enabled=false;Object.Destroy(item.view.gameObject);}recalls.Clear();recallViews.Clear();recallMotion=null;}
+    public void ClearNodes(){sampledHead=false;supply.Reset();foreach(var node in nodes)if(node!=null&&node.gameObject.activeSelf)node.ResetObject();ClearRecall();}
     public void DrawDiagnostics()
     {
         if(!Diagnostics||fever.Model.Current!=FeverState.Phase.Fever||Camera.main==null)return;

@@ -6,12 +6,21 @@ public sealed class FeverNexusRig
 {
     private Transform dotted;private Rotator rotator;private Vector3 scale;private Quaternion rotation;
     private bool bound,enabledBefore;private float direction=1,angle;private readonly FeverRingSpin spin=new FeverRingSpin();
+    private FeverExitMotion recall;private Image dottedImage;private float initialAlpha;private NexusGameboardPresentation presentation;
+    private double actualSpeed=24;
     public bool Bound=>bound;
-    public double Speed=>spin.Speed;
+    public double Speed=>actualSpeed;
+    public float RestRadius {
+        get {var rect=dotted as RectTransform;if(rect==null||presentation==null||dotted.parent==null)return 0;
+            Vector3 a=Vector3.Scale(rect.rect.center,scale),b=Vector3.Scale((Vector3)rect.rect.center+Vector3.right*rect.rect.width*.5f,scale);
+            Vector3 p=dotted.parent.TransformPoint(dotted.localPosition+rotation*a),q=dotted.parent.TransformPoint(dotted.localPosition+rotation*b);
+            return Vector2.Distance(presentation.MapVisualPoint(p),presentation.MapVisualPoint(q))*.94f;}
+    }
     public void Bind(NexusGameboardPresentation view)
     {
         if(bound||view?.SourceImages==null)return;
         foreach(Image image in view.SourceImages)if(image.name=="HpCentral"){
+            presentation=view;dottedImage=image;initialAlpha=image.color.a;
             dotted=image.transform;scale=dotted.localScale;rotation=dotted.localRotation;angle=dotted.localEulerAngles.z;
             rotator=image.GetComponent<Rotator>();if(rotator!=null){enabledBefore=rotator.enabled;direction=rotator.DirectionSign;rotator.enabled=false;}bound=true;break;
         }
@@ -20,24 +29,30 @@ public sealed class FeverNexusRig
     {
         spin.Pulse(damage);
     }
-    public void Begin()=>spin.Begin();
-    public void Advance(float delta,FeverState.Phase phase,float progress)
+    public void Begin(){recall=null;SetOpacity(1);spin.Begin();}
+    public void BeginExit(FeverExitMotion motion){recall=motion;spin.Clear();Draw(FeverState.Phase.Exiting,0,0);}
+    private void SetOpacity(float opacity){if(dottedImage==null)return;var color=dottedImage.color;color.a=initialAlpha*opacity;dottedImage.color=color;}
+    public void Advance(float delta,FeverState.Phase phase,float progress,double elapsed=0)
     {
         if(!bound||dotted==null)return;
         if(delta>0){
-            angle=Mathf.Repeat(angle+direction*(float)spin.Advance(delta,phase,progress)*Mathf.Max(0,CursorDashTuning.Number("nexus.spin",1)),360);
+            float multiplier=Mathf.Max(0,CursorDashTuning.Number("nexus.spin",1));
+            if(phase==FeverState.Phase.Exiting&&recall!=null){spin.AdvanceExit(delta,elapsed,recall);actualSpeed=System.Math.Min(recall.MaxSpin,spin.Speed*multiplier);}
+            else{spin.Advance(delta,phase,progress);actualSpeed=spin.Speed*multiplier;}
+            angle=Mathf.Repeat(angle+direction*(float)(actualSpeed*delta),360);
         }
-        dotted.localRotation=Quaternion.Euler(0,0,angle);Draw(phase,progress);
+        dotted.localRotation=Quaternion.Euler(0,0,angle);Draw(phase,progress,elapsed);
     }
-    public void Draw(FeverState.Phase phase,float progress)
+    public void Draw(FeverState.Phase phase,float progress,double elapsed=0)
     {
         if(!bound||dotted==null)return;
-        float s=phase==FeverState.Phase.Entering?(float)FeverFlowMath.DotScale(false,progress):phase==FeverState.Phase.Fever?0:phase==FeverState.Phase.Exiting?(float)FeverFlowMath.DotScale(true,progress):1;
+        float s=phase==FeverState.Phase.Entering?(float)FeverFlowMath.DotScale(false,progress):phase==FeverState.Phase.Fever?0:phase==FeverState.Phase.Exiting&&recall!=null?(float)recall.RingScale(elapsed):1;
+        SetOpacity(phase==FeverState.Phase.Exiting&&recall!=null?(float)recall.RingAlpha(elapsed):1);
         dotted.localScale=scale*s;
     }
-    public void Restore(bool completed){if(bound&&dotted!=null)dotted.localScale=scale;}
+    public void Restore(bool completed){if(bound&&dotted!=null)dotted.localScale=scale;SetOpacity(1);spin.Clear();actualSpeed=24;recall=null;}
     public void Release()
     {
-        if(!bound)return;if(dotted!=null){dotted.localScale=scale;dotted.localRotation=rotation;}if(rotator!=null)rotator.enabled=enabledBefore;bound=false;spin.Clear();
+        if(!bound)return;if(dotted!=null){dotted.localScale=scale;dotted.localRotation=rotation;}SetOpacity(1);recall=null;if(rotator!=null)rotator.enabled=enabledBefore;bound=false;spin.Clear();
     }
 }

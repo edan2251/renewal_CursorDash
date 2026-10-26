@@ -1,5 +1,52 @@
 # CursorDash 수치 도구 사용법 — CP1~CP4 v2
 
+## 최신 — D-044 배경 점수 World 단위·상단 총점 제거 (2026-10-27)
+
+최신 사용자 스크린샷/글과 후속 ‘화면 위 하얀색 점수텍스트 제거’를 반영했다. `Projected total score`는 **Local Scale(1,1,1) / Rect Width4·Height4 / TMP Auto Size ON·Min1·Max3.5**이며 화면 중앙(.5,.5)을 유지한다. D-043의200×250/50~150을 대체한다.
+
+이전 Scale은 화면 폭/높이 맞춤과 획득 탄성에 쓰였다. 이번에는 자동 화면 맞춤을 제거하고 World Rect/TMP 단위를 우선한다. 획득 반응은 기존 단일 탄성값을 **TMP OnPreRenderText의 글자 정점**에 적용하여 Transform Scale·Rect·AutoSize 범위를 바꾸지 않는다. 새 기본 메시에서 적용해 확대가 누적되지 않으며, 비활성화·종료 때 이벤트를 해제한다. 이전 backgroundScoreSize/Width 값은 호환 보존하되 Inspector에서 숨기고 더 이상 적용하지 않는다. 긴 점수의 폭은 이제4×4/Min1 범위이므로 극단 자릿수는 실제 화면 검수가 필요하다.
+
+상단 총점은 TMP와 legacy Text 컴포넌트 두 경로 모두 Play 중 숨긴다. 글꼴 원본·점수 데이터·기록·결과 점수는 보존하고, **×2~×4와 Pause 버튼은 유지**한다. 숨긴 총점 폭을 예약하지 않아 배율만 상단 중앙에 배치한다. 배경 점수 토글을 꺼도 상단 총점이 자동으로 다시 나타나지 않는다. 씬/원본 객체를 삭제·저장하지 않고 Play 종료/해제 때 원래 사용자 표시 상태를 복원한다.
+
+변경: FeverScoreHud.cs(설정/정점반응/상단표시), CursorDashFever.cs와StageManager.cs(legacy 표시 참조 전달만), CursorDashVisualProfile.cs(옛자동맞춤필드숨김), 기존FeverPolishTests의관련기대값1개. 새테스트없음/공식103은작성·컴파일만. **PASS** 정적설정·범위/기존파일보존·참조C#게임108·테스트12·Editor2 오류0/기존런타임경고134. **NOT_RUN** 실제 Unity·TMP/GPU·Play·공식실행·빌드·커밋/push/배포·컴퓨터UI. 근거/Before/이번만패치: `Logs/score-world-units-20261027`.
+
+**다음 한 작업:** 사용자 새 Play에서 배경 점수 Scale1/Rect4×4/AutoSize1~3.5·화면중앙 → 단발/연속 획득 때 Scale과 Min/Max 고정/글자 반응 → 상단 총점 없음·배율/Pause 유지 → 일반/피버·Pause/Retry/Home·긴 점수를 검수한다. 피버 종료·육각/승인VFX·점수 규칙은 이번에 변경하지 않았고 기존D-042 미검수/보류는 유지한다. 자동 Unity실행/Play·빌드·Git/배포를 시작하지 않는다.
+
+## 이력 — D-043 Projected total score 텍스트 설정 (2026-10-26)
+
+최신 사용자 지시로 런타임 생성되는 배경 점수의 Rect Transform을 **Width200/Height250**, 중앙 pivot/가운데 정렬, 위치를 **카메라 뷰포트(.5,.5)**로 설정했다. TMP **Auto Size ON / Min50 / Max150**이며 수동 fontSize 시작값은150이다. 매 프레임 preferred 크기로 sizeDelta를 덮던 코드를 제거하고 고정 Rect에서 Auto Size를 먼저 계산하도록 했다. 기존 글꼴·재질/표시 순서·점수 데이터·획득 탄성/화면 폭맞춤은 유지한다.
+
+변경 소스는 `Assets/Scripts/Gameplay/StageManager/FeverScoreHud.cs`, `CursorDashVisualProfile.cs`, `Assets/Resources/CursorDash/VisualPrototype.asset`의 배경점수Y .58→.5뿐이다. 런타임 생성 객체이므로 씬/프리팹 저장이나 미저장 상태 조작은 하지 않았다. **PASS** 정적 설정·범위 보존 및 참조 C#108/12/Editor2 오류0/기존 런타임 경고134. 새 테스트는 추가하지 않았으며 공식103 실행/Unity·TMP 실제 화면·Play·빌드/Git/배포는 **NOT_RUN**이다. 근거/Before는 `Logs/score-text-layout-20261026`.
+
+**다음 한 작업:** 사용자가 새 Play에서 `Projected total score`를 선택해 Rect200×250/화면중앙/Auto Size50~150을 확인한다. 기존 점수 획득 반응·긴 숫자와 일반↔피버 가독성은 직접 검수한다. 이전 D-042의 피버종료/점수 검수 대기는 유지하며 다음 구현을 자동 시작하지 않는다.
+
+## 이력 — D-042 피버 종료·배경 총점 (2026-10-26)
+
+**Assets/Resources/CursorDash/VisualPrototype.asset**의기존Inspector를사용한다. 종료appear.20/absorb.51/settle.24(총.95초),appearSpin180/max1260/decay.10,squeeze.12/recoilHold.06,bend.28/power3.2/twist.90,nodeStretch.65/nodeShrinkStart.22(남은반경거리)/spacePull.65,RGB.006/lens.012/shake.0035. 종료시캡처/실제피버8초별개/판정·공급은Gauge0에끝난다.
+Projected total score그룹: enabledtrue,position(.5,.58),size.42(짧은축높이)/width.8,tint(.36,.76,.84),opacity.105/boost.14/cap.24,reaction.22/scaleCap1.22,response.32. 실제획득량으로한개의탄성상태만갱신/정확한총점즉시표시. 이사만루Bold·게임판MeshRenderer -900/기존상단HUD유지,피버알파마스크에서저대비회색.
+기존Tools→CursorDash→넥서스수동검수의‘배경 큰 점수 (현재 라운드)’토글은임시비교용/Retry때프로필기본복귀다. 웹템플릿기존피버검수에도같은토글만추가(현재공개웹에는미반영). 프로필자산설정과이름있는프리셋저장은별개/기존171키·사용자프리셋자동변경없음. fx.enabled/OnFlash/user.flash·기존광학접근성/상한존중. [전체수치·조절·사용자검수](FEVER_EXIT_PROJECTED_SCORE_20261026.md). 육각타이밍은이번검토·조정대상아니다.
+
+## 이력 — D-041 적용 기본값·피버 종료 조절 (2026-10-26)
+
+기존 개발자 도구→육각 회전·공격 타이밍: 기본속도10경로/초(실제hex.attack=.1초), 생성10%, 충전1 .95박→60%/.2박, 충전2 1.95박→100%/.2박, 변형2.8박/길이.3125박, 발사3.15박. 회전1배/Outside1 -60도 이동+정지1박=.8초. 명목2.24~2.49변형/2.52발사/2.62도달. 옛저장프리셋은자동변경하지않으므로기본시험은‘이 타임라인 기본값 복원’후새노드로확인한다. 진행중노드는캡처값유지/저장은이름있는프리셋/재실행후명시불러오기다.
+피버종료는 **Assets/Resources/CursorDash/VisualPrototype.asset**의Fever exit그룹에서조절한다. appear.18/absorb.55/settle.22=총.95초,spin1260도초/감쇠.10/수축.10/곡선bend.28/가속power2.6/twist.90/RGB.0055/shake.0035/lens.009. 같은종료시계/다음종료캡처이며프리셋171키에중복추가하지않았다. 링등장→회수→마지막압축동기화→복원. 실제피버판정/공급8초와시각종료시간은별개다.
+회수중표시는무판정/무보상,고유수명2.8초/퇴장.55는유지·라운드잔여시간선행축소만제거했다. FX접근성/상한을존중하며접촉위치진단이켜져있으면왜곡·RGB는우회한다. 사용자Play검수는[값표/씬·0·소수·14개/중단·복원절차](HEX_DEFAULTS_FEVER_RECALL_20261026.md). 공개웹은D-038그대로/이번자동Play·빌드/git/배포없음.
+
+## 이력 — D-040 육각 회전·공격 타이밍 (2026-10-26)
+
+기존개발자도구→‘육각 회전·공격 타이밍’. 생성0/60도이동+정지=1연속박자, 기본.8초다. **회전1끝=.5박/2끝=1.5박/3끝=2.5박/4시작=3박**을각도/방향·초와표시한다. 초기생성33.3%,충전실행.5/1.5·목표66.7/100·길이각.15박,변형시작2.5/길이.3125박,발사3박이다. D-039의3끝변형완료는최신변형시작요청으로대체됐다.
+기존hex.spin은육각이동·정지전체속도,hex.morph는박자길이로재사용한다. hex.attack은기존도달초를저장하고화면에는1/초=경로초속도로편집한다(16.667→도달.06초,25→.04초). 둘은독립이며새속도키/도구없음. 각시점/길이는소수·초환산,다음생성만적용한다. 순서충돌은경고/새생성보류이며자동발사지연없음.
+검수표시hex.timelineDebug기본OFF/Dev만,현재박자·충전·단계·다음사건을표시한다. 임시변경은기존프리셋저장으로지속되며재실행후명시적으로불러온다. ‘타임라인 기본값 복원’은해당13항목만복원/저장본보존. JSON171키/defaultsVersion hex-timeline-v1-20261026,구141/157/161은morph초→박환산. [13항목/초기표·저장·구버전·검수](HEX_TIMELINE_TOOLS_20261026.md). Unity/브라우저/모바일실화면검수는대기,이번자동Play/빌드/git/배포없음.
+
+## 이력 — D-039 4박·회전1800·피버종료/배경 (2026-10-26)
+
+현재로컬은[HEX4_FEVER_EXIT_20261026.md](HEX4_FEVER_EXIT_20261026.md)의값을우선한다. 아래D-024이하‘현재’표기는과거시점의이력이며새요구가아니다. 공개D-038은재배포하지않았다.
+- 육각 첫링60도/.4이동+.4휴지: 생성1/3→1끝2/3→2끝완충→3끝변형완료→4시작발사. `hex.spin`은이동속도와박자를함께변경/휴지유지, `hex.morph=.25`는셋째이동안의상한이다. `preFireDuration`저장값은이력이며현재대기는Rotator실제interval을사용한다. `hex.prepare=3.5`는두링회전없음대체시간이다.
+- `player.turn`기본 **1800도/초**. PlayerCharacterController의공유상수→실제FixedUpdate와도구정의가사용한다. 옛씬Inspector540은미사용/씬수정없음. 명시적Dev프리셋은보존되므로새기본검수때player.turn1800을확인한다. 다른이동값/조작기준은유지.
+- `VisualPrototype.asset`: backgroundSpeed .22/Mix .84/Bend .30/HitSpeed2.6/HitRecovery.38/HitColor.65/HitShift.075/circuitRestContrast.62. 같은프로필의승인피버파편/공급값은변경하지않았다. 배경색세부팔레트/영역경계는LivingBackground.shader다.
+- FeverFlowMath/FeverFlow.cginc: 기존종료.95초중진행.06까지0게이지표시, u=(p-.06)/.84,가속이동.18u+.82u^2.2/진행.90까지회수완료. 피버판정/공급8초불변. 점선재등장진행.56에기존FeverRingSpin.Begin1회/24도초로감쇠한다.
+- 새슬라이더패널·새프리셋저장/초기화/그림은없음. 실제GPU/모바일·사용자Play검수대기. 노드겹침배치·새Flash그림/사이버재구축은보류.
+
 ## 현재 — D-024 다음 테스트 조정 (2026-10-25)
 
 승인 형상·육각 파괴는 유지한다. 둘째 육각 테두리는 기본색RGB .82배(기준#FFD466→약#D1AE54), 첫째는 그대로다. 다른 색/형상/공통 효과 기본값과161키 JSON 계약은 바꾸지 않았다.

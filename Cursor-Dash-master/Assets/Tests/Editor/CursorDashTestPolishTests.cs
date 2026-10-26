@@ -25,8 +25,8 @@ namespace CursorDashTests
             Call(hex,"ResetObject");Call(stage,"SetPaused",false);yield return WaitGameplay(.45f);
             Assert.AreEqual("Inactive",Get(hex,"Phase").ToString());Assert.IsFalse(beam.enabled);Assert.AreEqual(0,Get(hex,"ImpactsThisExecution"));Assert.AreEqual(3f,Get(Get(stage,"scoreManager"),"Hp"));
             hex.gameObject.SetActive(true);hex.transform.position=new Vector2(0,2);float began=Time.time;Call(hex,"Execute");yield return WaitCirclePhase(hex,"Fired");
-            Assert.That(Time.time-began,Is.EqualTo(3.08f).Within(Mathf.Max(.06f,2*Time.deltaTime)),"Fire on the END of actual turn 6, with the test aiming pose inside the last half-turn.");Assert.IsTrue(beam.enabled);Assert.Greater(node.localPosition.sqrMagnitude,.0000001f,"Recoil and beam begin together.");
-            Assert.That((float)Get(hex,"attackDuration"),Is.EqualTo(.06f));Assert.That((float)Get(hex,"reflectionDuration"),Is.EqualTo(.06f));Call(hex,"ResetObject");
+            Assert.That(Time.time-began,Is.EqualTo(3.08f).Within(Mathf.Max(.06f,2*Time.deltaTime)),"Fire at START 4 after the completed third pose and its native rest.");Assert.IsTrue(beam.enabled);Assert.Greater(node.localPosition.sqrMagnitude,.0000001f,"Recoil and beam begin together.");
+            Assert.That((float)Get(hex,"FlightSeconds"),Is.EqualTo(.1f));Assert.That((float)Get(hex,"reflectionDuration"),Is.EqualTo(.06f));Call(hex,"ResetObject");
             Assert.That(node.localPosition.sqrMagnitude,Is.LessThan(.000001f));
         }
 
@@ -38,7 +38,7 @@ namespace CursorDashTests
             player.GetComponent<Rigidbody2D>().position=new Vector2(-2,-3);player.transform.position=new Vector2(-2,-3);
             var trail=Find("PlayerCharacterAfterImage");Call(trail,"ClearTrail");
             var hex=NodesOfType("ArrowNode").First();hex.gameObject.SetActive(true);hex.transform.position=new Vector2(0,2);
-            ConfigureHexPreparation(hex,.05f);Set(hex,"warningDuration",.05f);Set(hex,"attackDuration",.01f);Call(hex,"Execute");
+            ConfigureHexPreparation(hex,.05f);Set(hex,"warningDuration",.05f);ConfigureHexFlight(hex,.01f);Call(hex,"Execute");
             yield return WaitCirclePhase(hex,"Fired");Vector2 start=(Vector2)Get(hex,"origin"),end=(Vector2)Get(hex,"target");
             Vector2 mid=Vector2.Lerp(start,end,.5f),side=Vector2.Perpendicular((end-start).normalized)*.4f;
             Call(trail,"RecordMovement",mid-side,mid+side,Time.time);

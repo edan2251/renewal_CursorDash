@@ -69,7 +69,7 @@ namespace CursorDashTests
             var ui=Find("CursorDashRuntimeUI");Call(ui,"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
             var player=Find("PlayerCharacterController");player.GetComponent<Rigidbody2D>().position=new Vector2(-2,-3);player.transform.position=new Vector2(-2,-3);
             var hex=NodesOfType("ArrowNode").First();hex.gameObject.SetActive(true);hex.transform.position=new Vector2(0,2);
-            ConfigureHexPreparation(hex,2.8f);Set(hex,"warningDuration",.12f);Set(hex,"attackDuration",.3f);Call(hex,"Execute");
+            ConfigureHexPreparation(hex,2.8f);Set(hex,"warningDuration",.12f);ConfigureHexFlight(hex,.3f);Call(hex,"Execute");
             foreach(string phase in new[]{"Preparing","Warning","Fired"}){
                 if(phase!="Preparing")yield return WaitCirclePhase(hex,phase);
                 yield return null;
@@ -82,8 +82,11 @@ namespace CursorDashTests
             Call(ui,"Open",true);string previous=File.ReadAllText(Path.GetFullPath("Logs/node-graphics-20261024-192424/Web/strong-full.json"));
             var tuning=TypeFor("CursorDashTuning");object[] args={previous,null};Assert.IsTrue((bool)tuning.GetMethod("Import").Invoke(null,args),args[1]?.ToString());
             var migrated=JObject.Parse((string)tuning.GetMethod("Export").Invoke(null,new object[]{"157 migrated",false}));
-            Assert.AreEqual(161,((JObject)migrated["values"]).Count);
-            foreach(var p in ((JObject)JObject.Parse(previous)["values"]).Properties())Assert.IsTrue((bool)tuning.GetMethod("Equivalent").Invoke(null,new object[]{p.Name,p.Value,migrated["values"][p.Name]}),p.Name);
+            Assert.AreEqual(171,((JObject)migrated["values"]).Count);
+            foreach(var p in ((JObject)JObject.Parse(previous)["values"]).Properties()){
+                if(p.Name=="hex.morph"){double spin=(double)JObject.Parse(previous)["values"]["hex.spin"];Assert.That((double)migrated["values"][p.Name],Is.EqualTo((double)p.Value/(.8/spin)).Within(1e-8));}
+                else Assert.IsTrue((bool)tuning.GetMethod("Equivalent").Invoke(null,new object[]{p.Name,p.Value,migrated["values"][p.Name]}),p.Name);
+            }
             var broken=JObject.Parse(previous);((JObject)broken["values"]).Remove("hex.radius");args=new object[]{broken.ToString(),null};Assert.IsFalse((bool)tuning.GetMethod("Import").Invoke(null,args));
             var unchanged=JObject.Parse((string)tuning.GetMethod("Export").Invoke(null,new object[]{"157 migrated",false}));Assert.IsTrue(JToken.DeepEquals(migrated["values"],unchanged["values"]));
         }

@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e5e83f6279e4a2b8d560c5b014b5c12, type: 3}
   m_Name: VisualPrototype
   m_EditorClassIdentifier:
-  backgroundSpeed: 0.16
-  backgroundMix: 0.66
-  backgroundBend: 0.22
+  backgroundSpeed: 0.22
+  backgroundMix: 0.84
+  backgroundBend: 0.30
   feverBreakStrength: 2.5
-  backgroundHitSpeed: 1.8
-  backgroundHitRecovery: 0.26
-  circuitRestContrast: 0.72
+  backgroundHitSpeed: 2.6
+  backgroundHitRecovery: 0.38
+  backgroundHitColor: 0.65
+  backgroundHitShift: 0.075
+  circuitRestContrast: 0.62
   feverSpawnInterval: 0.12
   feverConcurrentLimit: 14
   feverNodeGap: 0.22
@@ -37,3 +39,32 @@ MonoBehaviour:
   feverChromaticHit: 0.0042
   feverChromaticAmbient: 0.0008
   feverShakeScale: 0.45
+  feverExitAppear: 0.20
+  feverExitAbsorb: 0.51
+  feverExitSettle: 0.24
+  feverExitSpin: 1260
+  feverExitSpinDecay: 0.10
+  feverExitSqueeze: 0.12
+  feverExitBend: 0.28
+  feverExitPower: 3.2
+  feverExitTwist: 0.90
+  feverExitChromatic: 0.006
+  feverExitShake: 0.0035
+  feverExitLens: 0.012
+  feverExitAppearSpin: 180
+  feverExitNodeStretch: 0.65
+  feverExitNodeShrinkStart: 0.22
+  feverExitSpacePull: 0.65
+  feverExitRecoilHold: 0.06
+  backgroundScoreEnabled: 1
+  backgroundScoreX: 0.5
+  backgroundScoreY: 0.5
+  backgroundScoreSize: 0.42
+  backgroundScoreWidth: 0.80
+  backgroundScoreTint: {r: 0.36, g: 0.76, b: 0.84, a: 1}
+  backgroundScoreOpacity: 0.105
+  backgroundScoreOpacityBoost: 0.14
+  backgroundScoreOpacityCap: 0.24
+  backgroundScoreReaction: 0.22
+  backgroundScoreScaleCap: 1.22
+  backgroundScoreResponse: 0.32

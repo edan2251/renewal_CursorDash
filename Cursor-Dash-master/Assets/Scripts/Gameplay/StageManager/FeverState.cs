@@ -34,6 +34,7 @@ public sealed class FeverState
     public double NormalCombatSeconds {get;private set;}
     public bool SuppressesThreats=>Current==Phase.Entering||Current==Phase.Fever||Current==Phase.Exiting;
     public event Action<Phase,Phase> Transitioned;
+    public event Action<BigInteger,BigInteger> PointsAwarded; // Presentation notification: actual awarded delta, exact new total.
     public double Elapsed=>elapsed;
     public string PointsText=>Points.ToString(CultureInfo.InvariantCulture);
     public string MultiplierText=>"x"+Multiplier.ToString(CultureInfo.InvariantCulture);
@@ -47,9 +48,10 @@ public sealed class FeverState
     public bool Kill(int source,ulong execution)
     {
         if(Current==Phase.Stopped||execution==0||(kills.TryGetValue(source,out var previous)&&execution<=previous))return false;
-        kills[source]=execution;Points+=Multiplier;
+        kills[source]=execution;BigInteger awarded=Multiplier;Points+=awarded;
         if(Current==Phase.Normal){idle=0;Gauge=Math.Min(1,Gauge+FeverSettings.Safe(Settings.chargePerKill,.125,0));if(Gauge>=1)Transition(Phase.Closing);}
         // Confirmed policy: no recharge from kills during fever or its transitions.
+        PointsAwarded?.Invoke(awarded,Points);
         return true;
     }
     public void NexusHit(){if(Current==Phase.Stopped)return;Gauge=idle=0;Multiplier=1;LastReset="NexusHit";ResetVersion++;Transition(Phase.Normal);}

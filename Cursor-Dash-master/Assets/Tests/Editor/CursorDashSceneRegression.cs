@@ -215,7 +215,7 @@ namespace CursorDashTests
             Set(normal, "dashDuration", 0.2f);
             ConfigureHexPreparation(hex,0.06f);
             Set(hex, "warningDuration", 0.05f);
-            Set(hex, "attackDuration", 0.35f);
+            ConfigureHexFlight(hex,0.35f);
 
             // Real Physics2D body overlap goes through PlayerCharacterController.OnTriggerEnter2D.
             normal.transform.position = player.transform.position;
@@ -260,7 +260,7 @@ namespace CursorDashTests
 
             Call(trail, "ClearTrail");
             ConfigureHexPreparation(hex,0.18f);
-            Set(hex, "attackDuration", 0.2f);
+            ConfigureHexFlight(hex,0.2f);
             Call(trail, "RecordMovement", new Vector2(-1f, 1f), new Vector2(1f, 1f), Time.time - 0.48f);
             hex.transform.position = new Vector2(0f, 2f);
             Call(hex, "Execute");
@@ -273,7 +273,7 @@ namespace CursorDashTests
 
             Call(trail, "ClearTrail");
             ConfigureHexPreparation(hex,0.05f);
-            Set(hex, "attackDuration", 0.4f);
+            ConfigureHexFlight(hex,0.4f);
             hex.transform.position = new Vector2(0f, 2f);
             Call(hex, "Execute");
             yield return WaitGameplay(0.12f+(float)Get(hex,"PreFireSeconds"));
@@ -683,7 +683,7 @@ namespace CursorDashTests
             Click("RemakeMenu/Start");yield return WaitForScene("Cyberpunk");DisablePatterns();
             Component stage=Find("StageManager"),hex=NodesOfType("ArrowNode").First(),trail=Find("PlayerCharacterAfterImage"),p=Find("PlayerCharacterController");
             p.GetComponent<Rigidbody2D>().position=new Vector2(2,-3);p.transform.position=new Vector2(2,-3);
-            ConfigureHexPreparation(hex,.05f);Set(hex,"warningDuration",.05f);Set(hex,"attackDuration",.4f);
+            ConfigureHexPreparation(hex,.05f);Set(hex,"warningDuration",.05f);ConfigureHexFlight(hex,.4f);
             hex.transform.position=Vector2.up*2;Call(hex,"Execute");yield return WaitCirclePhase(hex,"Fired");
             Assert.IsTrue((bool)Get(hex,"TriangleVisible"));
             Assert.IsTrue(hex.transform.GetChild(0).GetComponentsInChildren<SpriteRenderer>(true).All(sr=>!sr.enabled),"Every original hex sprite is absorbed; no hidden central outline remains.");
@@ -711,7 +711,7 @@ namespace CursorDashTests
             Call(trail,"ClearTrail");
             Type tuning=TypeFor("CursorDashTuning");tuning.GetMethod("EnableDev").Invoke(null,new object[]{true});
             object[] arg={"fx.enabled","false",null,false};Assert.IsTrue((bool)tuning.GetMethod("TrySetText").Invoke(null,arg));
-            Set(hex,"attackDuration",.01f);hex.transform.position=new Vector2(2,2);Call(hex,"Execute");
+            ConfigureHexFlight(hex,.01f);hex.transform.position=new Vector2(2,2);Call(hex,"Execute");
             yield return WaitCirclePhase(hex,"Inactive");
             Assert.AreEqual(2f,(float)Get((Component)Get(stage,"scoreManager"),"Hp"));
             Vector2 edge=(Vector2)Get(hex,"target");
@@ -796,7 +796,7 @@ namespace CursorDashTests
             Set(hex,"reflectionDuration",0.3f);
             ConfigureHexPreparation(hex,2.8f); // Give the 5.5→6 morph a visible test window.
             Set(hex, "warningDuration", 0.3f);
-            Set(hex, "attackDuration", 0.25f);
+            ConfigureHexFlight(hex,0.25f);
             hex.transform.position = new Vector2(0f, 2f);
             Call(hex, "Execute");
             yield return WaitCirclePhase(hex,"Warning");yield return WaitGameplay(.04f);
@@ -865,7 +865,7 @@ namespace CursorDashTests
             // A round interruption during reflection cannot leave an impact callback on this pooled node.
             ConfigureHexPreparation(hex,0.05f);
             Set(hex, "warningDuration", 0.05f);
-            Set(hex, "attackDuration", 0.4f);
+            ConfigureHexFlight(hex,0.4f);
             Call(trail, "ClearTrail");
             hex.transform.position = new Vector2(0f, 2f);
             Call(hex, "Execute");
@@ -987,7 +987,7 @@ namespace CursorDashTests
             yield return WaitGameplay(0.12f);
             Vector2 reversalStart = body.position;
             Set(player, "MoveVector", Vector2.left);
-            yield return WaitGameplay(0.08f);
+            yield return WaitGameplay(0.04f); // New 1800 deg/s default: inspect the first two physics steps, before the 0.10 s reversal completes.
             Vector2 earlyTurn = body.position;
             Assert.Greater(earlyTurn.x, reversalStart.x,
                 "Reversing at speed should continue forward briefly while turning.");
@@ -1009,8 +1009,13 @@ namespace CursorDashTests
             Transform artwork=hex.transform.GetChild(0);
             foreach(string name in new[]{"Outside 1","Outside 2"}){
                 var ring=artwork.Find(name);Assert.IsNotNull(ring);var rotation=ring.GetComponent(TypeFor("Rotator"));Assert.IsNotNull(rotation);
-                Set(rotation,"duration",seconds/6);Set(rotation,"interval",0f);
+                float parts=2*(float)(double)TypeFor("HexRotationTimeline").GetField("DefaultFireAt").GetRawConstantValue();Set(rotation,"duration",seconds/parts);Set(rotation,"interval",seconds/parts); // Keep the test target time under the new default firing beat.
             }
+        }
+        private static void ConfigureHexFlight(Component hex,float seconds)
+        {
+            var tuning=TypeFor("CursorDashTuning");tuning.GetMethod("EnableDev").Invoke(null,new object[]{true});
+            object[] args={"hex.attack",new Newtonsoft.Json.Linq.JValue((double)(decimal)seconds),null,false};Assert.IsTrue((bool)tuning.GetMethod("TrySet").Invoke(null,args),args[2]?.ToString());
         }
         private static IEnumerator WaitGameplay(float seconds)
         {

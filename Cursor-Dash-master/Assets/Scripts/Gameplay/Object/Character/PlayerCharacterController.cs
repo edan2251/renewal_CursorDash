@@ -8,7 +8,8 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     [Header("Control feel (tune on devices)")]
     [SerializeField, Min(0f)] private float acceleration = 60f;
     [SerializeField, Min(0f)] private float releaseDeceleration = 18f;
-    [SerializeField, Range(90f, 1080f)] private float turnDegreesPerSecond = 540f;
+    // Developer tool and gameplay share one default; the old scene's serialized 540 is left untouched.
+    public const float DefaultTurnDegreesPerSecond = 1800f;
     private Vector2 moveVector;
     private Vector2 travelDirection;
     private float travelSpeed;
@@ -68,7 +69,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         maximum=boundsCamera.ViewportToWorldPoint(new Vector3(1-margin,1-margin,0));
         Vector2 displacement = AdvanceMotion(ref travelDirection, ref travelSpeed, moveVector,
             MoveSpeed, CursorDashTuning.Number("player.acceleration",acceleration),CursorDashTuning.Number("player.release",releaseDeceleration),
-            CursorDashTuning.Number("player.turn",turnDegreesPerSecond), Time.fixedDeltaTime);
+            CursorDashTuning.Number("player.turn",DefaultTurnDegreesPerSecond), Time.fixedDeltaTime);
         if (displacement == Vector2.zero)
         {
             if (previousSpeed > 0f && body != null)

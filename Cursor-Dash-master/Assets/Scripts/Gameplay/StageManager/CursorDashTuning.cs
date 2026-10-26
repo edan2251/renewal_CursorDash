@@ -9,7 +9,8 @@ using UnityEngine;
 /// <summary>Allow-listed runtime values. No reflection, asset writes or executable imports.</summary>
 public static class CursorDashTuning
 {
-    public const string DefaultsVersion = "cp14-v2.1-20261024";
+    public const string DefaultsVersion = "hex-timeline-v1-20261026";
+    private const string PreviousDefaultsVersion="cp14-v2.1-20261024";
     public const string UserKey = "CursorDash.v2.user";
     public const string PresetKey = "CursorDash.v2.presets";
     public const string TutorialKey = "CursorDash.v2.tutorial";
@@ -19,13 +20,15 @@ public static class CursorDashTuning
         public string key, label, group, type, unit, apply, scope, description;
         public double min, max, step;
         public JToken defaultValue;
+        public string section="";
+        public bool reciprocal;
     }
     public static readonly List<Parameter> Parameters = new List<Parameter>();
     private static readonly Dictionary<string, JToken> requested = new Dictionary<string, JToken>();
     private static readonly Dictionary<string, JToken> effective = new Dictionary<string, JToken>();
     private static readonly Dictionary<string, JToken> liveFallbacks = new Dictionary<string, JToken>();
     private static JObject userValues = new JObject();
-    private static HashSet<string> legacyKeys,previousVisualKeys;
+    private static HashSet<string> legacyKeys,previousVisualKeys,previousTimelineKeys;
     public static bool DevEnabled { get; private set; }
     public static event Action Changed;
     public static Action RuleSessionChanged;
@@ -69,14 +72,16 @@ public static class CursorDashTuning
         Add("debug.boundary","실제 넥서스 피격 원 표시","시험",0,0,1,1,"","즉시","개발자","toggle");
         DefineVisualParameters();
         DefineFeedbackRevision();
+        previousTimelineKeys=new HashSet<string>(Parameters.Select(p=>p.key));
+        DefineHexTimeline();
     }
     // Extended checkpoints add only explicitly wired parameters here.
     private static void DefineExtendedParameters()
     {
         Add("circle.spin","원형 테두리 회전 배율","원형",1,0,4,0.1,"배","다음 생성");
-        Add("hex.prepare","육각 회전 꺼짐·누락 시 발사까지","육각",3.5,0.05,20,0.05,"초","다음 생성","개발자","number","회전 종료 기준 1/3/5회 충전, 5.5회 변형, 6회 종료에 발사합니다. 이 시간은 회전이 없을 때 발사까지의 안전 대체값입니다.");
-        Add("hex.morph","육각 흡수·삼각 변형 상한","육각",0.25,0.01,3,0.01,"초","다음 생성","개발자","number","5.5~6회 구간 안에 변형과 예비동작을 맞춥니다. 기본 실제 변형은 0.175초이며 이 값은 상한입니다.");
-        Add("hex.attack","레이저 외곽 도달","육각",0.06,0.01,5,0.01,"초");
+        Add("hex.prepare","육각 회전 꺼짐·누락 시 발사까지","육각",3.5,0.05,20,0.05,"초","다음 생성","개발자","number","생성 1/3, 회전 1·2 끝에 2/3·완충, 회전 3 끝에 변형 완료, 회전 4 시작에 발사합니다. 이 시간은 회전이 없을 때 발사까지의 안전 대체값입니다.");
+        Add("hex.morph","삼각형 변형 소요 길이","육각",HexRotationTimeline.DefaultMorphLength,0.01,4,0.01,"박","다음 육각 생성","개발자","number","이동+정지 한 묶음이 1박입니다. 이 길이는 테두리 속도에 맞춰 초로 환산됩니다.");
+        Add("hex.attack","레이저 외곽 도달","육각",HexRotationTimeline.DefaultFlightSeconds,0.01,5,0.01,"초");
         Add("hex.return","반사 반환","육각",0.06,0.005,2,0.005,"초");
         Add("hex.destroy","삼각 파괴 후 풀 복귀","육각",1.333,0.05,5,0.05,"초");
         Add("hex.radius","정삼각형 외접 반경","육각",0.8,0.1,3,0.05,"로컬");
@@ -104,7 +109,7 @@ public static class CursorDashTuning
         Add("player.speed","최대 이동속도","플레이어",5.75,1,15,0.05,"월드/초","즉시");
         Add("player.acceleration","가속","플레이어",60,1,200,1,"월드/초²","즉시");
         Add("player.release","입력 해제 감속","플레이어",18,1,100,1,"월드/초²","즉시");
-        Add("player.turn","방향 회전속도","플레이어",540,90,1800,10,"도/초","즉시");
+        Add("player.turn","방향 회전속도","플레이어",PlayerCharacterController.DefaultTurnDegreesPerSecond,90,1800,10,"도/초","즉시");
         Add("player.margin","화면 이동 여백","플레이어",0.08,0,0.25,0.01,"뷰포트","즉시");
         Add("player.visualScale","커서 표시 크기","플레이어",0.5,0.1,1.5,0.05,"로컬","다음 라운드");
         Add("player.colliderX","실제 충돌 폭","플레이어",0.75,0.1,2,0.05,"로컬","다음 라운드");
@@ -282,6 +287,37 @@ public static class CursorDashTuning
             p.description="기존 DamageNexus 수동 진단 파편에만 적용합니다. 실제 C 원형/D 레이저 접촉은 NexusImpactVfx의 사건별 프로필을 사용합니다. 공통 히트스톱·화면 반응 설정은 C/D에 계속 적용됩니다.";
         }
     }
+    private static void DefineHexTimeline()
+    {
+        const string g="육각",apply="다음 육각 생성";
+        Add("hex.bornCharge","생성 시 충전량",g,HexRotationTimeline.DefaultBorn*100,0,100,.1,"%",apply);
+        Add("hex.charge1.at","충전 1 실행 시점",g,HexRotationTimeline.DefaultFirstAt,0,32,.05,"박",apply);
+        Add("hex.charge1.target","충전 1 목표 누적량",g,HexRotationTimeline.DefaultFirstTarget*100,0,100,.1,"%",apply);
+        Add("hex.charge1.length","충전 1 차오르는 길이",g,HexRotationTimeline.DefaultChargeLength,.01,4,.01,"박",apply);
+        Add("hex.charge2.at","충전 2 실행 시점",g,HexRotationTimeline.DefaultSecondAt,0,32,.05,"박",apply);
+        Add("hex.charge2.target","충전 2 목표 누적량",g,100,0,100,.1,"%",apply);
+        Add("hex.charge2.length","충전 2 차오르는 길이",g,HexRotationTimeline.DefaultChargeLength,.01,4,.01,"박",apply);
+        Add("hex.morphAt","삼각형 변형 시작 시점",g,HexRotationTimeline.DefaultMorphAt,0,32,.05,"박",apply);
+        Add("hex.fireAt","발사 시작 시점",g,HexRotationTimeline.DefaultFireAt,.01,40,.05,"박",apply);
+        Add("hex.timelineDebug","회전 타임라인 검수 표시",g,0,0,1,1,"","즉시 · Dev 검수용","개발자","toggle");
+        foreach(var p in Parameters.Where(p=>p.key=="hex.spin"||p.key=="hex.morph"||p.key=="hex.attack"||!previousTimelineKeys.Contains(p.key)))p.section="hexTimeline";
+        var spin=Find("hex.spin");spin.label="기준 테두리 회전속도";spin.apply=apply;
+        spin.description="Outside 1의 60도 시계방향 이동. 이동과 정지를 함께 배율로 나눠 전체 박자 속도를 바꿉니다. 기본 (.4초 이동 + .4초 정지)/배율 = 1박. 두 링 합산 아님. 0은 회전 없는 대체 시간.";
+        var laser=Find("hex.attack");laser.label="레이저 이동속도";laser.reciprocal=true;laser.apply=apply;
+        laser.description="화면은 경로/초(값이 클수록 빠름), 저장 key hex.attack은 기존 도달시간(초)입니다. 속도 = 1/도달시간. 테두리 속도와 독립이며 월드/초는 실제 경로 길이에 따라 달라집니다.";
+        Find("hex.prepare").label="회전 없음 · 3박 환산 기준시간";
+        Find("hex.prepare").description="기준 링이 둘 다 없거나 정지했을 때만 사용합니다. 1박=이 시간/3입니다. 발사 시점을 바꾸면 실제 발사까지의 초도 그만큼 달라집니다.";
+    }
+    public static HexRotationTimeline HexTimeline(bool consume=false)
+    {
+        double V(string key)=>consume?DoubleNumber(key,(double)Find(key).defaultValue):(double)Requested(key);
+        return new HexRotationTimeline(V("hex.bornCharge")/100,V("hex.charge1.at"),V("hex.charge1.target")/100,V("hex.charge1.length"),V("hex.charge2.at"),V("hex.charge2.target")/100,V("hex.charge2.length"),V("hex.morphAt"),V("hex.morph"),V("hex.fireAt"));
+    }
+    public static string TimelineWarning=>HexTimeline().Warning;
+    public static void TimelineRejected(string reason){LastMessage="육각 생성 보류: "+reason+" 진행 중 육각은 유지합니다.";}
+    public static void ResetHexTimeline(){foreach(var p in Parameters.Where(p=>p.section=="hexTimeline"))requested.Remove(p.key);Changed?.Invoke();}
+    public static double DisplayValue(Parameter p,double stored)=>p.reciprocal?1/stored:stored;
+    public static double StoredValue(Parameter p,double display)=>p.reciprocal?1/display:display;
     public static Parameter Find(string key) => Parameters.Find(p=>p.key==key);
     public static void EnableDev(bool enabled)
     {
@@ -300,6 +336,7 @@ public static class CursorDashTuning
         if(user) userValues[key]=value.DeepClone();
         else {requested[key]=value.DeepClone();RuleSessionChanged?.Invoke();}
         LastMessage="적용 요청: "+p.label+" ("+p.apply+")";
+        if(p.section=="hexTimeline"&&TimelineWarning!="")LastMessage+=" · 경고: "+TimelineWarning+" 새 육각 생성 보류";
         Changed?.Invoke(); return true;
     }
     private static JToken Canonical(Parameter p,JToken value) {
@@ -349,6 +386,7 @@ public static class CursorDashTuning
         return value;
     }
     public static float Number(string key,float fallback) => (float)Read(key,new JValue(fallback));
+    public static double DoubleNumber(string key,double fallback) => (double)Read(key,new JValue(fallback));
     public static int Integer(string key,int fallback) => Mathf.RoundToInt(Number(key,fallback));
     public static bool Toggle(string key,bool fallback) => (bool)Read(key,new JValue(fallback));
     public static Color ColorValue(string key,Color fallback) {
@@ -384,29 +422,42 @@ public static class CursorDashTuning
             if(doc.Properties().Any(p=>!allowed.Contains(p.Name)))throw new Exception("알 수 없는 최상위 필드");
             if(doc["schemaVersion"]?.Type!=JTokenType.Integer||(int)doc["schemaVersion"]!=1)throw new Exception("지원하지 않는 schemaVersion");
             foreach(string s in new[]{"buildId","defaultsVersion","presetName","createdAt","kind"})if(doc[s]?.Type!=JTokenType.String)throw new Exception(s+" 문자열 필요");
-            if((string)doc["defaultsVersion"]!=DefaultsVersion)throw new Exception("기본값 버전 불일치");
+            bool previous=(string)doc["defaultsVersion"]==PreviousDefaultsVersion;
+            if((string)doc["defaultsVersion"]!=DefaultsVersion&&!previous)throw new Exception("기본값 버전 불일치");
             if((string)doc["kind"]!="full"&&(string)doc["kind"]!="changes")throw new Exception("kind 오류");
             if(((string)doc["presetName"]).Length>40)throw new Exception("이름 길이 초과");
             if(!DateTimeOffset.TryParse((string)doc["createdAt"],out _))throw new Exception("작성 시각 오류");
             var vals=doc["values"] as JObject;if(vals==null||vals.Count>Parameters.Count)throw new Exception("values 오류");
             var next=new Dictionary<string,JToken>();
-            foreach(var pair in vals){var p=Find(pair.Key);string e;if(p==null||!Validate(p,pair.Value,out e))throw new Exception("지원 key/값 오류: "+pair.Key);next[pair.Key]=Canonical(p,pair.Value);}
+            foreach(var pair in vals){var p=Find(pair.Key);string e;
+                if(previous&&pair.Key=="hex.morph"){
+                    double seconds=(double)pair.Value,spin=(double?)vals["hex.spin"]??1,prepare=(double?)vals["hex.prepare"]??3.5;
+                    if(pair.Value.Type!=JTokenType.Float&&pair.Value.Type!=JTokenType.Integer||double.IsNaN(seconds)||double.IsInfinity(seconds)||seconds<.01||seconds>3)throw new Exception("이전 변형 시간 오류");
+                    next[pair.Key]=new JValue(seconds/(spin>0?.8/spin:prepare/3));continue;
+                }
+                if(p==null||(previous&&!previousTimelineKeys.Contains(pair.Key))||!Validate(p,pair.Value,out e))throw new Exception("지원 key/값 오류: "+pair.Key);next[pair.Key]=Canonical(p,pair.Value);
+            }
             if((string)doc["kind"]=="full"&&next.Count!=Parameters.Count){
                 // Exact historical 141- and 157-key full schemas only. Arbitrary omissions remain errors.
                 bool original=next.Count==legacyKeys.Count&&legacyKeys.All(next.ContainsKey);
-                bool previous=next.Count==previousVisualKeys.Count&&previousVisualKeys.All(next.ContainsKey);
-                if(!original&&!previous)throw new Exception("전체 설정의 key가 누락됐습니다. 입력 "+next.Count+" / 이전 "+legacyKeys.Count+" 또는 "+previousVisualKeys.Count+" / 현재 "+Parameters.Count);
+                bool visual=next.Count==previousVisualKeys.Count&&previousVisualKeys.All(next.ContainsKey);
+                bool timeline=next.Count==previousTimelineKeys.Count&&previousTimelineKeys.All(next.ContainsKey);
+                if(!previous||(!original&&!visual&&!timeline))throw new Exception("전체 설정의 key가 누락됐습니다. 이전 141/157/161 또는 현재 전체 key가 필요합니다.");
                 foreach(var p in Parameters.Where(p=>!next.ContainsKey(p.key)))next[p.key]=p.defaultValue.DeepClone();
             }
+            double V(string key)=>next.TryGetValue(key,out var value)?(double)value:(double)Find(key).defaultValue;
+            var plan=new HexRotationTimeline(V("hex.bornCharge")/100,V("hex.charge1.at"),V("hex.charge1.target")/100,V("hex.charge1.length"),V("hex.charge2.at"),V("hex.charge2.target")/100,V("hex.charge2.length"),V("hex.morphAt"),V("hex.morph"),V("hex.fireAt"));
+            if(plan.Warning!="")throw new Exception(plan.Warning);
+            if(next.TryGetValue("hex.morph",out var converted)&&!Validate(Find("hex.morph"),converted,out _))throw new Exception("환산한 변형 길이가 허용 범위를 벗어났습니다.");
             // Commit only after every field passes. No data loss on a rejected import.
             requested.Clear();foreach(var pair in next)requested.Add(pair.Key,pair.Value);
-            RuleSessionChanged?.Invoke();Changed?.Invoke();LastMessage="가져오기 완료 ("+next.Count+"항목). 적용 시점을 확인하세요.";return true;
+            RuleSessionChanged?.Invoke();Changed?.Invoke();LastMessage="가져오기 완료 ("+next.Count+"항목). 다음 생성부터 적용."+(previous?" 이전 변형 초 단위를 박자로 환산했습니다. 새 hex.spin은 이동·정지를 함께 조절합니다.":"");return true;
         } catch(Exception e){error="가져오기 거부: "+e.Message;LastMessage=error;return false;}
     }
     public static string ChangedReport() {
         var lines=new List<string>{"CursorDash 변경 수치 보고서", "빌드: "+BuildId+" / 기본값: "+DefaultsVersion};
         foreach(var p in Parameters) if(!Equivalent(p.key,Requested(p.key),p.defaultValue))
-            lines.Add(p.label+" ["+p.key+"] "+p.defaultValue+" → "+Requested(p.key)+" "+p.unit+" / "+p.apply+" / 현재 유효: "+Effective(p.key));
+            lines.Add(p.reciprocal?p.label+" ["+p.key+"] "+DisplayValue(p,(double)p.defaultValue).ToString("0.###")+" → "+DisplayValue(p,(double)Requested(p.key)).ToString("0.###")+"경로/초 (저장 도달시간 "+p.defaultValue+" → "+Requested(p.key)+"초) / "+p.apply:p.label+" ["+p.key+"] "+p.defaultValue+" → "+Requested(p.key)+" "+p.unit+" / "+p.apply+" / 최근 소비값: "+Effective(p.key));
         return string.Join("\n",lines);
     }
     public static bool ApplyVisualPreset(string name,out string error)
@@ -440,7 +491,7 @@ public static class CursorDashTuning
     private static JObject ReadPresets() => JObject.Parse(CursorDashStorage.Get(PresetKey,"{}"));
     public static string[] PresetNames() {try{return ReadPresets().Properties().Select(p=>p.Name).ToArray();}catch{LastMessage="프리셋 저장소가 손상됐습니다. 기존 값을 지우지 않습니다.";return new string[0];}}
     public static bool SavePreset(string name,out string error) {
-        error="";try {name=(name??"").Trim();if(name.Length<1||name.Length>40||name.Any(char.IsControl))throw new Exception("이름은 1~40자");
+        error="";try {if(TimelineWarning!="")throw new Exception("타임라인 충돌을 먼저 수정하세요: "+TimelineWarning);name=(name??"").Trim();if(name.Length<1||name.Length>40||name.Any(char.IsControl))throw new Exception("이름은 1~40자");
             var all=ReadPresets();if(all[name]==null&&all.Count>=MaxPresets)throw new Exception("프리셋 최대8개");
             all[name]=Export(name);string packed=all.ToString(Formatting.None);if(System.Text.Encoding.UTF8.GetByteCount(packed)>524288)throw new Exception("저장 한도512KiB");
             return SaveString(PresetKey,packed,out error);

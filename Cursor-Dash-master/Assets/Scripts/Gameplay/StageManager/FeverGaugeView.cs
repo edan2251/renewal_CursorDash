@@ -44,7 +44,7 @@ public sealed class FeverGaugeView : MonoBehaviour
         float head=displayCharge,tail=0,arrow=displayCharge>.001f?1:0;
         if(m.Current==FeverState.Phase.Closing){head=Mathf.Lerp(closingStart,1,Mathf.SmoothStep(0,1,(float)m.Progress));arrow=1;}
         if(m.Current==FeverState.Phase.Entering){head=1;arrow=0;}
-        if(m.Current==FeverState.Phase.Fever){head=1;tail=(float)m.Progress;arrow=1;}
+        if(m.Current==FeverState.Phase.Fever){head=1;tail=1-(float)m.Gauge;arrow=m.Gauge>0?1:0;}
         if(m.Current==FeverState.Phase.Exiting){head=tail=arrow=0;}
         HeadTurn=m.Current==FeverState.Phase.Fever?tail:head;
         material.SetFloat("_Head",Mathf.Clamp01(head));material.SetFloat("_Tail",tail);material.SetFloat("_Drain",m.Current==FeverState.Phase.Fever?1:0);material.SetFloat("_Arrow",arrow);

@@ -23,12 +23,13 @@ public sealed class CursorDashLivingBackground : MonoBehaviour
         if(quad==null)return;
         float delta=stage.IsPlaying?Time.deltaTime:0;
         if(stage.NormalThreatsSuppressed)hitEnergy=0;
-        float recovery=profile==null?.26f:Mathf.Clamp(profile.backgroundHitRecovery,.08f,.6f);
-        if(delta>0){clock+=delta*(1+hitEnergy*(profile==null?1.8f:Mathf.Clamp(profile.backgroundHitSpeed,0,3)));hitEnergy*=Mathf.Exp(-delta/recovery);drift*=Mathf.Exp(-delta/recovery);}
+        float recovery=profile==null?.38f:Mathf.Clamp(profile.backgroundHitRecovery,.08f,.6f);
+        if(delta>0){clock+=delta*(1+hitEnergy*(profile==null?2.6f:Mathf.Clamp(profile.backgroundHitSpeed,0,3)));hitEnergy*=Mathf.Exp(-delta/recovery);drift*=Mathf.Exp(-delta/recovery);}
         material.SetVector("_HitDrift",new Vector4(drift.x,drift.y,0,0)); // Continues through fever; pause holds it, exit never resets it.
+        material.SetFloat("_HitColor",hitEnergy*(profile==null?.65f:Mathf.Clamp01(profile.backgroundHitColor)));
         float h=board.orthographicSize*1.06f;quad.transform.position=new Vector3(board.transform.position.x,board.transform.position.y,0);
         quad.transform.localScale=new Vector3(h*board.aspect,h,1);material.SetFloat("_Clock",clock);
-        material.SetFloat("_FlowSpeed",profile==null ? .16f : profile.backgroundSpeed);material.SetFloat("_Mix",profile==null ? .66f : profile.backgroundMix);material.SetFloat("_Bend",profile==null ? .22f : profile.backgroundBend);
+        material.SetFloat("_FlowSpeed",profile==null ? .22f : profile.backgroundSpeed);material.SetFloat("_Mix",profile==null ? .84f : profile.backgroundMix);material.SetFloat("_Bend",profile==null ? .30f : profile.backgroundBend);
     }
     private void OnHit(HitFeedback.EventInfo hit)
     {
@@ -36,7 +37,7 @@ public sealed class CursorDashLivingBackground : MonoBehaviour
         if(hit.kind!="circleRemove"&&hit.kind!="triangleBreak"&&hit.kind!="nexusDamage")return;
         hitEnergy=Mathf.Max(hitEnergy,hit.kind=="nexusDamage"?1:.75f);
         Vector2 direction=hit.incoming.sqrMagnitude>.001f?hit.incoming.normalized:((Vector2)hit.point-stage.NexusPosition).normalized;
-        drift=Vector2.ClampMagnitude(drift+direction*.045f,.09f); // Bounded push, continuous color phase.
+        drift=Vector2.ClampMagnitude(drift+direction*(profile==null?.075f:Mathf.Clamp(profile.backgroundHitShift,0,.12f)),.14f); // Bounded push, continuous color phase.
     }
     private void OnDisable(){hitEnergy=0;drift=Vector2.zero;if(original!=null)original.enabled=originalEnabled;if(quad!=null)quad.SetActive(false);}
     private void OnEnable(){if(quad!=null){quad.SetActive(true);if(original!=null)original.enabled=false;}}

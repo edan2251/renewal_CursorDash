@@ -13,29 +13,45 @@ namespace CursorDashTests
         private static Type Runtime(string name)=>AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType(name)).First(t=>t!=null);
         private static double MathCall(string type,string method,params object[] args)=>(double)Runtime(type).GetMethod(method).Invoke(null,args);
         private static bool Sweep(double x0,double y0,double x1,double y1,double hx,double hy,double r,out double hit){object[] args={x0,y0,x1,y1,hx,hy,r,0d};bool ok=(bool)Runtime("FeverContactMath").GetMethod("Sweep").Invoke(null,args);hit=(double)args[7];return ok;}
-        [Test] public void HexChargesAtEndsOneThreeFiveAndFiresAtEndSixAfterMorph()
+        [Test] public void PlayerTurnDefaultIs1800DegreesPerSecondAndStillTurnsAlongMotion()
         {
-            double Fill(double turns,double age=double.PositiveInfinity)=>MathCall("NodeRhythmMath","RotationChargeFill",turns,age,.14d,.06d);
-            Assert.AreEqual(0,Fill(0));Assert.That(Fill(.5),Is.EqualTo(1d/6).Within(1e-8));
-            foreach(double turns in new[]{1d,1.5,2d})Assert.That(Fill(turns),Is.EqualTo(1d/3).Within(1e-8));
-            Assert.That(Fill(2.5),Is.EqualTo(.5).Within(1e-8));foreach(double turns in new[]{3d,3.5,4d})Assert.That(Fill(turns),Is.EqualTo(2d/3).Within(1e-8));
-            Assert.That(Fill(4.5),Is.EqualTo(5d/6).Within(1e-8));foreach(double turns in new[]{5d,5.5,5.9,6d})Assert.That(Fill(turns),Is.EqualTo(1).Within(1e-8));
-            var type=Runtime("NodeRhythmMath");var ready=type.GetMethod("RotationReady");var morph=type.GetMethod("RotationMorphReady");
-            Assert.IsFalse((bool)morph.Invoke(null,new object[]{5.49d}));Assert.IsTrue((bool)morph.Invoke(null,new object[]{5.5d}));
-            Assert.IsFalse((bool)ready.Invoke(null,new object[]{5.99d}));Assert.IsTrue((bool)ready.Invoke(null,new object[]{6d}));
-            double startSix=MathCall("NodeRhythmMath","RotationTurns",4d,.4d,.4d),endSix=MathCall("NodeRhythmMath","RotationTurns",4.4d,.4d,.4d);
-            Assert.IsFalse((bool)ready.Invoke(null,new object[]{startSix}),"Starting the sixth movement is not the firing beat.");
-            Assert.IsTrue((bool)ready.Invoke(null,new object[]{endSix}),"Fire on the END of the sixth movement.");
-            Assert.Greater(Fill(1,.07),1d/3);Assert.Less(Fill(5,.07),1);Assert.That(Fill(5,.14),Is.EqualTo(1).Within(1e-8));
+            var type=Runtime("PlayerCharacterController");float rate=(float)type.GetField("DefaultTurnDegreesPerSecond").GetRawConstantValue();Assert.AreEqual(1800f,rate);
+            object[] args={Vector2.right,5.75f,Vector2.up,5.75f,60f,18f,rate,.02f};
+            Vector2 displacement=(Vector2)type.GetMethod("AdvanceMotion").Invoke(null,args),direction=(Vector2)args[0];
+            Assert.That(Vector2.Angle(Vector2.right,direction),Is.EqualTo(36f).Within(.001));Assert.Greater(displacement.x,0);Assert.Greater(displacement.y,0);
         }
-        [Test] public void HexMorphAndAimFitTheLastHalfTurnWithoutChangingFlightTime()
+        private static object Plan(double fire=3.15,double morph=2.8,double length=.3125)=>Activator.CreateInstance(Runtime("HexRotationTimeline"),new object[]{.1d,.95d,.6d,.2d,1.95d,1d,.2d,morph,length,fire});
+        private static double PlanFill(object plan,double beat){object[] args={beat,.06d,0d};return (double)plan.GetType().GetMethod("Fill").Invoke(plan,args);}
+        [Test] public void HexTimelineUserDefaultsQuickStagesAndDecimalLandmarks()
         {
-            foreach(double speed in new[]{.25,.5,1,2,4})foreach(double requested in new[]{.01,.05,.25,3})foreach(double hold in new[]{0d,.025,.16,2}){
-                double movement=.4/speed,window=movement*.5,morph=MathCall("NodeRhythmMath","RotationMorphSeconds",movement,requested,hold);
-                Assert.Greater(morph,0);Assert.LessOrEqual(morph,requested);Assert.LessOrEqual(morph,window);
-                double actualHold=window-morph;Assert.GreaterOrEqual(actualHold,0);Assert.That(morph+actualHold,Is.EqualTo(window).Within(1e-8));
+            var plan=Plan();Assert.AreEqual("",plan.GetType().GetProperty("Warning").GetValue(plan));
+            Assert.That(PlanFill(plan,0),Is.EqualTo(.1d).Within(1e-8));Assert.That(PlanFill(plan,.95),Is.EqualTo(.1d).Within(1e-8));
+            Assert.Greater(PlanFill(plan,1.05),.5);Assert.That(PlanFill(plan,1.15),Is.EqualTo(.6d).Within(1e-8));Assert.That(PlanFill(plan,1.9),Is.EqualTo(.6d).Within(1e-8));
+            Assert.That(PlanFill(plan,2.15),Is.EqualTo(1d).Within(1e-8));
+            Assert.That((double)plan.GetType().GetMethod("Seconds").Invoke(plan,new object[]{2.8d,.4d,.4d}),Is.EqualTo(2.24d).Within(1e-8));
+            Assert.That((double)plan.GetType().GetMethod("Seconds").Invoke(plan,new object[]{3.15d,.4d,.4d}),Is.EqualTo(2.52d).Within(1e-8));
+        }
+        [Test] public void HexTimelineWholeBeatSpeedScalesMorphAndFireButNotFlight()
+        {
+            var plan=Plan();foreach(double speed in new[]{.25,.5,1,2,4}){
+                double period=.8/speed,morphStart=2.8*period,morphEnd=(2.8+.3125)*period,fire=3.15*period;
+                Assert.Less(morphStart,morphEnd);Assert.Less(morphEnd,fire);Assert.That(fire+ .1-fire,Is.EqualTo(.1).Within(1e-8));
+                Assert.That((double)plan.GetType().GetMethod("Seconds").Invoke(plan,new object[]{3.15d,.4/speed,.4/speed}),Is.EqualTo(fire).Within(1e-8));
             }
-            Assert.That(MathCall("NodeRhythmMath","RotationMorphSeconds",.4d,.25d,.025d),Is.EqualTo(.175).Within(1e-8));
+        }
+        [Test] public void HexTimelineCrossedEventsAreMonotoneAndIdempotentWithSkippedFrames()
+        {
+            var plan=Plan(4,3.5,.275);int seen=0,handled=0;var due=plan.GetType().GetMethod("DueEvents");
+            foreach(double beat in new[]{0d,.1,1.7,3.8,4.05,4.05,8}){
+                int crossed=(int)due.Invoke(plan,new object[]{beat})&~seen;seen|=crossed;
+                for(int bit=1;bit<=16;bit<<=1)if((crossed&bit)!=0)handled++;
+            }
+            Assert.AreEqual(31,seen);Assert.AreEqual(5,handled,"Every threshold is observed once even when several fall in one skipped frame.");
+        }
+        [Test] public void HexTimelineConflictsWarnAndDoNotMoveTheRequestedFireTime()
+        {
+            var plan=Plan(3.6,3.5,.2);Assert.IsNotEmpty((string)plan.GetType().GetProperty("Warning").GetValue(plan));
+            Assert.AreEqual(3.6,(double)plan.GetType().GetField("FireAt").GetValue(plan));Assert.IsTrue(plan.GetType().GetField("FireAt").IsInitOnly,"Captured nodes cannot be retimed by editing the tool.");
         }
         [Test] public void RotationProgressUsesRealMoveAndRestTimesForDifferentSpeeds()
         {
@@ -61,10 +77,11 @@ namespace CursorDashTests
             double last=1;for(int i=0;i<=1000;i++){double value=Scale(2.25+.55*i/1000,.55*(1-i/1000d));Assert.LessOrEqual(value,last+1e-9);last=value;}
             Assert.AreEqual(0,last);Assert.AreEqual(0,MathCall("NodeRhythmMath","Departure",.18d,.18d));Assert.AreEqual(1,MathCall("NodeRhythmMath","Departure",0d,.18d));
         }
-        [Test] public void FeverOpticsFadeOnlyAtPhaseEdgesAndNeverAccumulateWeight()
+        [Test] public void FeverOpticsKeepFullWeightUntilGaugeZeroAndNeverAccumulate()
         {
             Assert.AreEqual(0,MathCall("FeverFlowMath","OpticsWeight",0d,8d));Assert.AreEqual(0,MathCall("FeverFlowMath","OpticsWeight",8d,0d));
             Assert.AreEqual(1,MathCall("FeverFlowMath","OpticsWeight",1d,7d));Assert.AreEqual(0,MathCall("FeverFlowMath","OpticsWeight",double.NaN,7d));
+            Assert.AreEqual(1,MathCall("FeverFlowMath","OpticsWeight",7.999d,.001d),"No premature monochrome/optical ending while gauge remains.");
             for(int i=0;i<=1000;i++){double elapsed=8*i/1000d;Assert.That(MathCall("FeverFlowMath","OpticsWeight",elapsed,8-elapsed),Is.InRange(0d,1d));}
         }
         [Test] public void FeverBurstShellKeepsAllEdgesWithoutVectorOverflowOrInternalFading()
@@ -190,7 +207,7 @@ namespace CursorDashTests
     // Authored only: inherits the existing preference-protecting Play fixture. Never auto-run by this task.
     public partial class CursorDashSceneRegression
     {
-        [UnityTest] public IEnumerator HexRotationChargePausesCancelsAndFiresAtEndSixWithoutAnExtraWarningDelay()
+        [UnityTest] public IEnumerator HexUserTimelinePausesCancelsAndFiresAtConfiguredBeatAfterMorph()
         {
             Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
             var stage=Find("StageManager");var player=Find("PlayerCharacterController");player.GetComponent<Rigidbody2D>().position=new Vector2(-2,-3);player.transform.position=new Vector2(-2,-3);
@@ -199,13 +216,13 @@ namespace CursorDashTests
             hex.transform.position=new Vector2(0,2);Call(hex,"Execute");
             float deadline=Time.realtimeSinceStartup+3;
             while((int)Get(hex,"ChargeStepsCompleted")<3){Assert.Less(Time.realtimeSinceStartup,deadline);yield return null;}
-            Assert.IsTrue((bool)Get(hex,"ChargeFollowsRotation"));Assert.AreEqual("Preparing",Get(hex,"Phase").ToString());Assert.Less((float)Get(hex,"ChargeRotationTurns"),6);
+            Assert.IsTrue((bool)Get(hex,"ChargeFollowsRotation"));Assert.AreEqual("Preparing",Get(hex,"Phase").ToString());Assert.Less((float)Get(hex,"ChargeRotationTurns"),3);
             Call(stage,"SetPaused",true);float held=(float)Get(hex,"ChargeRotationTurns");yield return WaitRealtime(.15f);Assert.AreEqual(held,Get(hex,"ChargeRotationTurns"));Call(stage,"SetPaused",false);
-            yield return WaitCirclePhase(hex,"Warning");Assert.GreaterOrEqual((float)Get(hex,"ChargeRotationTurns"),5.5f-.00001f);Assert.IsFalse(hex.GetComponent<LineRenderer>().enabled);Call(hex,"ResetObject");yield return WaitGameplay(.4f);
+            yield return WaitCirclePhase(hex,"Warning");Assert.GreaterOrEqual((float)Get(hex,"ChargeRotationTurns"),2f-.00001f);Assert.IsFalse(hex.GetComponent<LineRenderer>().enabled);Call(hex,"ResetObject");yield return WaitGameplay(.4f);
             Assert.IsFalse(hex.GetComponent<LineRenderer>().enabled);Assert.AreEqual(3f,Get(Get(stage,"scoreManager"),"Hp"));
-            hex.transform.position=new Vector2(1,2);float began=Time.time;Call(hex,"Execute");Assert.AreEqual(0,Get(hex,"ChargeStepsCompleted"));Assert.AreEqual(0f,Get(hex,"ChargeRotationTurns"));
-            yield return WaitCirclePhase(hex,"Fired");Assert.GreaterOrEqual((float)Get(hex,"ChargeRotationTurns"),6-.00001f);
-            Assert.That((float)Get(hex,"FiredAt")-began,Is.EqualTo(6*.2f+5*.04f).Within(Mathf.Max(.06f,2*Time.deltaTime)),"The morph/hold fit before the END of turn 6; they must not add another delay.");
+            hex.transform.position=new Vector2(1,2);float began=Time.time;Call(hex,"Execute");Assert.AreEqual(1,Get(hex,"ChargeStepsCompleted"));Assert.AreEqual(0f,Get(hex,"ChargeRotationTurns"));
+            yield return WaitCirclePhase(hex,"Fired");Assert.GreaterOrEqual((float)Get(hex,"ChargeRotationTurns"),3-.00001f);
+            Assert.That((float)Get(hex,"FiredAt")-began,Is.EqualTo(3.15f*(.2f+.04f)).Within(Mathf.Max(.06f,2*Time.deltaTime)),"User defaults start morph at 2.8 beats and fire at 3.15, without an extra timer.");
             Assert.Greater((float)Get(hex,"FiredAt"),(float)Get(hex,"WarningCompletedAt"));Call(hex,"ResetObject");
         }
         [UnityTest] public IEnumerator FeverFinalOpticsRunAfterCursorAndStopOutsideFeverOrInContactDiagnostics()
@@ -260,6 +277,37 @@ namespace CursorDashTests
             Assert.IsNotNull(Get(bursts[0],"View"),"White-world mask reads the owned DontSave burst directly.");
             Call(fever,"SweepBonuses",player,new Vector2(1,-2),new Vector2(-1,-2));Assert.IsFalse((bool)Call(node,"TryCollect",Vector2.zero,Vector2.right,false));
             Assert.AreEqual(points,Get(model,"PointsText"));Assert.AreEqual(1,Get(fever,"BonusCollections"));Assert.AreEqual(1,Get(fever,"BonusSweepCollections"));
+        }
+        [UnityTest] public IEnumerator FeverExitCopiesRealPositionsWithoutCollidersOrRewardsAndCancelsCleanly()
+        {
+            Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
+            var stage=Find("StageManager");var fever=(Component)Get(stage,"Fever");var model=Get(fever,"Model");
+            Call(fever,"Review","fill");Call(fever,"Review","step");Call(fever,"Review","step");
+            var node=Resources.FindObjectsOfTypeAll(TypeFor("FeverBonusNode")).Cast<Component>().First(n=>n.gameObject.scene.IsValid());
+            Call(stage,"SetPaused",true);Call(node,"Spawn",new Vector2(1.4f,2.1f),.205f,2.8f,0f);
+            Vector3 origin=((Renderer)Get(node,"RecallSource")).transform.position;string points=Get(model,"PointsText").ToString();
+            Call(fever,"Review","step");Assert.AreEqual("Exiting",Get(model,"Current").ToString());Assert.AreEqual(0d,Get(model,"Gauge"));Assert.AreEqual(0,Get(fever,"ActiveBonuses"));
+            var copies=((IEnumerable)Get(fever,"RecallViews")).Cast<MeshRenderer>().ToArray();Assert.Greater(copies.Length,0);
+            Assert.IsTrue(copies.Any(c=>Vector3.Distance(c.transform.position,origin)<.0001f));
+            foreach(var copy in copies){Assert.AreEqual(0,copy.GetComponents<Collider2D>().Length);Assert.AreEqual(0,copy.GetComponents(TypeFor("Node")).Length);}
+            Assert.IsFalse((bool)Call(node,"TryCollect",(Vector2)origin,Vector2.right,false));Assert.AreEqual(points,Get(model,"PointsText"));
+            var held=copies.Select(c=>c.transform.position).ToArray();yield return WaitRealtime(.12f);
+            for(int i=0;i<copies.Length;i++)Assert.AreEqual(held[i],copies[i].transform.position);
+            Call(fever,"Review","abort");Assert.AreEqual(0,Get(fever,"RecallingBonuses"));Assert.AreEqual("Normal",Get(model,"Current").ToString());
+            Assert.AreEqual(0,Get(model,"CompletedFevers"));Assert.AreEqual(points,Get(model,"PointsText"));
+            foreach(var copy in copies)Assert.IsTrue(copy==null||!copy.enabled,"Cancelled copies must stop rendering before deferred destruction.");
+            Call(stage,"SetPaused",false);
+        }
+        [UnityTest] public IEnumerator ProjectedScoreUsesTheRealTotalAtlasAndWorldLayerWithTopTotalHidden()
+        {
+            Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
+            var stage=Find("StageManager");var fever=(Component)Get(stage,"Fever");Call(fever,"Review","kill");
+            Assert.AreEqual(Get(Get(fever,"Model"),"PointsText"),Get(fever,"BackgroundScoreText"));Assert.IsTrue((bool)Get(fever,"BackgroundScoreAtlasMatches"));
+            var top=(Component)Get(stage,"timeScoreLabel");object font=Get(top,"font"),hudMaterial=Get(top,"fontSharedMaterial");
+            var renderer=(MeshRenderer)Get(fever,"BackgroundScoreRenderer");Assert.IsNotNull(renderer);Assert.AreEqual(-900,renderer.sortingOrder);Assert.IsNull(renderer.GetComponent<Canvas>());
+            Set(fever,"BackgroundScoreVisible",false);yield return null;Assert.IsFalse(renderer.enabled);Set(fever,"BackgroundScoreVisible",true);yield return null;Assert.IsTrue(renderer.enabled);Assert.IsTrue(top.gameObject.activeInHierarchy);Assert.IsFalse(((Behaviour)top).enabled,"The old top total is hidden while its source/font is preserved.");Assert.AreSame(font,Get(top,"font"));Assert.AreSame(hudMaterial,Get(top,"fontSharedMaterial"));Assert.AreEqual(Get(Get(fever,"Model"),"PointsText"),Get(top,"text"));
+            Call(stage,"SetPaused",true);Call(fever,"Review","kill");double held=(double)Get(fever,"BackgroundScorePulse");yield return WaitRealtime(.12f);Assert.AreEqual(held,Get(fever,"BackgroundScorePulse"));
+            Call(fever,"Abort");Assert.AreEqual(0d,Get(fever,"BackgroundScorePulse"));Assert.IsFalse(renderer.enabled);Call(stage,"SetPaused",false);
         }
         [UnityTest] public IEnumerator OrdinaryNodeEntranceReusesPoolWithoutRestartingAttackClock()
         {

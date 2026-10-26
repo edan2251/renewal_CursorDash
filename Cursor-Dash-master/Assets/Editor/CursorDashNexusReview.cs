@@ -56,7 +56,9 @@ public sealed class CursorDashNexusReview : EditorWindow
             if(hex!=null){
                 EditorGUILayout.LabelField("현재 육각",hex.IsPreFiring?"변형 완료 · 짧은 조준 유지":hex.AfterglowOnly?"도달 완료 · 판정 없는 광선 잔상":hex.Phase.ToString());
                 EditorGUILayout.LabelField("육각 차징 기준",hex.ChargeFollowsRotation?"실제 첫 테두리 회전":"회전 없음 · 준비시간 안전 대체");
-                EditorGUILayout.LabelField("육각 회전 / 충전단계",hex.ChargeRotationTurns.ToString("0.00")+" / 6 종료 · "+hex.ChargeStepsCompleted+" / 3");
+                EditorGUILayout.LabelField("육각 회전 / 충전단계",hex.ChargeRotationTurns.ToString("0.00")+" · "+hex.ChargeStepsCompleted+" / 3");
+                EditorGUILayout.LabelField("생성0 기준 연속박자",hex.TimelineBeat.ToString("0.00")+"박 / 1박="+hex.BeatSeconds.ToString("0.###")+"초");
+                if(hex.Timeline!=null)EditorGUILayout.LabelField("다음 타임라인 사건",hex.Timeline.NextEvent(hex.TimelineBeat)+" / 남은 "+System.Math.Max(0,hex.Timeline.NextBeat(hex.TimelineBeat)-hex.TimelineBeat).ToString("0.00")+"박");
                 EditorGUILayout.LabelField("육각 변형시작 / 완료 / 발사",hex.MorphStartedAt.ToString("0.000")+" / "+hex.WarningCompletedAt.ToString("0.000")+" / "+hex.FiredAt.ToString("0.000"));
                 EditorGUILayout.LabelField("실제 변형 / 예비 시간",hex.MorphSeconds.ToString("0.000")+" / "+hex.PreFireSeconds.ToString("0.000"));
                 EditorGUILayout.LabelField("육각 잔상접촉 / 넥서스",hex.BlockedAt.ToString("0.000")+" / "+hex.NexusReachedAt.ToString("0.000"));
@@ -64,6 +66,8 @@ public sealed class CursorDashNexusReview : EditorWindow
             var fever=stage.Fever;
             if(fever!=null&&fever.Model!=null){
                 var model=fever.Model;
+                bool projected=EditorGUILayout.Toggle("배경 큰 점수 (현재 라운드)",fever.BackgroundScoreVisible);if(projected!=fever.BackgroundScoreVisible)fever.BackgroundScoreVisible=projected;
+                EditorGUILayout.LabelField("배경 점수 / 아틀라스",fever.BackgroundScoreText+" / "+(fever.BackgroundScoreAtlasMatches?"일치":"확인 필요"));
                 EditorGUILayout.Space();EditorGUILayout.LabelField("피버 C — 전투·곡선 흑백 전환 (사용자 검수 대기)",EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("점수 / 배율",model.PointsText+" / "+model.MultiplierText+" (최대 x4)");
                 EditorGUILayout.LabelField("상태 / 게임시계",model.Current+" / "+(model.Paused?"정지":"진행"));
@@ -74,7 +78,7 @@ public sealed class CursorDashNexusReview : EditorWindow
                 EditorGUILayout.LabelField("흑백 후처리 / 호출",fever.World==null?"카메라 없음":(fever.World.Supported?"연결":"셰이더 미지원")+" / "+fever.World.RenderedFrames);
                 EditorGUILayout.LabelField("피버 광학후처리 / 호출",fever.World==null?"없음":(fever.World.OpticsSupported?"연결":"미지원/Console 확인")+" / "+fever.World.OpticsFrames);
                 if(fever.ContactDiagnostics)EditorGUILayout.HelpBox("판정 진단 중에는 최종 왜곡·색수차를 잠시 우회해 원래 좌표를 비교합니다.",MessageType.None);
-                EditorGUILayout.LabelField("점선 소유 / 기준 속도",(fever.DottedControlled?"전용 제어":"원본/미연결")+" / "+fever.DottedSpeed.ToString("0.0")+"도/초 × nexus.spin");
+                EditorGUILayout.LabelField("점선 소유 / 실제 속도",(fever.DottedControlled?"전용 제어":"원본/미연결")+" / "+fever.DottedSpeed.ToString("0.0")+"도/초");
                 EditorGUILayout.LabelField("실제 글꼴·텍스처",fever.HudAtlasStatus);
                 EditorGUILayout.LabelField("보너스 공급 / 수집 / 연속 경로",fever.SpawnedBonuses+" / "+fever.BonusCollections+" / "+fever.BonusSweepCollections);
                 fever.ContactDiagnostics=EditorGUILayout.Toggle("접촉 위치 진단 (기본 꺼짐)",fever.ContactDiagnostics);
@@ -93,10 +97,13 @@ public sealed class CursorDashNexusReview : EditorWindow
                     if(GUILayout.Button("피버 취소 → 일반 복귀 (배율 상승 없음)"))fever.Review("abort");
                     EditorGUI.BeginChangeCheck();var c=fever.Settings;
                     double charge=EditorGUILayout.DoubleField("처치당 충전량",c.chargePerKill),grace=EditorGUILayout.DoubleField("감소 유예 (게임초)",c.decayGrace),decay=EditorGUILayout.DoubleField("초당 자연 감소",c.decayPerSecond);
-                    double close=EditorGUILayout.DoubleField("만충 정착",c.closeSeconds),enter=EditorGUILayout.DoubleField("흡수·확산 (C 임시)",c.enterSeconds),life=EditorGUILayout.DoubleField("피버 소모",c.feverSeconds),exit=EditorGUILayout.DoubleField("색 회수·점선 복귀 (C 임시)",c.exitSeconds);
+                    double close=EditorGUILayout.DoubleField("만충 정착",c.closeSeconds),enter=EditorGUILayout.DoubleField("흡수·확산 (C 임시)",c.enterSeconds),life=EditorGUILayout.DoubleField("피버 소모",c.feverSeconds);
+                    var exit=fever.Exit??(fever.Visuals==null?new FeverExitMotion():fever.Visuals.CaptureExit());
+                    EditorGUILayout.LabelField("종료: 링 등장/흡입/안정화",exit.Appear.ToString("0.###")+" / "+exit.Absorb.ToString("0.###")+" / "+exit.Settle.ToString("0.###")+"초 = "+exit.Total.ToString("0.###"));
+                    EditorGUILayout.LabelField("회수 표시 / 압축",fever.RecallingBonuses+" / "+(fever.Exit==null?0:exit.Pressure(fever.Model.Elapsed)).ToString("0.000"));
                     if(EditorGUI.EndChangeCheck()){
                         stage.DisqualifyRecord();c.chargePerKill=FeverSettings.Safe(charge,.125,0);c.decayGrace=FeverSettings.Safe(grace,4,0);c.decayPerSecond=FeverSettings.Safe(decay,.03,0);
-                        c.closeSeconds=FeverSettings.Safe(close,.22,.001);c.enterSeconds=FeverSettings.Safe(enter,1.05,.001);c.feverSeconds=FeverSettings.Safe(life,8,.01);c.exitSeconds=FeverSettings.Safe(exit,.95,.001);
+                        c.closeSeconds=FeverSettings.Safe(close,.22,.001);c.enterSeconds=FeverSettings.Safe(enter,1.05,.001);c.feverSeconds=FeverSettings.Safe(life,8,.01);
                     }
                 }
                 EditorGUILayout.Space();

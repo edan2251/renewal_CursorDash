@@ -6,6 +6,7 @@ public sealed class FeverBonusNode : Node
     private FeverBonusField owner;private MeshRenderer view;private MaterialPropertyBlock properties;
     private Vector2 origin;private float age,life,radius,seed;private bool removed;
     public float WorldRadius=>Mathf.Abs(transform.lossyScale.x);
+    public MeshRenderer RecallSource=>view;
     public bool Collectible=>!removed&&Phase!=NodePhase.Inactive&&gameObject.activeInHierarchy&&circleCollider!=null&&circleCollider.enabled;
     private new void Awake(){base.Awake();}
     public void Bind(FeverBonusField field,Mesh mesh,Material material)
@@ -34,7 +35,8 @@ public sealed class FeverBonusNode : Node
     private void ApplyAppearance()
     {
         var profile=owner?.Visuals;
-        float remaining=Mathf.Min(life-age,owner==null?float.PositiveInfinity:owner.RemainingSeconds);
+        // Own lifetime still expires normally. Round-end copies take over at gauge zero, not .55 s early.
+        float remaining=life-age;
         float appear=profile==null?.12f:profile.feverNodeAppearSeconds,retire=profile==null?.55f:profile.feverNodeRetireSeconds;
         transform.localScale=Vector3.one*(radius*(float)NodeRhythmMath.BonusScale(age,appear,remaining,retire));
         transform.position=origin; // Renderer and real CircleCollider2D shrink together until the existing expiry.

@@ -4,14 +4,15 @@ using UnityEngine;
 public class ArrowNode : Node
 {
     [SerializeField,HideInInspector] private float chargeBeatRiseSeconds=.18f; // Historic serialized value, retained for user data.
-    [Header("Rotation-driven charge — fill at ends 1 / 3 / 5, morph 5.5, fire at end 6")]
-    [SerializeField,Range(.05f,.3f)] private float chargeBeatSettleSeconds=.14f;
+    [SerializeField,HideInInspector] private float chargeBeatSettleSeconds=.14f; // Historical seconds; stages now own beat lengths.
+    [Header("Rotation timeline — tune in the existing developer tool")]
     [SerializeField,Range(0,.15f)] private float chargeBeatElasticity=.06f;
     [SerializeField,HideInInspector] private float chargeBeatHoldSeconds=.95f; // Historic time hold; no longer drives rotation charge.
-    [SerializeField,Min(.01f)] private float attackDuration=.06f;
-    [Tooltip("회전 컴포넌트가 없거나 회전 배율이 0일 때만 쓰는 안전 대체 시간") ]
+    [SerializeField,HideInInspector] private float attackDuration=.06f; // Historical serialized time; developer default/preset is authoritative.
+    [Tooltip("회전이 없을 때의 3박 환산 기준시간. 1박=이 값/3이며 발사 시점에 따라 총 시간은 달라집니다.") ]
     [SerializeField,Min(.05f)] private float preparationDuration=3.5f;
-    [SerializeField,Min(.01f)] private float warningDuration=.25f;
+    [SerializeField,HideInInspector] private float warningDuration=.25f; // Old seconds retained in serialized assets only.
+    [Tooltip("이전 저장 호환값. 현재 발사 전 멈춤은 테두리의 실제 정지 간격을 사용합니다.")]
     [SerializeField,Min(0)] private float preFireDuration=.025f;
     [SerializeField,Range(0,.2f)] private float preFireRecoilRatio=.08f;
     [SerializeField,Min(.02f)] private float firingRecoilDuration=.08f;
@@ -46,6 +47,22 @@ public class ArrowNode : Node
     private Quaternion initialOutsideOneRotation,initialOutsideTwoRotation;
     private Quaternion warningOneRotation,warningTwoRotation;
     private float warningElapsed;
+    private double rotationClock,rotationMovement,rotationPause;
+    private Rotator chargeSource;
+    private int timelineEvents;
+    public HexRotationTimeline Timeline {get;private set;}
+    public double TimelineBeat {get;private set;}
+    public double BeatSeconds=>rotationMovement+rotationPause;
+    public float SpawnedAt {get;private set;}
+    public string TimelineReference {get;private set;}="";
+    public float TimelineStepDegrees {get;private set;}
+    public int TimelineEventsHandled {get;private set;}
+    public float FlightSeconds=>attack;
+    public float DisplayedCharge=>ChargeVisual;
+    public Rotator ConfiguredReference {
+        get {var first=oneRotator!=null?oneRotator:transform.Find("Node/Outside 1")?.GetComponent<Rotator>();var second=twoRotator!=null?twoRotator:transform.Find("Node/Outside 2")?.GetComponent<Rotator>();
+            return first!=null&&Mathf.Abs(first.StepDegrees)>.0001f&&first.ConfiguredTurnSeconds>0?first:second;}
+    }
     private int initialOutsideOneOrder,initialOutsideTwoOrder,generation;
     private float initialLineWidth,initialStartWidth,beamDefenseRadius;
     private Gradient initialGradient;
@@ -65,8 +82,7 @@ public class ArrowNode : Node
     public float ChargeRotationTurns {get;private set;}
     public bool ChargeFollowsRotation {get;private set;}
     public int ChargeStepsCompleted {get;private set;}
-    private float chargeKickAt=float.NegativeInfinity;
-    private float ChargeVisual=>Phase==NodePhase.Preparing?(float)NodeRhythmMath.RotationChargeFill(ChargeRotationTurns,Time.time-chargeKickAt,chargeBeatSettleSeconds,chargeBeatElasticity):1;
+    private float ChargeVisual=>Timeline==null?0:(float)Timeline.Fill(TimelineBeat,Phase==NodePhase.Preparing?chargeBeatElasticity:0,out _);
     public Vector2 BeamOutlet=>flat==null?(Vector2)transform.position:(Vector2)flat.transform.TransformPoint((hexPoints[0]+hexPoints[1])*.5f);
     private const int Segments=60;
     private readonly Vector3[] vertices=new Vector3[Segments+1];
@@ -115,12 +131,20 @@ public class ArrowNode : Node
     public override void Execute()
     {
         generation++;BeginExecution();RestoreVisuals();
-        ChargeRotationTurns=0;ChargeStepsCompleted=0;chargeKickAt=float.NegativeInfinity;ChargeFollowsRotation=false;
+        ChargeRotationTurns=0;ChargeStepsCompleted=1;ChargeFollowsRotation=false;
         // Restart only this hex's two owned ring components, after restoring their initial transforms.
         oneRotator?.RestartRotation();twoRotator?.RestartRotation();
         prepare=CursorDashTuning.Number("hex.prepare",preparationDuration);
-        morph=CursorDashTuning.Number("hex.morph",warningDuration);
-        attack=CursorDashTuning.Number("hex.attack",attackDuration);
+        chargeSource=oneRotator!=null&&oneRotator.HasRotation?oneRotator:twoRotator!=null&&twoRotator.HasRotation?twoRotator:null;
+        ChargeFollowsRotation=chargeSource!=null;
+        rotationMovement=chargeSource!=null?chargeSource.TurnSeconds:Mathf.Max(.001f,prepare)/6;
+        rotationPause=chargeSource!=null?chargeSource.PauseSeconds:rotationMovement;
+        Timeline=CursorDashTuning.HexTimeline(true);
+        if(Timeline.Warning!=""){CursorDashTuning.TimelineRejected(Timeline.Warning);ResetObject();return;}
+        SpawnedAt=Time.time;TimelineReference=chargeSource==null?"회전 없음 · hex.prepare/3 대체박자":chargeSource.name;
+        TimelineStepDegrees=chargeSource==null?0:chargeSource.StepDegrees;
+        morph=(float)(Timeline.MorphLength*BeatSeconds);
+        attack=(float)CursorDashTuning.DoubleNumber("hex.attack",HexRotationTimeline.DefaultFlightSeconds);
         returnTime=CursorDashTuning.Number("hex.return",reflectionDuration);
         resolve=CursorDashTuning.Number("hex.destroy",destroyDuration);
         radius=CursorDashTuning.Number("hex.radius",triangleRadius);
@@ -130,7 +154,7 @@ public class ArrowNode : Node
         rotation=CursorDashTuning.Number("hex.rotation",0);
         shortRatio=CursorDashTuning.Number("visual.hexShortEdge",.18f);
         energyCurve=CursorDashTuning.Number("visual.energyCurve",1);
-        activePreFire=Mathf.Max(0,preFireDuration);activePreFireRatio=preFireRecoilRatio;preFiring=false;
+        activePreFire=(float)System.Math.Max(0,(Timeline.FireAt-Timeline.MorphAt-Timeline.MorphLength)*BeatSeconds);activePreFireRatio=preFireRecoilRatio;preFiring=false;
         activeRecoil=Mathf.Max(.02f,firingRecoilDuration);activeAfterglow=Mathf.Max(0,beamAfterglowDuration);
         beamArrived=recoiling=false;fireElapsed=afterglowElapsed=0;
         MorphStartedAt=WarningCompletedAt=FiredAt=BlockedAt=NexusReachedAt=-1;
@@ -138,7 +162,7 @@ public class ArrowNode : Node
         beamColor=CursorDashTuning.ColorValue("hex.beamColor",bodyColor);
         returnColor=CursorDashTuning.ColorValue("hex.returnColor",bodyColor);
         node.SetActive(true);spriteRenderer.color=Color.clear;animator.enabled=false;circleCollider.enabled=false;
-        inside.localScale=Vector3.zero;lineRenderer.enabled=false;elapsed=0;impacted=false;
+        inside.localScale=Vector3.one*(float)Timeline.Born;lineRenderer.enabled=false;elapsed=0;impacted=false;
         ReturnProgress=0;ImpactsThisExecution=BlocksThisExecution=0;
         EnergyRemaining=1;flat.transform.localRotation=Quaternion.identity;
         DrawMorph(0);
@@ -183,18 +207,18 @@ public class ArrowNode : Node
     }
     private void AdvanceRotationCharge(StageManager stage)
     {
-        var source=oneRotator!=null&&oneRotator.HasRotation?oneRotator:twoRotator!=null&&twoRotator.HasRotation?twoRotator:null;
-        ChargeFollowsRotation=source!=null;
-        // A disabled/missing visual spin must not leave an immortal, unattackable hex in the pool.
-        ChargeRotationTurns=source!=null?(float)source.RotationTurns:Mathf.Clamp01(elapsed/Mathf.Max(.001f,prepare))*NodeRhythmMath.FireTurn;
-        float movement=source!=null?source.TurnSeconds:Mathf.Max(.001f,prepare)/NodeRhythmMath.FireTurn;
+        // Snapshot values and the clock owner never change midway through an execution.
+        if(Timeline==null)return;
+        if(chargeSource!=null&&!chargeSource.HasRotation){ResetObject();return;}
+        rotationClock=chargeSource!=null?chargeSource.RotationElapsedSeconds:elapsed;
+        TimelineBeat=System.Math.Max(TimelineBeat,HexRotationTimeline.Beat(rotationClock,rotationMovement,rotationPause));
+        int crossed=Timeline.DueEvents(TimelineBeat)&~timelineEvents;timelineEvents|=crossed;
+        for(int bit=1;bit<=16;bit<<=1)if((crossed&bit)!=0)TimelineEventsHandled++;
+        ChargeRotationTurns=(float)NodeRhythmMath.RotationTurns(rotationClock,rotationMovement,rotationPause);
         if(Phase==NodePhase.Preparing){
-            int reached=NodeRhythmMath.RotationChargeStage(ChargeRotationTurns);
-            if(reached>ChargeStepsCompleted){ChargeStepsCompleted=reached;chargeKickAt=Time.time;}
+            ChargeStepsCompleted=Timeline.CompletedCharges(TimelineBeat);
             inside.localScale=Vector3.one*ChargeVisual;
-            if(!NodeRhythmMath.RotationMorphReady(ChargeRotationTurns))return;
-            morph=(float)NodeRhythmMath.RotationMorphSeconds(movement,morph,activePreFire);
-            activePreFire=movement*.5f-morph;
+            if((timelineEvents&4)==0)return;
             inside.localScale=Vector3.one;Phase=NodePhase.Warning;MorphStartedAt=Time.time;
             // Keep the native clock alive until fire; the absorbed artwork is drawn explicitly below.
             warningOneRotation=outsideOne.localRotation;warningTwoRotation=outsideTwo.localRotation;
@@ -203,7 +227,7 @@ public class ArrowNode : Node
             if(bodyRenderer!=null)bodyRenderer.enabled=false;insideRenderer.enabled=false;triangleRenderer.enabled=true;DrawMorph(0);
             foreach(var sr in originalSprites)if(sr!=outsideOneRenderer&&sr!=outsideTwoRenderer)sr.enabled=false;
         }
-        warningElapsed=Mathf.Max(0,(ChargeRotationTurns-(float)NodeRhythmMath.MorphStartTurn)*movement);
+        warningElapsed=(float)System.Math.Max(0,(TimelineBeat-Timeline.MorphAt)*BeatSeconds);
         AdvanceWarning(stage);
     }
     private void AdvanceWarning(StageManager stage)
@@ -214,7 +238,7 @@ public class ArrowNode : Node
         outsideOne.localScale=initialOutsideOneScale*(1-t);outsideTwo.localScale=initialOutsideTwoScale*(1-t);
         outsideOne.localRotation=warningOneRotation*Quaternion.Euler(0,0,150*t);
         outsideTwo.localRotation=warningTwoRotation*Quaternion.Euler(0,0,-150*t);
-        DrawMorph(t);if(warningElapsed<morph)return;
+        DrawMorph(t);if(warningElapsed<morph-.000001f)return;
         outsideOne.localScale=outsideTwo.localScale=Vector3.zero;
         outsideOneRenderer.enabled=outsideTwoRenderer.enabled=false;DrawMorph(1);
         foreach(var sr in originalSprites)sr.enabled=false;
@@ -224,7 +248,7 @@ public class ArrowNode : Node
     private void AdvancePreFire(StageManager stage)
     {
         // The final aiming pose is held briefly; the main recoil belongs to the actual shot.
-        if(NodeRhythmMath.RotationReady(ChargeRotationTurns))BeginFire(stage);
+        if((timelineEvents&16)!=0)BeginFire(stage);
     }
     private void AdvanceFiringRecoil(float delta)
     {
@@ -287,7 +311,8 @@ public class ArrowNode : Node
         float ring=Phase==NodePhase.Preparing?1:Phase==NodePhase.Warning?1-t:0;
         flat.DrawHexagonA(Mathf.Lerp(HexagonalNodeRings.BodyRadius,radius,t),Mathf.Lerp(1,shortRatio,t),charge,EnergyRemaining,
             Phase==NodePhase.Fired||Phase==NodePhase.Resolving,bodyColor,t);
-        flat.SetChargePulse(Phase==NodePhase.Preparing?(float)NodeRhythmMath.RotationChargePulse(Time.time-chargeKickAt,chargeBeatSettleSeconds,ChargeStepsCompleted):0);
+        double pulse=0;Timeline?.Fill(TimelineBeat,chargeBeatElasticity,out pulse);
+        flat.SetChargePulse(Phase==NodePhase.Preparing?(float)pulse:0);
         flat.transform.localScale=Vector3.one*EntranceBody;
         if(originalRings!=null)originalRings.Draw(bodyColor,ring);
         if(originalRings!=null)originalRings.ApplyEntrance(EntranceRing,EntranceTurn);
@@ -295,8 +320,9 @@ public class ArrowNode : Node
     private void RestoreVisuals()
     {
         if(node==null)return;
-        ChargeRotationTurns=0;ChargeStepsCompleted=0;chargeKickAt=float.NegativeInfinity;ChargeFollowsRotation=false;
-        preFiring=beamArrived=recoiling=false;elapsed=fireElapsed=afterglowElapsed=warningElapsed=0;node.transform.localPosition=initialNodePosition;
+        ChargeRotationTurns=0;ChargeStepsCompleted=0;ChargeFollowsRotation=false;
+        chargeSource=null;Timeline=null;TimelineBeat=0;timelineEvents=TimelineEventsHandled=0;TimelineReference="";TimelineStepDegrees=0;
+        preFiring=beamArrived=recoiling=false;rotationClock=rotationMovement=rotationPause=0;elapsed=fireElapsed=afterglowElapsed=warningElapsed=0;node.transform.localPosition=initialNodePosition;
         if(flat!=null){flat.Visible=false;flat.transform.localRotation=Quaternion.identity;}
         if(originalRings!=null)originalRings.Visible=false;
         node.SetActive(true);node.transform.localScale=initialNodeScale;

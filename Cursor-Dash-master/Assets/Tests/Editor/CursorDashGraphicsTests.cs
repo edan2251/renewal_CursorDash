@@ -69,7 +69,7 @@ namespace CursorDashTests
                 Assert.Greater((float)Get(graphic,"QuadExtent"),r*1.35f,"Artwork bounds must contain the ring at every allowed legacy radius.");
                 Assert.That((float)Get(graphic,"CoreRadius"),Is.Zero.Within(.0001f),"D-019 removes the independent marker; the outline still remains at zero energy.");
             }
-            ConfigureHexPreparation(h,.05f);Set(h,"warningDuration",.12f);Set(h,"attackDuration",.30f);
+            ConfigureHexPreparation(h,.05f);Set(h,"warningDuration",.12f);ConfigureHexFlight(h,.30f);
             var geometry=TypeFor("NodeFlatGraphic").GetMethod("Hexagon");
             for(int k=0;k<=100;k++){
                 var points=(Vector2[])geometry.Invoke(null,new object[]{.8f,Mathf.Lerp(1,.18f,k/100f)});
@@ -131,7 +131,7 @@ namespace CursorDashTests
             string old=File.ReadAllText(Path.GetFullPath("../docs/CursorDash/examples/cp14-full.json"));object[] args={old,null};
             Assert.IsTrue((bool)tuning.GetMethod("Import").Invoke(null,args),args[1]?.ToString());
             string restored=(string)tuning.GetMethod("Export").Invoke(null,new object[]{"legacy migrated",false});
-            Assert.That(Newtonsoft.Json.Linq.JObject.Parse(restored)["values"].Count(),Is.EqualTo(161));
+            Assert.That(Newtonsoft.Json.Linq.JObject.Parse(restored)["values"].Count(),Is.EqualTo(171));
             Assert.That((float)Newtonsoft.Json.Linq.JObject.Parse(restored)["values"]["hex.radius"],Is.EqualTo(.8f));
             var incomplete=Newtonsoft.Json.Linq.JObject.Parse(old);((Newtonsoft.Json.Linq.JObject)incomplete["values"]).Remove("hex.radius");args=new object[]{incomplete.ToString(),null};
             Assert.IsFalse((bool)tuning.GetMethod("Import").Invoke(null,args),"Arbitrary missing old keys are not migration.");
@@ -141,7 +141,7 @@ namespace CursorDashTests
             var oldValues=Newtonsoft.Json.Linq.JObject.Parse(old)["values"];
             var preserved=Newtonsoft.Json.Linq.JObject.Parse(legacyStrong)["values"];
             foreach(var field in ((Newtonsoft.Json.Linq.JObject)oldValues).Properties().Where(f=>!f.Name.StartsWith("fx.circleRemove.")&&!f.Name.StartsWith("fx.triangleBreak.")))
-                Assert.IsTrue((bool)tuning.GetMethod("Equivalent").Invoke(null,new object[]{field.Name,field.Value,preserved[field.Name]}),"Visual preset must preserve imported combat/user value: "+field.Name);
+                Assert.IsTrue((bool)tuning.GetMethod("Equivalent").Invoke(null,new object[]{field.Name,Newtonsoft.Json.Linq.JObject.Parse(restored)["values"][field.Name],preserved[field.Name]}),"Visual preset must preserve imported combat/user value after unit migration: "+field.Name);
             // The original CP14 JSON intentionally contains a .45s experiment. A visual preset must preserve it.
             // Start a fresh default training session explicitly before exporting the new .20s comparison examples.
             Call(ui,"BrowserCommand","{\"cmd\":\"resetAll\"}");

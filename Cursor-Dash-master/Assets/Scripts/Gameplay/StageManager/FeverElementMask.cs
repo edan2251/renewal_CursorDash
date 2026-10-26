@@ -26,12 +26,15 @@ public sealed class FeverElementMask
             for(int i=0;i<materials.Length;i++)if(materials[i]!=null)buffer.DrawRenderer(renderer,materials[i],i);
         }
         foreach(var renderer in pooled)DrawOne(renderer);
+        var score=stage.Fever?.BackgroundScoreRenderer;if(score!=null&&System.Array.IndexOf(pooled,score)<0)DrawOne(score);
         if(player==null)player=PlayerCharacterController.instance;
         if(player!=null)foreach(var renderer in player.GetComponentsInChildren<Renderer>())DrawOne(renderer);
         // The field already owns these DontSave bursts. Scene searches exclude DontSave objects,
         // which previously let the white pass erase their black fragments despite successful hits.
         var bursts=stage.Fever?.BonusBursts;
         if(bursts!=null)foreach(var burst in bursts)if(burst!=null)DrawOne(burst.View);
+        var recalls=stage.Fever?.RecallViews;
+        if(recalls!=null)foreach(var renderer in recalls)if(System.Array.IndexOf(pooled,renderer)<0)DrawOne(renderer);
         Graphics.ExecuteCommandBuffer(buffer);
     }
     public void Dispose(){buffer.Release();if(trail!=null)Object.Destroy(trail);}

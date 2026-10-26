@@ -40,6 +40,7 @@ public static class CursorDashFeverPreview
             source=new Texture2D(2,2,TextureFormat.RGBA32,false);source.hideFlags=HideFlags.HideAndDontSave;
             if(!source.LoadImage(File.ReadAllBytes(Path.Combine(Application.dataPath,"../Captures/node-alignment-runtime.png"))))throw new InvalidDataException("Old source capture unavailable");
             material=new Material(shader){hideFlags=HideFlags.HideAndDontSave};
+            var exit=new FeverExitMotion();material.SetVector("_RecallSettings",new Vector4((float)exit.Power,(float)exit.Twist,(float)exit.SpacePull,0));
             float ax=1,ay=16f/9f;material.SetVector("_Center",new Vector4(.5f,.5f,0,0));material.SetVector("_Aspect",new Vector4(ax,ay,0,0));
             material.SetFloat("_Extent",FeverWorldTransition.Extent(new Vector2(.5f,.5f),ax,ay));material.SetFloat("_CoreRadius",.058f);material.SetFloat("_Light",1);material.SetFloat("_Warp",1);material.SetVectorArray("_Pulses",new Vector4[6]);
             material.SetVector("_FeverCenterAspect",new Vector4(.5f,.5f,ax,ay));material.SetVector("_Aspect",new Vector4(ax,ay,0,0));
@@ -49,7 +50,7 @@ public static class CursorDashFeverPreview
             foreach(var frame in frames){
                 frame.spread=(float)(frame.mode==1?FeverFlowMath.EntrySpread(frame.progress):frame.mode==2?1:FeverFlowMath.ExitRemaining(frame.progress));
                 material.SetFloat("_Mode",frame.mode);material.SetFloat("_Progress",frame.progress);material.SetFloat("_Spread",frame.spread);
-                material.SetVector("_FeverFlow",new Vector4(frame.mode,frame.spread,FeverWorldTransition.Extent(new Vector2(.5f,.5f),ax,ay),frame.progress));
+                material.SetVector("_FeverFlow",new Vector4(frame.mode,frame.spread,FeverWorldTransition.Extent(new Vector2(.5f,.5f),ax,ay),frame.mode==3?(float)exit.Suction(frame.progress*exit.Total):frame.progress));
                 Graphics.Blit(source,target,material);RenderTexture.active=target;read.ReadPixels(new Rect(0,0,450,800),0,0);read.Apply();
                 File.WriteAllBytes(Path.Combine(folder,frame.name+".png"),read.EncodeToPNG());
             }
