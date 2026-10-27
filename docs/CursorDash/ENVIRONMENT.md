@@ -1,5 +1,9 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-066 최신 릴리스 환경 (2026-10-28)
+
+기존6000.3.23f1/WebGL타깃·Cyberpunk→legacy01등록·기존NoPlay메뉴로1회성공. 오류0/경고8·312.175초/입력1518동일. 시작PlayOFF/Cyberpunkclean/imported6보존,사용자PC사용재개후추가OS입력없음·빌드뒤메모리재조회NOT_RUN. 저장폐기/다른프로젝트종료/설치·전역·새연결없음. 로컬24/공개25HTTP·해시·MIME PASS/실IAB메인UI·진입·Pause복귀PASS,임시8888서버정상종료. 제한네트워크첫실패는정상승인경로로복구·정책우회/설정변경없음. [릴리스·실제검수범위](RELEASE_SETTINGS_20261028.md).
+
 ## 최신 추가 — 설정 UI (2026-10-28)
 
 D-065: 기존Unity6000.3.23f1/Cyberpunk읽기진단PlayOFF·clean/imported6동일범위, 저장폐기없음. UI참조컴파일성공이나실제Editor확인중physicalEscape사용자중단으로native/Play미검수. 설치/새연결/전역변경/빌드/게시없음. UI전완성본bded6a4 source main push반영확인/배포브랜치불변. 상세 SETTINGS_PAUSE_UI_20261028.md.

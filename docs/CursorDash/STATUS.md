@@ -1,8 +1,14 @@
 # CursorDash 현재 상태와 다음 한 작업
 
-## 최신 — D-066 사용자 UI 확인·WebGL 릴리스 진행 (2026-10-28)
+## 최신 — D-066 설정·일시정지 최신본 릴리스 완료 (2026-10-28)
 
-**USER_VERIFIED UI 조작 / RELEASE_IN_PROGRESS / NOT_DEPLOYED.** 사용자최신요청으로현관련변경검사·WebGL빌드·선별커밋/push·기존GitHubPages게시를이번에만허용한다. mainbded6a4/원격동일·미푸시0/index빈,gh-pages de9ec5f 기존대상확인. 씬clean/PlayOFF·기존imported6보존,게임변경없이ID·기존빌드메뉴guard만갱신/새전용출력. [진행기록](RELEASE_SETTINGS_20261028.md). 실패는완료로기록하지않으며성공후소스/배포/사후문서커밋과검수범위를기록한다. 다음한작업은빌드→로컬검수→기존Pages배포/공개확인이다.
+**RELEASE_COMPLETE / USER_VERIFIED UI / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** [최신 릴리스·검수·보존·인계](RELEASE_SETTINGS_20261028.md).
+
+실제빌드소스 main `0ad2e9945435bfcb5e900e069995fb8fa0f6039a`(31선별파일)/gh-pages `6909ed2c187e4e221e798b45ba4b513b6aed99c0` 정상push,Pages40576817544 success·built/SHA동일. buildId `cursordash-20261028-settings-bb06638d1e46`,공개 https://edan2251.github.io/renewal_CursorDash/ . Unity6000.3.23f1 WebGL오류0/경고8·312.175초/입력1518파일동일. 로컬24·공개25HTTP200/Git SHA256·WASM MIME·bare URL새ID동일. 실제IAB메인/설정7·로컬드래그100→70→100/시작·커서/Pause2/계속/Home와warn/error0. 사용자UI정상확인과기존동일게임소스Native고유7PASS는별도집계.
+
+기존파일1609개보존/예상외변경0·Play/저장폐기없음,imported6시작보존·사용자PC재개후빌드뒤메모리재조회NOT_RUN. 임시서버정상종료·공개Main반환. 실모바일/터치/전체전투·튜토리얼완주/피버/성능/재실행저장·독립QA NOT_RUN. 경고8세부분류미조회. 새Flash그림/별도사이버재구축·일반겹침보류/육각재검토제외/D-014유지. 사후문서[Docs]는빌드소스뒤로구분하며재빌드없음.
+
+**다음 한 작업:** 사용자공개PC/모바일UI·저장/튜토리얼검수. 이번한정게시권한완료/새기능·추가빌드·커밋/push/배포는새승인필요.
 
 아래 D-065 미커밋/Git금지는이번릴리스범위에서만대체한다. 기존사용자보존·보류범위는유지한다.
 

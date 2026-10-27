@@ -1,5 +1,9 @@
 # 근거와 참고 자료
 
+## D-066 최신 실행 근거 (2026-10-28)
+
+출처는사용자최신UI정상확인/이번릴리스승인,기존정상TestRunner7고유항목자료,이번실제UnityBuildReportJSON/1518입력해시,Git main0ad2e99/gh-pages6909ed2,GitHubPages작업40576817544·Pages built API,로컬24/공개25HTTP·Git blob해시,실IAB PNG/브라우저warn/error0이다. 외부아트/폰트/패키지추가없음·기존이용문서보존. 로그/사적진단은공개산출물에포함하지않는다. [경로와범위](RELEASE_SETTINGS_20261028.md).
+
 ## 최신 추가 — 설정 UI (2026-10-28)
 
 D-065: 사용자첨부 a5c5ca88-b539-426c-94fa-518d7dfa8b74/붙여넣은 텍스트.txt(전체UI요구)와최신정정(완성본source커밋·push후UI/시안이미지없음·소수UI조사)을우선한다. Returnal공식UI개발자기사/Returnal·Rez설정이미지검색을제한참고, 원본일부403/cache miss/애니메이션미관찰·외부에셋편입없음. 링크와확인범위 SETTINGS_PAUSE_UI_20261028.md.

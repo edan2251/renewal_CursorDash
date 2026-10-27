@@ -1,5 +1,9 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-066 최신 릴리스 검사 (2026-10-28)
+
+USER_VERIFIED:사용자가UI조작정상확인. PASS:정적/참조118-test17-Editor2 오류0·기존133경고/JS구문,실제WebGL오류0·경고8/312.175초,입력1518전후동일·기존1609보존. 기존동일게임Native고유7PASS는이번자동Play실행으로표시하지않는다. 로컬24/공개25HTTP200·SHA256·WASM MIME와bare URL새ID/소스SHA·Pages40576817544 success PASS. 실제브라우저메인설정7·로컬드래그100→70→100/시작·커서/Pause2/계속/Home·warn/error0 PASS. 실제스크린샷과논리/참조검사는구분. NOT_RUN:실모바일/터치·전체전투/튜토리얼완주·피버·장시간성능·재실행저장·전체공식테스트·독립QA·빌드뒤Unity메모리재조회. [세부기록](RELEASE_SETTINGS_20261028.md).
+
 ## 최신 후속 — 패널 입력 복구 (2026-10-28)
 
 D-065 후속: NativeUnity컴파일0오류/참조118-test17-Editor2오류0·기존133경고,실제raycast최상단검사추가. 정상7중5PASS/2검사준비FAIL을핵심단언유지수정후2개만재검사PASS(04:46:47KST). 고유7항목최종PASS이며단일7PASS실행으로혼합하지않음. Main전조작/Slider31%/12×12·4·48/Pause계속·Retry/Home/설정·완화·기록/기존튜토리얼2+2/필수첫피버흰화면GPU확인. PNG39/동영상아님,실손/모바일/WebGL·성능/앱재실행저장NOT_RUN. PlayOFF/timeScale1/씬clean·보호6키/imported6동일,실패/최종JSON/XML보존. 상세SETTINGS_PAUSE_UI_20261028.md.

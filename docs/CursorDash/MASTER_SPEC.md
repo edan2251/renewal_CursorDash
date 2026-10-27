@@ -1,5 +1,9 @@
 # CursorDash — 개발 기준 v0.1
 
+## D-066 릴리스 완료·현재 기준 (2026-10-28)
+
+현재UI는USER_VERIFIED,소스0ad2e99/배포6909ed2·buildId cursordash-20261028-settings-bb06638d1e46로기존Pages게시완료. 기본게임은변경하지않으며설정은동일Tuning/Storage·메인7/Pause2공유/음량·완화1회적용·입력해제가드·Shade뒤/손잡이12×12·트랙4/터치48를유지한다. [공개·검수·다음범위](RELEASE_SETTINGS_20261028.md). 이번릴리스권한완료/추가개발·게시자동진행없음. 아래진행기록은이력으로유지한다.
+
 ## D-066 이번 릴리스 승인 (2026-10-28)
 
 사용자가 현재메인설정/중앙Pause UI조작정상을확인했다(USER_VERIFIED). 이번은현재게임그대로선별소스·WebGL빌드·기존main/gh-pages정상게시만허용한다. 새기능/수치조정없음/게임규칙·보류유지. [진행·결과](RELEASE_SETTINGS_20261028.md).

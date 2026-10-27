@@ -18,7 +18,7 @@
 
 ## 환경과 범위
 
-- 최신D-066(2026-10-28)진행: 사용자UI조작정상확인/현본검사·WebGL빌드·선별소스/웹정상커밋push·기존Pages배포이번한정허용. STATUS→RELEASE_SETTINGS_20261028.md. mainbded6a4/remote동일·미푸시0,index빈/기존gh-pages de9ec5f. 게임수정없이기존EditorNoPlay빌드/새출력·ID만갱신,실패게시금지·공개최신ID/HTTP해시·UI검수완료후기록. 이전게시금지를이번범위만대체/사용자미저장저장폐기·force/설치·전역·새연결금지/육각제외·기존보류유지. 완료뒤추가권한자동연장없음.
+- 최신D-066(2026-10-28)릴리스완료: 사용자UI정상확인/선별소스main0ad2e99(31파일)/gh-pages6909ed2 정상push·Pages40576817544성공,built/SHA동일. buildId cursordash-20261028-settings-bb06638d1e46. Unity6000.3.23f1 WebGL오류0/경고8·312.175초/1518입력동일. 로컬24·공개25HTTP200/Git SHA256/WASM MIME·bare URL새ID일치/실IAB메인·설정7/로컬슬라이더100→70→100/시작·커서/Pause2/계속/Home·warn/error0. 기존동일게임Native고유7PASS/사용자USER_VERIFIED구분. 기존1609보존/삭제·예상외변경0·Play/저장폐기없음·imported6시작보존,PC사용재개뒤메모리재조회NOT_RUN. 서버정상종료/공개Main. 실모바일·터치/전체전투·튜토리얼완주/피버/성능·재실행저장·독립QA NOT_RUN. STATUS→RELEASE_SETTINGS_20261028.md·다음은사용자공개PC/모바일검수. 사후Docs는빌드소스뒤/문서만이면재빌드없음. 이번한정권한완료/추가빌드·Git/배포/새기능은새승인필요. force/이력재작성·설치/전역/새연결/미저장일괄저장폐기금지·육각재검토제외/일반겹침·새Flash·별도재구축보류/D-014유지.
 
 
 - D-065후속(2026-10-28): 패널무반응원인은dim이Safe area뒤형제라전면입력차단→첫형제로이동. Slider실12×12/터치48/막대4·Track알파.82,이번게임변경SettingsUI1·테스트2+문서만/기존사용자미커밋보존. 사용자이번Unity검수허용·실컴파일오류0/집중최초5PASS·2검사준비FAIL→핵심단언유지검사수정후2PASS(04:46:47KST)/고유7항목PASS/실좌표raycast·UI이벤트/실물리·PNG39. 손/모바일/WebGL·성능/재실행저장·전체suite NOT_RUN. PlayOFF·timeScale1/Cyberpunkclean/보호prefs6·imported6동일/저장폐기없음、추가OS입력은사용자입력감지로전송안됨·포커스되가져오지않고컴퓨터조작즉시반환. STATUS→SETTINGS_PAUSE_UI_20261028.md최상단을읽고다음은사용자검수. mainbded6a4/index빈·이번커밋/push·빌드배포없음/추가UI조작새지시필요. D014/육각제외·보류범위유지. 아래최초D065 NOT_RUN은이전중단이력이다.
