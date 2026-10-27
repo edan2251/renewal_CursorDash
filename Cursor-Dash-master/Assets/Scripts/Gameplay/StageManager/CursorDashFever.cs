@@ -17,6 +17,20 @@ public sealed class CursorDashFever : MonoBehaviour
     private FeverBonusField bonus;private readonly FeverNexusRig rig=new FeverNexusRig();
     private readonly FeverFeedbackGate feelGate=new FeverFeedbackGate();
     private bool entryImpulse,ownsShake;
+    private readonly NexusMagnetism magnet=new NexusMagnetism();private double previousCharge;private float nexusFeedbackClock;
+    private bool MagnetActive=>stage.IsPlaying&&(Model.Current==FeverState.Phase.Normal||Model.Current==FeverState.Phase.Closing)&&CursorDashTuning.Toggle("fx.enabled",true);
+    private double MagneticSeconds=>Visuals==null?.48:Mathf.Clamp(Visuals.nexusMagnetSeconds,.15f,.6f);
+    public float MagneticBody=>MagnetActive?(float)magnet.Body(nexusFeedbackClock,Visuals==null?.04:Visuals.nexusBreath,Visuals==null?.24:Visuals.nexusChargeExpand,Visuals==null?.32:Visuals.nexusHitCompress,MagneticSeconds):1;
+    public float MagneticLight=>MagnetActive?(float)magnet.Light(nexusFeedbackClock,Visuals==null?.15:Visuals.nexusBreathLight,MagneticSeconds)*Mathf.Clamp01(CursorDashTuning.Number("user.flash",1))*(PlayerPrefs.GetString("OnFlash","true")=="true"?1:0):0;
+    public float MagneticRing=>MagnetActive?(float)magnet.Ring(nexusFeedbackClock,(Visuals==null?.24:Visuals.nexusChargeExpand)*.65,Visuals==null?.32:Visuals.nexusHitCompress,MagneticSeconds):1;
+    public float MagneticArc(float radians)=>MagnetActive?(float)magnet.ArcShaped(nexusFeedbackClock,radians,Model.Gauge,Visuals==null?.028:Visuals.nexusArcDrift,Visuals==null?.24:Visuals.nexusChargeExpand,Visuals==null?.32:Visuals.nexusHitCompress,Visuals==null?.08:Visuals.nexusChargeGap,MagneticSeconds,Visuals==null?.8:Visuals.nexusArcMotion,Visuals==null?.12:Visuals.nexusArcStagger):1;
+    public void NexusVisualHit(bool directionKnown,Vector2 side)
+    {
+        magnet.Hit(nexusFeedbackClock,directionKnown&&side.sqrMagnitude>.00001f,Mathf.Atan2(side.y,side.x));
+        Circuits?.NexusDamaged(); // Same confirmed HP-loss path as the body, not a score/reflection callback.
+    }
+    public void ClearNexusResponses(){magnet.Clear();previousCharge=Model.Gauge;}
+    public void SnapDisplayedScore()=>projection?.SnapScore();
     private FeverScoreHud hud;private FeverBackgroundScore projection;
     public bool BackgroundScoreVisible {get=>projection!=null&&projection.Visible;set{if(projection!=null)projection.Visible=value;}}
     public MeshRenderer BackgroundScoreRenderer=>projection?.View;
@@ -56,8 +70,10 @@ public sealed class CursorDashFever : MonoBehaviour
     }
     public void Advance(float delta,bool paused)
     {
+        if(stage.IsPlaying)nexusFeedbackClock+=Mathf.Max(0,Time.unscaledDeltaTime);
         Model.Paused=paused;Model.Tick(delta);
         float step=paused?0:Mathf.Max(0,delta);Clock+=step;bonus?.Tick(step);projection?.Advance(step);
+        if(Model.Gauge>previousCharge+.00001&&(Model.Current==FeverState.Phase.Normal||Model.Current==FeverState.Phase.Closing))magnet.Charge(nexusFeedbackClock);previousCharge=Model.Gauge;
         Circuits?.Advance(step);
         rig.Advance(step,Model.Current,(float)Model.Progress,Model.Elapsed);
         if(Model.Current==FeverState.Phase.Entering&&Model.Progress>=.66&&!entryImpulse){
@@ -78,11 +94,12 @@ public sealed class CursorDashFever : MonoBehaviour
     public void ResetSpace()
     {
         Abort();Model.ResetRun();rig.Restore(false);Exit=null;feelGate.Reset();entryImpulse=ownsShake=false;
-        ContactDiagnostics=false;projection?.ResetRound();World?.Clear();Circuits?.ResetSpace();
+        ContactDiagnostics=false;nexusFeedbackClock=0;magnet.Clear();previousCharge=0;projection?.ResetRound();World?.Clear();Circuits?.ResetSpace();
     }
     private void Transition(FeverState.Phase before,FeverState.Phase after)
     {
         if(after==FeverState.Phase.Entering){
+            magnet.Clear();
             // Suppression is already true before resetting any node. Cleanup is never a kill callback.
             LastClearedThreats=stage.NodeCreator.ActiveCount;
             float retire=Mathf.Min(Visuals==null?.18f:Visuals.feverThreatRetireSeconds,(float)FeverSettings.Safe(Settings.enterSeconds,1.05,.001)*.55f);
@@ -95,6 +112,7 @@ public sealed class CursorDashFever : MonoBehaviour
             bonus?.BeginRecall(Exit,stage.NexusPosition,rig.RestRadius>0?rig.RestRadius:stage.NexusRadius*1.38f);
         }
         else if(after==FeverState.Phase.Normal||after==FeverState.Phase.Stopped){
+            magnet.Clear();previousCharge=Model.Gauge;
             stage.NodeCreator.ClearFeverDepartures();bonus?.ClearNodes();bonus?.ClearEffects();rig.Restore(before==FeverState.Phase.Exiting&&after==FeverState.Phase.Normal&&Model.LastReset!="Cancelled"&&Model.LastReset!="NexusHit");World?.Clear();
             if(ownsShake){stage.GetComponent<CameraShake>()?.Reset();ownsShake=false;}
             Exit=null;if(after==FeverState.Phase.Stopped)projection?.Clear();
@@ -110,7 +128,7 @@ public sealed class CursorDashFever : MonoBehaviour
     {
         if(!CursorDashTuning.Toggle("fx.enabled",true))return;
         World?.Hit(point);
-        Circuits?.Hit(point);
+        Circuits?.ScoreHit(point);
         rig.Pulse(false);
         float gain=BonusImpactGain;
         if(feelGate.Stop(Clock,FeverSettings.Safe(Settings.bonusStopGap,.18,.08)))stage.RequestFeedbackStop(Mathf.Clamp((float)FeverSettings.Safe(Settings.bonusStop,.012,0)*gain,0,.035f));
@@ -138,7 +156,7 @@ public sealed class CursorDashFever : MonoBehaviour
     private void OnFeedback(HitFeedback.EventInfo hit){if(!CursorDashTuning.Toggle("fx.enabled",true))return;if(hit.kind=="circleRemove"||hit.kind=="triangleBreak")rig.Pulse(false);else if(hit.kind=="nexusDamage")rig.Pulse(true);}
     private void LateUpdate(){hud?.Draw();bonus?.SweepHead();projection?.Draw();}
     private void OnGUI()=>bonus?.DrawDiagnostics(); // After score updates and CanvasScaler layout, before rendering.
-    private void OnDisable(){if(Model!=null)Abort();rig.Release();hud?.Restore();projection?.Clear();}
+    private void OnDisable(){if(Model!=null)Abort();rig.Suspend();hud?.Restore();projection?.Clear();}
     private void OnEnable(){if(stage!=null)rig.Bind(stage.NexusPresentation);}
-    private void OnDestroy(){if(Model!=null)Model.Transitioned-=Transition;if(stage!=null&&stage.Feedback!=null)stage.Feedback.Signaled-=OnFeedback;rig.Release();bonus?.Dispose();projection?.Dispose();if(World!=null)Destroy(World);hud?.Dispose();}
+    private void OnDestroy(){if(Model!=null)Model.Transitioned-=Transition;if(stage!=null&&stage.Feedback!=null)stage.Feedback.Signaled-=OnFeedback;rig.Release(false);bonus?.Dispose();projection?.Dispose();if(World!=null)Destroy(World);hud?.Dispose();}
 }

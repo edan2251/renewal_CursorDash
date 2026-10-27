@@ -38,14 +38,16 @@ public sealed class FeverGaugeView : MonoBehaviour
         if(root==null||fever.Model==null)return;var m=fever.Model;bool visible=!stage.IsDeath&&m.Current!=FeverState.Phase.Stopped;
         root.SetActive(visible);if(!visible)return;
         Radius=stage.NexusRadius*1.86f;root.transform.SetPositionAndRotation(stage.NexusPosition,Quaternion.identity);root.transform.localScale=Vector3.one*Radius;
+        bool beganRewind=false;
         if(seenReset!=m.ResetVersion){
             seenReset=m.ResetVersion;velocity=0;
-            if(m.LastReset=="NexusHit")rewind.Begin(displayCharge,fever.Visuals==null?.16:fever.Visuals.nexusGaugeRewindSeconds);
+            if(m.LastReset=="NexusHit"){rewind.Begin(displayCharge,fever.Visuals==null?.38:fever.Visuals.nexusGaugeRewindSeconds);beganRewind=true;}
             else{rewind.Clear();displayCharge=(float)m.Gauge;HeadTurn=0;}
         }
         if(lastPhase!=m.Current){if(m.Current==FeverState.Phase.Closing)closingStart=HeadTurn;if(m.Current==FeverState.Phase.Normal&&!rewind.Active){displayCharge=(float)m.Gauge;velocity=0;}lastPhase=m.Current;}
         if(m.Current==FeverState.Phase.Normal){
-            if(rewind.Active)displayCharge=(float)rewind.Tick(m.Gauge,stage.IsPlaying?Time.unscaledDeltaTime:0);
+            // The hit's already elapsed frame must not consume the new animation before its first render.
+            if(rewind.Active)displayCharge=(float)rewind.Tick(m.Gauge,stage.IsPlaying&&!beganRewind?Time.unscaledDeltaTime:0);
             else if(Time.deltaTime>0)displayCharge=Mathf.SmoothDamp(displayCharge,(float)m.Gauge,ref velocity,(float)FeverSettings.Safe(fever.Settings.gaugeSmoothSeconds,.06,.015),Mathf.Infinity,Time.deltaTime);
         }else rewind.Clear();
         if(m.Current==FeverState.Phase.Normal&&m.Gauge>previousGauge+.0001)chargePulse=1;
@@ -66,6 +68,10 @@ public sealed class FeverGaugeView : MonoBehaviour
             if(m.Current==FeverState.Phase.Entering){float t=Mathf.Clamp01((p-i*.018f)/.50f);scale=(float)FeverFlowMath.OuterScale(i,false,p);spin=-(450+i*11)*(1-Mathf.Pow(1-t,3));offset=Quaternion.Euler(0,0,spin-i*72)*Vector3.up*(.11f*Mathf.Sin(t*Mathf.PI)*scale);}
             else if(m.Current==FeverState.Phase.Fever){float t=Mathf.Clamp01((float)m.Elapsed/.20f);scale=Mathf.SmoothStep(0,1,t);spin=120*(1-scale);}
             else if(m.Current==FeverState.Phase.Exiting){scale=(float)FeverFlowMath.OuterScale(i,true,p);spin=180*(1-scale);}
+            else if(m.Current==FeverState.Phase.Normal||m.Current==FeverState.Phase.Closing){
+                float angle=(7f/12+(i+.5f)/5)*Mathf.PI*2;Vector3 radial=new Vector3(Mathf.Sin(angle),Mathf.Cos(angle),0);
+                offset=radial*(fever.MagneticArc(Mathf.Atan2(radial.y,radial.x))-1);
+            }
             segments[i].localPosition=offset;segments[i].localScale=Vector3.one*scale;segments[i].localRotation=Quaternion.Euler(0,0,spin);
         }
     }

@@ -206,7 +206,8 @@ namespace CursorDashTests
             object Make()=>Activator.CreateInstance(Runtime("ScoreProjectionPulse"));var small=Make();var large=Make();
             Call(small,"Award",System.Numerics.BigInteger.One);Call(large,"Award",new System.Numerics.BigInteger(4));
             double first=(double)Get(small,"Value"),big=(double)Get(large,"Value");Assert.Greater(big,first);
-            for(int i=0;i<600;i++){if(i%7==0)Call(large,"Award",new System.Numerics.BigInteger(4));Call(large,"Advance",1d/60,.32d);Assert.That((double)Call(large,"Scale",.22d,1.22d),Is.InRange(.98d,1.22d));Assert.LessOrEqual((double)Call(large,"Opacity",.105d,.14d,.24d),.24d);}
+            // D-055: the requested small scoring undershoot has a .955 floor; all upper/opacity/pause/fit assertions remain.
+            for(int i=0;i<600;i++){if(i%7==0)Call(large,"Award",new System.Numerics.BigInteger(4));Call(large,"Advance",1d/60,.32d);Assert.That((double)Call(large,"Scale",.22d,1.22d),Is.InRange(.955d,1.22d));Assert.LessOrEqual((double)Call(large,"Opacity",.105d,.14d,.24d),.24d);}
             double held=(double)Get(large,"Value");Call(large,"Advance",0d,.32d);Assert.AreEqual(held,Get(large,"Value"));Call(large,"Advance",2d,.32d);Assert.That((double)Get(large,"Value"),Is.EqualTo(0).Within(.001));Call(large,"Clear");Assert.AreEqual(0d,Get(large,"Value"));
             foreach(double width in new[]{1d,8d,100d}){double fit=(double)Runtime("ScoreProjectionPulse").GetMethod("Fit").Invoke(null,new object[]{width,2d,3d,5d,4d,1.22d});Assert.LessOrEqual(width*fit*1.22,5d+1e-8);Assert.LessOrEqual(2*fit*1.22,4d+1e-8);}
         }

@@ -5,7 +5,13 @@ public static class FeverFlowMath
 {
     public static double Clamp(double t)=>Math.Max(0,Math.Min(1,t));
     public static double Smooth(double t){t=Clamp(t);return t*t*(3-2*t);}
-    public static double Out(double t){t=Clamp(t);return t>=1?1:1-Math.Pow(2,-9*t);}
+    public static double FinalScoreBreath(double age,double amount,double seconds,double fade)
+    {
+        if(age<=0||double.IsNaN(age)||double.IsInfinity(age))return 1;
+        amount=Math.Max(0,Math.Min(.08,amount));seconds=Math.Max(1,Math.Min(6,seconds));
+        return 1+amount*Math.Sin(age*Math.PI*2/seconds)*Smooth(age/.25)*Clamp(fade);
+    }
+    public static double Out(double t){t=Clamp(t);return t>=1-1e-12?1:1-Math.Pow(2,-9*t);}
     public static double OpticsWeight(double elapsed,double remaining)
     {
         if(double.IsNaN(elapsed)||double.IsNaN(remaining)||remaining<=0)return 0;
@@ -161,6 +167,31 @@ public sealed class ScoreProjectionPulse
     public static double Fit(double width,double height,double designHeight,double safeWidth,double safeHeight,double maximum)=>Math.Max(0,Math.Min(designHeight/Math.Max(.0001,height),Math.Min(safeWidth/Math.Max(.0001,width)/Math.Max(1,maximum),safeHeight/Math.Max(.0001,height)/Math.Max(1,maximum))));
     public double Scale(double strength,double maximum)=>Math.Min(Math.Max(1,maximum),Math.Max(.98,1+Math.Max(0,Math.Min(.4,strength))*Value));
     public double Opacity(double rest,double boost,double maximum)=>Math.Max(0,Math.Min(Math.Min(.35,maximum),rest+Math.Max(0,Value)*Math.Max(0,boost)));
+}
+
+/// <summary>Finite visual impulses sampled from one clock; no transform, HP, gauge or collision ownership.</summary>
+public sealed class NexusMagnetism
+{
+    private double charge=-100,damage=-100;private bool directional;private double angle;
+    public void Clear(){charge=damage=-100;directional=false;angle=0;}
+    public void Charge(double clock)=>charge=clock;
+    public void Hit(double clock,bool known,double radians){damage=clock;directional=known;angle=radians;}
+    private static double Pulse(double age,double seconds){double t=FeverFlowMath.Clamp(age/Math.Max(.08,seconds));return age<0?0:Math.Sin(Math.PI*t)*(1-t)/.57923;}
+    public double Body(double clock,double breath,double gain,double press,double seconds)=>1+breath*Math.Sin(clock*Math.PI*2/3.2)+gain*Pulse(clock-charge,seconds)-press*Pulse(clock-damage,seconds);
+    public double Light(double clock,double breath,double seconds)=>breath*(.5+.5*Math.Sin(clock*Math.PI*2/3.2))+ .55*Pulse(clock-charge,seconds);
+    public double Ring(double clock,double gain,double press,double seconds)=>1+gain*Pulse(clock-charge-.025,seconds)-press*Pulse(clock-damage-.018,seconds);
+    public double Arc(double clock,double radians,double gauge,double idle,double gain,double press,double gap,double seconds)
+        =>ArcShaped(clock,radians,gauge,idle,gain,press,gap,seconds,.8,.12);
+    public double ArcShaped(double clock,double radians,double gauge,double idle,double gain,double press,double gap,double seconds,double motion,double stagger)
+    {
+        double weight=directional?.25+.75*Math.Pow((1+Math.Cos(radians-angle))*.5,2):1;
+        // Fixed per-angle phase/strength: an irregular ripple, never a fresh random pose each frame.
+        double phase=.5+.5*Math.Sin(radians*2.73+1.17),variation=1+.08*Math.Sin(radians*4.19+.61);
+        double delay=.035+Math.Max(0,Math.Min(.24,stagger))*phase;
+        double displacement=idle*Math.Sin(clock*.85+radians*1.7)+gap*FeverFlowMath.Clamp(gauge)
+            +gain*variation*Pulse(clock-charge-delay,seconds)-press*weight*Pulse(clock-damage-.025*(1-weight),seconds);
+        return 1+Math.Max(0,Math.Min(1,motion))*displacement;
+    }
 }
 
 /// <summary>Independent timed supply, with no kill dependency, burst catch-up or full-pool debt.</summary>

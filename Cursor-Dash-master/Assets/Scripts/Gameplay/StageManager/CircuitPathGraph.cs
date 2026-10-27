@@ -197,19 +197,40 @@ public sealed class CircuitAmbientFlow
 /// <summary>Fixed pulse slots and reusable graph-distance scratch space. Disconnected circuits never receive a hit.</summary>
 public sealed class CircuitPulseField
 {
-    private sealed class Pulse {public readonly double[] Distance;public readonly int[] Branches;public bool Active;public double Age,T,Rate=1,Reach;public int Edge;public Pulse(int nodes){Distance=new double[nodes];Branches=new int[nodes];}}
+    // A spatial HP-loss wave, distinct from graph-connected success pulses. Never creates graph edges.
+    public static double RadialLevel(double distance,double age,double speed,double width,double seconds)
+    {
+        if(distance<0||age<0||age>=seconds||double.IsNaN(distance)||double.IsInfinity(distance)||double.IsNaN(age)||double.IsInfinity(age))return 0;
+        speed=Math.Max(.1,speed);width=Math.Max(.03,width);seconds=Math.Max(.05,seconds);
+        double behind=age*speed-distance;if(behind<0||behind>width)return 0;
+        double front=CircuitPathGraph.Smooth(behind/(width*.12)),tail=1-CircuitPathGraph.Smooth(behind/width);
+        return Math.Max(0,Math.Min(1,front*tail*Math.Pow(1-age/seconds,.65)));
+    }
+    public static double DamagePriority(double level)=>CircuitPathGraph.Smooth(level/.08);
+    private sealed class Pulse {public readonly double[] Distance;public readonly int[] Branches;public bool Active,Radial;public CircuitPathGraph.Point Origin;public double Age,T,Rate=1,Reach,Life;public int Edge;public Pulse(int nodes){Distance=new double[nodes];Branches=new int[nodes];}}
     private readonly CircuitPathGraph graph;private readonly Pulse[] pulses=new Pulse[8];private readonly bool[] visited;
     public int Count {get{int n=0;foreach(var p in pulses)if(p.Active)n++;return n;}}
     public CircuitPulseField(CircuitPathGraph graph){this.graph=graph;visited=new bool[graph.Points.Length];for(int i=0;i<pulses.Length;i++)pulses[i]=new Pulse(graph.Points.Length);}
     public bool Hit(CircuitPathGraph.Point point,double radius,int cap)
         =>Seed(point,radius,cap,1);
     public bool HitFlow(CircuitPathGraph.Point point,double radius,int cap,double rate)=>Seed(point,radius,cap,rate);
+    private Pulse Acquire(int cap)
+    {
+        cap=Math.Max(1,Math.Min(8,cap));int slot=0;double oldest=-1;
+        for(int i=0;i<cap;i++){if(!pulses[i].Active){slot=i;break;}if(pulses[i].Age>oldest){oldest=pulses[i].Age;slot=i;}}
+        for(int i=cap;i<pulses.Length;i++)pulses[i].Active=false;return pulses[slot];
+    }
+    public bool HitRadial(CircuitPathGraph.Point point,int cap,double speed,double width)
+    {
+        if(double.IsNaN(point.X)||double.IsNaN(point.Y)||double.IsInfinity(point.X)||double.IsInfinity(point.Y)||double.IsNaN(speed)||double.IsInfinity(speed)||double.IsNaN(width)||double.IsInfinity(width))return false;
+        var p=Acquire(cap);p.Active=p.Radial=true;p.Age=0;p.Origin=point;p.Rate=Math.Max(.1,speed);p.T=Math.Max(.03,width);p.Reach=0;
+        foreach(var node in graph.Points)p.Reach=Math.Max(p.Reach,(node-point).Length);
+        p.Life=(p.Reach+p.T)/p.Rate+.01;return true;
+    }
     private bool Seed(CircuitPathGraph.Point point,double radius,int cap,double rate)
     {
         double distance=graph.Nearest(point,out int edge,out double t);if(distance>Math.Max(0,radius)||edge<0)return false;
-        cap=Math.Max(1,Math.Min(8,cap));int slot=0;double oldest=-1;
-        for(int i=0;i<cap;i++){if(!pulses[i].Active){slot=i;break;}if(pulses[i].Age>oldest){oldest=pulses[i].Age;slot=i;}}
-        var p=pulses[slot];p.Active=true;p.Age=0;p.Edge=edge;p.T=t;p.Rate=rate;p.Reach=0;Array.Clear(visited,0,visited.Length);
+        var p=Acquire(cap);p.Active=true;p.Radial=false;p.Age=0;p.Edge=edge;p.T=t;p.Rate=rate;p.Reach=0;Array.Clear(visited,0,visited.Length);
         for(int i=0;i<p.Distance.Length;i++){p.Distance[i]=double.PositiveInfinity;p.Branches[i]=0;}
         var seed=graph.Edges[edge];p.Distance[seed.A]=seed.Length*t;p.Distance[seed.B]=seed.Length*(1-t);
         for(int step=0;step<graph.Points.Length;step++){
@@ -220,18 +241,22 @@ public sealed class CircuitPulseField
                 double candidate=best+link.Length;if(candidate<p.Distance[next]){p.Distance[next]=candidate;p.Branches[next]=p.Branches[node]+(graph.Degree[node]>2?1:0);}}
         }
         foreach(double value in p.Distance)if(!double.IsInfinity(value))p.Reach=Math.Max(p.Reach,value);
-        // Lowering the configured cap also prunes previously occupied higher slots.
-        for(int i=cap;i<pulses.Length;i++)pulses[i].Active=false;return true;
+        return true;
     }
     public void Advance(double delta,double speed,double seconds,double decay,int cap)
     {
         cap=Math.Max(1,Math.Min(8,cap));double lifetime=Math.Max(.05,seconds)+Math.Max(.05,decay)*3/Math.Max(.1,speed);
-        for(int i=0;i<pulses.Length;i++){var p=pulses[i];if(i>=cap){p.Active=false;continue;}if(!p.Active)continue;p.Age+=Math.Max(0,delta);if(p.Age>=lifetime)p.Active=false;}
+        for(int i=0;i<pulses.Length;i++){var p=pulses[i];if(i>=cap){p.Active=false;continue;}if(!p.Active)continue;p.Age+=Math.Max(0,delta);if(p.Age>=(p.Radial?p.Life:lifetime))p.Active=false;}
     }
     public double Level(int edgeIndex,double t,double speed,double seconds,double decay)
     {
         double level=0;var edge=graph.Edges[edgeIndex];speed=Math.Max(.1,speed);seconds=Math.Max(.05,seconds);decay=Math.Max(.05,decay);
         foreach(var pulse in pulses){if(!pulse.Active)continue;
+            if(pulse.Radial){
+                var point=graph.Points[edge.A]+(graph.Points[edge.B]-graph.Points[edge.A])*t;
+                // A spatial front reaches independent routes too; the geometry/mask still clips hidden sections.
+                level=Math.Max(level,RadialLevel((point-pulse.Origin).Length,pulse.Age,pulse.Rate,pulse.T,pulse.Life*3));continue;
+            }
             double a=pulse.Distance[edge.A]+edge.Length*t,b=pulse.Distance[edge.B]+edge.Length*(1-t);int branches=a<=b?pulse.Branches[edge.A]:pulse.Branches[edge.B];double distance=Math.Min(a,b);
             if(pulse.Edge==edgeIndex){distance=Math.Min(distance,Math.Abs(t-pulse.T)*edge.Length);branches=0;}
             double age=pulse.Age-distance/speed;if(age<0||age>=seconds||distance>decay*3)continue;

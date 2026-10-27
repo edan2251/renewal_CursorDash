@@ -1,5 +1,39 @@
 # 근거와 참고 자료
 
+## D-059 근거와 확인 범위 (2026-10-27)
+
+최신 사용자 텍스트가 현재 요구다. 소스에서 처치회로는 nearest/그래프연결묶음 한정, 피격/처치겹침은Max밝기·색혼합, 치명타는EmitFinalCommitted→DamageSignal(false)→옛red.26/.24초/RGB.0055/waveOFF·별도왜곡임을 확인했다. 일반피격공용경로와ScoreMask/TMP정점/Returning클릭대기·시계를 재사용했다. StageManager/ScoreManager/FeverState/최종파괴·저장 소스는 보존했다.
+
+수정후 증거는Logs/global-scorewave-final-hit-20261027의 참조컴파일·실순수C#·정적보존/해시다. 새게임화면/Native/GPU·모바일검수는없다. [구현13파일·전후값·검사/수동절차](SCORE_WAVE_FINAL_HIT_20261027.md). 과거 D-057의치명타보존은현재요구가아니며 D-059통일결정이우선한다.
+
+## D-058 근거와 확인 범위 — 2026-10-27
+
+최신 사용자 첨부 `C:/Users/molph/AppData/Local/Temp/codex-clipboard-5ccbf4ed-5f78-4021-98ee-4a6efc328032.png`를 실제열어 현재 원호/숫자 배치를 확인했다. 수정후 화면이나 목표이미지로 사용하지 않는다. 소스확인: Arc의 공통charge+.055초, 표시되감기 .16초/(1-t)^3·첫프레임경과소비, 실제프로필/scorefallback Y.58, 완료게임판 FinishBoard→FeverImpact(점수포함·피해블록만glyph guard), 기존Signaled→회로연결전달/확정HP감소→NexusVisualHit를 추적했다.
+
+수정후 증거는 `Cursor-Dash-master/Logs/arc-rewind-fever-circuit-20261027`의 참조컴파일/순수.NET/정적보존/전후해시이며 Native/GPU·수정후게임화면 증거는 없다. 원호정점시점은 순수샘플 계산값으로 실측과 구분한다. [변경13파일·전후값·검사/수동절차](ARC_REWIND_FEVER_CIRCUIT_20261027.md).
+
+## D-057 실제 근거 — 2026-10-27
+
+사용자 최신 BEST0 재발·Editor 저장·강한 붉은 공간굴절/모든피해·과장Nexus 요청이 현재 근거다. 새 레퍼런스/영상 관람을 주장하지 않는다. 실제 소스/실행 스택은 NormalNode.ContactAt→HitFeedback.EmitCore→Tuning.ColorValue/Read의 #BF4CFFFF/메타 #BF4DFFFF 차이→RuleSessionChanged였다. 원본0/1 실패와 사본은 `Logs/nexus-hit-save-20261027/reproduced-color-failure.*`/`Backups/nexus-hit-save-20261027`에 보존했다.
+
+최종 실제 Unity6000.3.23f1/DX11 JSON/XML70PASS(2026-10-27 20:33:34 KST), Play재진입 격리QA키 지속/사용자키불변, 실제카메라광학진단/GPU수치·GameView PNG117/전후readonly state·해시·참조/순수결과는 `Cursor-Dash-master/Logs/nexus-hit-save-20261027`이다. 내부호출·GPU·표본과 실제손전투/실기기·앱 전체재실행 미검수를 구분한다. [상세 원인·절대값·변경12파일·검수](NEXUS_HIT_RECORD_FIX_20261027.md).
+
+## D-056 실제 근거 — 2026-10-27
+
+- 사용자 최신 6항 및 메인에서도 BEST0이라는 직접 답변이 현재 요구다. 새 목표영상/레퍼런스를 추정해 추가하지 않았다.
+- 실제 호출·소스: 정상피격→HitFeedback.EmitCore의 Tuning.Read `.008`/메타 `.006` 오인→RuleSessionChanged; 기존 PointsRecord/Stage정산/Space메인읽기. 원본 실패 스택과 작업 전 사본을 보존했다. D-055의 Play62PASS는 정상피격 후 저장까지 확인한 것이 아니었다.
+- 기존 D-053 ScoreProjectionPulse 사본에서 감쇠/하강/크기 하한을 확인해 복원. 같은 TMP의 종단·정규화맥동·피격 shader/실제접촉점·클릭대기 변경은 현재 소스 확인이다. 육각 코드는 재검토하지 않았다.
+- 실제 Unity6000.3.23f1/DX11 최종67PASS JSON/XML(19:34:10KST), GPU 측정, GameView PNG93, 종료 readonly state·해시·참조/순수 결과는 `Cursor-Dash-master/Logs/score-nexus-review-20261027`이다. 실제 화면/내부호출·정적/순수·모바일 NOT_RUN을 구분한다. [최신 인계](SCORE_NEXUS_REVIEW_20261027.md).
+
+
+## D-055 소스·영상 관찰범위 (2026-10-27)
+
+실제 자료: D:/renewal_CursorDash/_incoming/references/90_current_mobile.mp4 및91_reference_wave_transition_score.mp4. 기존 MediaPlayer로 일반/피버 전투와 참고 점수11/22·복귀로고/최고22 표본을 관찰. 참고 영상은 전투부터 시작하므로 Main→Start 전체 관찰로 주장하지 않는다. 오디오/전체 프레임 정밀분석 아님.
+
+참고 D:/Gamejam2026/Gamejam2026_wave의 enabled WaveGame.unity·TweenController/UIManager 및 실제 serialized Rect/Canvas 값을 읽음. 6000.5.7f1/QualitySettings의 URP asset 참조(전역Graphics default는0); 대상은6000.3.23f1 기존Built-in gameboard pass이다. 새참고원본 실행/업그레이드/수정 없음, 보호해시 전후동일. 같은 숫자의 .7초 InOutCubic 이동/.35초 OutQuad 표시감소와 실제점수 선확정→표시 roll/punch를 구분해 재사용한다. CursorDash 좌표·렌더링·상한에 맞춰 적용, 참고 float저장/아트/새매니저는 이식하지 않는다. [상세](CONTINUOUS_FLOW_20261027.md).
+
+D-055최종실행근거: 정상TestRunner62PASS JSON/XML(09:23:51UTC)·실GameView PNG65장1080×1920·native-compiled-source/DLL해시·editor-cp6-before/after·native-finish-and-exit.log. 실제Nexus위치/생산shaderGPU변위·glyph보호/격리QA키정산·수명검사이며실제손전투/모바일/재실행저장증거는아니다. 최초57/59·2차60/61실패도보존. [화면갤러리](../../Cursor-Dash-master/Logs/continuous-flow-20261027/evidence.html)는정적실캡처모음/연속영상아님.
+
 ## D-054 실제 WebGL/Pages·공개 근거 (2026-10-27)
 
 소스f6e5f8a/실빌드cursordash-20261027-space-e0c721d84748/gh-pages3195915와[Pages40422372912](https://github.com/edan2251/renewal_CursorDash/actions/runs/40422372912)를고정했다. 실제Unity전용로그/성공JSON·입력1489해시·공개25파일Git바이트HTTP/hash/wasm MIME와canonicalURL의실제IAB GameView·마우스이동/훈련·UI JSON/변경보고서새ID/브라우저오류0이근거다. 웹문서읽기도구접속은실패했으며이를화면검증으로사용하지않는다.

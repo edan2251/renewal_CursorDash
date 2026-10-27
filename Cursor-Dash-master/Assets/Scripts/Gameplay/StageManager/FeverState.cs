@@ -84,6 +84,7 @@ public sealed class FeverState
     public static double DrainHead(double progress,double gapDegrees,double seconds,double returnSeconds)
     {
         double tail=Math.Min(.2,Math.Max(.001,returnSeconds/Math.Max(.01,seconds))),p=Math.Max(0,Math.Min(1,progress)),main=1-gapDegrees/360;
-        return p<=1-tail?main*p/(1-tail):main+(1-main)*(p-(1-tail))/tail;
+        if(p>=1)return 1; // Exact endpoint; floating division can otherwise produce 1.0000000000000002.
+        return Math.Max(0,Math.Min(1,p<=1-tail?main*p/(1-tail):main+(1-main)*(p-(1-tail))/tail));
     }
 }

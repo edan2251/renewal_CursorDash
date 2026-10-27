@@ -32,13 +32,32 @@ public sealed class CursorDashStartTimeline
     public static double Body(double t,double overshoot){t=Clamp(t);return t<.72?(1+overshoot)*(1-Math.Pow(1-t/.72,3)):1+overshoot*(1-Smooth((t-.72)/.28));}
     public static double Launch(double t,double acceleration=.18){t=Clamp(t);return t<acceleration?t*t/acceleration:1-(1-t)*(1-t)/(1-acceleration);}
     public double Cursor=>Launch((Progress-CursorAt)/Math.Min(.28,1-CursorAt),CursorAcceleration);
-    public double ScoreTravel=>Smooth((Progress-.10)/.72);
-    public double ScoreCountProgress=>Smooth((Progress-.08)/.70);
+    public static double Cubic(double x){x=Clamp(x);return x<.5?4*x*x*x:1-Math.Pow(-2*x+2,3)/2;}
+    public double ScoreTravel=>Cubic(Progress); // One fixed duration through gameplay handoff; no early stop/restyle gap.
+    public double ScoreCountProgress=>1-Math.Pow(1-Clamp(Progress/.35),2);
+}
+
+/// <summary>Exact integer display interpolation. Retargets a running roll without restarting its clock.</summary>
+public sealed class CursorDashScoreRoll
+{
+    public System.Numerics.BigInteger Value {get;private set;}
+    public System.Numerics.BigInteger Target {get;private set;}
+    private System.Numerics.BigInteger from;private double age,seconds;
+    public void Snap(System.Numerics.BigInteger value){Value=Target=from=value;age=seconds=0;}
+    public bool Active=>age<seconds;
+    public void Award(System.Numerics.BigInteger delta,System.Numerics.BigInteger total,double duration){if(delta<=1&&!Active)Snap(total);else Aim(total,duration);}
+    public void Aim(System.Numerics.BigInteger value,double duration){if(value<=Value){Snap(value);return;}if(age>=seconds){from=Value;age=0;seconds=Math.Max(.05,Math.Min(.6,duration));}Target=value;}
+    public void Advance(double delta){if(delta<=0||double.IsNaN(delta)||double.IsInfinity(delta)||age>=seconds)return;age=Math.Min(seconds,age+delta);double t=1-Math.Pow(1-age/seconds,2);var next=from+(Target-from)*(long)(t*1000000)/1000000;Value=System.Numerics.BigInteger.Max(Value,next);if(age>=seconds)Value=Target;}
 }
 
 /// <summary>Fixed-duration display only. No calls into score, multiplier, rewards or persistence.</summary>
 public static class CursorDashScoreCountdown
 {
+    public static System.Numerics.BigInteger Blend(System.Numerics.BigInteger from,System.Numerics.BigInteger to,double progress)
+    {
+        double p=CursorDashStartTimeline.Clamp(progress);if(p>=1)return to;
+        return from+(to-from)*(long)(p*1000000)/1000000;
+    }
     public static System.Numerics.BigInteger At(System.Numerics.BigInteger best,double progress)
     {
         if(best.Sign<=0)return System.Numerics.BigInteger.Zero;
@@ -62,7 +81,7 @@ public sealed class NexusGaugeRewind
     {
         actual=CursorDashStartTimeline.Clamp(actual);if(!Active)return actual;
         if(delta>0&&!double.IsNaN(delta)&&!double.IsInfinity(delta))age=Math.Min(seconds,age+delta);
-        double remainder=Math.Pow(1-CursorDashStartTimeline.Clamp(age/seconds),3);
+        double t=CursorDashStartTimeline.Clamp(age/seconds),remainder=1-t*t*(3-2*t);
         return actual+Math.Max(0,from-actual)*remainder;
     }
 }

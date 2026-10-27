@@ -22,6 +22,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
     private bool maskFailed;private int maskWidth,maskHeight;
     private bool? enabledOverride,hitsOverride,retreatOverride,scoreMaskOverride,ambientOverride,twoTierOverride;
     private readonly ScoreRoot scoreRoot=new ScoreRoot();private bool scoreMaskReady;
+    private float nexusWaveAge=-1;private P nexusWaveOrigin; // One replaceable wave, not an accumulating set.
     public Texture ScoreGlyphMask=>scoreMaskReady&&scoreMask!=null?(Texture)scoreMask:Texture2D.blackTexture;
     private bool glyphMaskFailed;private int glyphWidth,glyphHeight;
     public bool Enabled {get=>enabledOverride??(fever.Visuals==null||fever.Visuals.dynamicCircuitsEnabled);set=>enabledOverride=value;}
@@ -75,17 +76,18 @@ public sealed class CursorDashCircuits : MonoBehaviour
     public void Advance(float delta)
     {
         if(graph==null)return;clock+=Mathf.Max(0,delta);
-        if(!HitsEnabled||!CursorDashTuning.Toggle("fx.enabled",true))reactions.Clear();
-        reactions.Advance(delta,V==null?1.65f:Value(V.circuitTransferSpeed,1.65f,.3f,3),V==null?.24f:Value(V.circuitHitSeconds,.24f,.08f,.6f),V==null?.26f:Value(V.circuitHitDecay,.26f,.05f,.5f),V==null?4:V.circuitReactionLimit);
-        bool quiet=AmbientEnabled&&!dying&&Active&&!stage.IsDeath&&CursorDashTuning.Toggle("fx.enabled",true)&&(fever.Model.Current==FeverState.Phase.Normal||fever.Model.Current==FeverState.Phase.Fever);
-        ambient.AdvanceShaped(delta,quiet,V==null?.24f:Value(V.circuitAmbientSpeed,.24f,.08f,.6f),V==null?2.6f:Value(V.circuitAmbientInterval,2.6f,1.5f,12),V==null?2:V.circuitAmbientLimit,V==null?.20f:Value(V.circuitAmbientTail,.20f,.06f,.35f),V==null?.025f:Value(V.circuitAmbientHead,.025f,.008f,.06f));
+        if(!HitsEnabled||!CursorDashTuning.Toggle("fx.enabled",true)){reactions.Clear();nexusWaveAge=-1;}
+        if(nexusWaveAge>=0&&stage.IsPlaying){nexusWaveAge+=Mathf.Max(0,Time.unscaledDeltaTime);if(nexusWaveAge>=(V==null?.80f:Value(V.circuitNexusSeconds,.80f,.3f,1.2f)))nexusWaveAge=-1;}
+        reactions.Advance(delta,V==null?1.65f:Value(V.circuitTransferSpeed,1.65f,.3f,3),V==null?.34f:Value(V.circuitHitSeconds,.34f,.08f,.6f),V==null?.40f:Value(V.circuitHitDecay,.40f,.05f,.5f),V==null?4:V.circuitReactionLimit);
+        bool quiet=AmbientEnabled&&!dying&&Active&&(!stage.IsDeath||stage.Space!=null&&stage.Space.IsReturning)&&CursorDashTuning.Toggle("fx.enabled",true)&&(fever.Model.Current==FeverState.Phase.Normal||fever.Model.Current==FeverState.Phase.Fever||stage.Space!=null&&stage.Space.IsReturning);
+        ambient.AdvanceShaped(delta,quiet,V==null?.28f:Value(V.circuitAmbientSpeed,.28f,.08f,.6f),V==null?2.2f:Value(V.circuitAmbientInterval,2.2f,1.5f,12),V==null?2:V.circuitAmbientLimit,V==null?.28f:Value(V.circuitAmbientTail,.28f,.06f,.35f),V==null?.032f:Value(V.circuitAmbientHead,.032f,.008f,.06f));
     }
     private void CaptureEntry(){buildSpeed=V==null?1.8f:Value(V.circuitBuildSpeed,1.8f,.4f,4);buildStagger=V==null?.018f:Value(V.circuitPathStagger,.018f,0,.05f);entryPush=V==null?.075f:Value(V.circuitEntryPush,.075f,0,.2f);}
     private void CaptureExit(){restoreSpeed=V==null?2.1f:Value(V.circuitRestoreSpeed,2.1f,.4f,4);restoreStagger=V==null?.018f:Value(V.circuitPathStagger,.018f,0,.05f);}
     private void CaptureRetreat(){cycleRetreat=RetreatEnabled;retreatCycle=(uint)fever.Model.CompletedFevers+1;retreatStart=V==null?.18f:Value(V.circuitRetreatStart,.18f,.08f,.4f);retreatSpread=V==null?.30f:Value(V.circuitRetreatSpread,.30f,0,.45f);retreatPower=V==null?1.35f:Value(V.circuitRetreatPower,1.35f,.55f,2.4f);retreatHold=V==null?.06f:Value(V.circuitRetreatReadHold,.06f,.02f,.15f);retreat?.Capture(retreatCycle,retreatStart,retreatSpread,retreatPower,retreatHold);}
     private void Transition(FeverState.Phase before,FeverState.Phase after)
     {
-        if(dying)return;previousPhase=before;ambient?.Clear();
+        nexusWaveAge=-1;if(dying)return;previousPhase=before;ambient?.Clear();
         if(after==FeverState.Phase.Entering){CaptureEntry();CaptureRetreat();restoring=false;reactions.Clear();for(int i=0;i<feverStarts.Length;i++)feverStarts[i]=float.PositiveInfinity;}
         else if(after==FeverState.Phase.Exiting){CaptureExit();restoring=true;reactions.Clear();for(int i=0;i<restoreStarts.Length;i++)restoreStarts[i]=float.PositiveInfinity;}
         else if(after==FeverState.Phase.Normal&&before!=FeverState.Phase.Exiting){restoring=false;reactions.Clear();}
@@ -98,15 +100,27 @@ public sealed class CursorDashCircuits : MonoBehaviour
     {
         if(hit.kind=="nexusFinal"){
             deathSpeed=V==null?1.6f:Value(V.circuitDeathSpeed,1.6f,.4f,4);deathStagger=V==null?.018f:Value(V.circuitDeathStagger,.018f,0,.04f);
-            dying=true;deathAge=0;reactions.Clear();ambient.Clear();deathFever=previousPhase==FeverState.Phase.Fever;
+            dying=true;deathAge=0;nexusWaveAge=-1;reactions.Clear();ambient.Clear();deathFever=previousPhase==FeverState.Phase.Fever;
             for(int i=0;i<deathFronts.Length;i++)deathFronts[i]=deathFever?feverFronts[i]:normalFronts[i];return;
         }
-        if(hit.kind=="circleRemove"||hit.kind=="triangleBreak"||hit.kind=="hexBlock"||hit.kind=="nexusDamage")Hit(hit.point);
+        if(hit.kind=="circleRemove"||hit.kind=="triangleBreak")ScoreHit(hit.point);
+        else if(hit.kind=="hexBlock"||hit.kind=="nexusDamage"&&!hit.confirmedDamage)Hit(hit.point);
     }
     public void Hit(Vector2 worldPoint)
     {
         if(!Active||dying||!HitsEnabled||!stage.IsPlaying||!CursorDashTuning.Toggle("fx.enabled",true))return;
-        reactions.Hit(Local(worldPoint),V==null?.13f:Value(V.circuitHitRange,.13f,.02f,.25f),V==null?4:V.circuitReactionLimit);
+        reactions.Hit(Local(worldPoint),V==null?.18f:Value(V.circuitHitRange,.18f,.02f,.25f),V==null?4:V.circuitReactionLimit);
+    }
+    public void ScoreHit(Vector2 worldPoint)
+    {
+        if(!Active||dying||!HitsEnabled||!stage.IsPlaying||!CursorDashTuning.Toggle("fx.enabled",true))return;
+        reactions.HitRadial(Local(worldPoint),V==null?4:V.circuitReactionLimit,V==null?2.6f:Value(V.circuitScoreWaveSpeed,2.6f,1,5),V==null?.32f:Value(V.circuitScoreWaveWidth,.32f,.10f,.6f));
+    }
+    public void NexusDamaged(bool final=false)
+    {
+        if(!Active||!HitsEnabled||!CursorDashTuning.Toggle("fx.enabled",true))return;
+        if(final){if(!dying||!stage.IsDeath)return;}else if(dying||!stage.IsPlaying)return;
+        nexusWaveOrigin=Local(stage.NexusPosition);nexusWaveAge=0;
     }
     private P Local(Vector2 world)=>(new P(world.x-restCenter.x,world.y-restCenter.y))*(1/Math.Max(.0001,worldUnit));
     private Vector3 World(P p)=>new Vector3(restCenter.x+(float)p.X*worldUnit,restCenter.y+(float)p.Y*worldUnit,0);
@@ -117,17 +131,17 @@ public sealed class CursorDashCircuits : MonoBehaviour
         if(Mathf.Abs(layoutAspect-board.aspect)>.0001f||Mathf.Abs(layoutSize-board.orthographicSize)>.0001f)RebuildLayout();
         EnsureMask();
         bool active=Active;legacy.DynamicCircuits=active;view.enabled=active;
-        if(active!=lastEnabled){reactions.Clear();ambient.Clear();lastEnabled=active;}
+        if(active!=lastEnabled){reactions.Clear();ambient.Clear();nexusWaveAge=-1;lastEnabled=active;}
         if(!active)return;
-        if(!HitsEnabled||!CursorDashTuning.Toggle("fx.enabled",true))reactions.Clear();
-        if(dying)deathAge+=Time.unscaledDeltaTime; // Same real-time domain as the existing .64 s Nexus finale; no timeScale writes.
+        if(!HitsEnabled||!CursorDashTuning.Toggle("fx.enabled",true)){reactions.Clear();nexusWaveAge=-1;}
+        if(dying){deathAge+=Time.unscaledDeltaTime;if(nexusWaveAge>=0)nexusWaveAge+=Time.unscaledDeltaTime;} // Finale uses real time; preserve the same damage wave while paths retreat.
     }
     // The existing score's LateUpdate/ForceMeshUpdate (including its vertex pulse) has finished.
     // Refresh masks with the final board camera immediately before culling/rendering, not a previous frame.
     private void BeforeBoardRender(Camera camera){if(camera!=board||normalMaterial==null||view==null)return;bool active=Active;legacy.DynamicCircuits=active;view.enabled=active;if(active)Draw();}
     private double Front(int root,bool feverLayer)
     {
-        if(!feverLayer&&stage.Space!=null&&stage.Space.IsStarting)return stage.Space.CircuitFront(graph.RootLengths[root]);
+        if(!feverLayer&&stage.Space!=null&&(stage.Space.IsStarting||stage.Space.IsReturning))return stage.Space.CircuitFront(graph.RootLengths[root]);
         if(dying)return Math.Min(deathFronts[root],DeathAt(root));
         if(feverLayer){
             var phase=fever.Model.Current;if(phase!=FeverState.Phase.Entering&&phase!=FeverState.Phase.Fever)return 0;
@@ -151,22 +165,27 @@ public sealed class CursorDashCircuits : MonoBehaviour
             return p+d*(force/r);
         }return p;
     }
-    private Color Tint(bool feverLayer,double level,double tip,double quiet)
+    private Color Tint(bool feverLayer,double level,double tip,double quiet,double damage)
     {
         float contrast=feverLayer?(V==null?.065f:Value(V.circuitFeverContrast,.065f,.03f,.25f)):(V==null?.075f:Value(V.circuitNormalContrast,.075f,.02f,.24f));
         float accessible=flashGain;
-        float boost=(V==null?.18f:Value(V.circuitMaxEmphasis,.18f,0,.3f))*(float)level*accessible;
+        float red=(float)damage*accessible,priority=(float)CircuitPulseField.DamagePriority(red);
+        float boost=(V==null?.44f:Value(V.circuitMaxEmphasis,.44f,0,.45f))*(float)level*accessible;
         float tipGain=V==null?.14f:Value(V.circuitTipEmphasis,.14f,0,.25f);
         Color color=feverLayer?(V==null?new Color(.18f,.19f,.20f):V.circuitFeverTint):(V==null?new Color(.40f,.47f,.52f):V.circuitNormalTint);
         if(!feverLayer)color=Color.Lerp(color,new Color(.65f,.92f,.96f),Mathf.Clamp01((float)level*.55f+(float)tip*.45f+(float)quiet*.42f));
-        float soft=(float)quiet*(V==null?.10f:Value(V.circuitAmbientStrength,.10f,0,.16f))*accessible;
+        color=Color.Lerp(color,V==null?new Color(1,.04f,.08f):V.nexusDamageTint,priority);
+        float soft=(float)quiet*(V==null?.12f:Value(V.circuitAmbientStrength,.12f,0,.16f))*accessible;
         // Quiet flow and impacts compete by max; reduced resting contrast never scales down event emphasis.
-        float opacity=contrast*.80f+Mathf.Max(soft,boost+(float)tip*tipGain*accessible);
-        color.a=Mathf.Min(.42f,opacity*(ContrastPreview?1.8f:1));return color;
+        float damageBoost=red*(V==null?.44f:Value(V.circuitNexusEmphasis,.44f,0,.6f));
+        float opacity=contrast*.80f+Mathf.Max(Mathf.Max(soft,boost+(float)tip*tipGain*accessible)*(1-priority),damageBoost);
+        color.a=Mathf.Min(.48f,opacity*(ContrastPreview?1.8f:1));return color;
     }
     private Color At(int index,double t,double front,bool feverLayer,double speed,double seconds,double decay)
     {
-        Color color=Tint(feverLayer||dying&&deathFever,dying?0:reactions.Level(index,t,speed,seconds,decay),Tip(graph.Edges[index],t,front,feverLayer),dying?0:ambient.Level(index,t));
+        var edge=graph.Edges[index];P point=graph.Points[edge.A]+(graph.Points[edge.B]-graph.Points[edge.A])*t;
+        double damage=nexusWaveAge<0?0:CircuitPulseField.RadialLevel((point-nexusWaveOrigin).Length,nexusWaveAge,V==null?2.6:Value(V.circuitNexusSpeed,2.6f,1,5),V==null?.26:Value(V.circuitNexusWidth,.26f,.08f,.5f),V==null?.80:Value(V.circuitNexusSeconds,.80f,.3f,1.2f));
+        Color color=Tint(feverLayer||dying&&deathFever,dying?0:reactions.Level(index,t,speed,seconds,decay),Tip(edge,t,front,feverLayer),dying?0:ambient.Level(index,t),damage);
         return color;
     }
     private Vector3 Side(int edgeIndex,double t,double fraction,double front,float half,bool feverLayer,int root)
@@ -197,7 +216,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
     {
         data.Clear();
         if(dying&&feverLayer)return;
-        double speed=V==null?1.65:Value(V.circuitTransferSpeed,1.65f,.3f,3),seconds=V==null?.24:Value(V.circuitHitSeconds,.24f,.08f,.6f),decay=V==null?.26:Value(V.circuitHitDecay,.26f,.05f,.5f);
+        double speed=V==null?1.65:Value(V.circuitTransferSpeed,1.65f,.3f,3),seconds=V==null?.34:Value(V.circuitHitSeconds,.34f,.08f,.6f),decay=V==null?.40:Value(V.circuitHitDecay,.40f,.05f,.5f);
         for(int root=0;root<graph.Roots.Length;root++){
             double front=Front(root,feverLayer);if(feverLayer)feverFronts[root]=front;else if(!dying)normalFronts[root]=front;
             for(int e=0;e<graph.Edges.Length;e++){
@@ -236,7 +255,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
         else fever.World.SetFlow(normalMaterial,Math.Max(1,board.pixelWidth),Math.Max(1,board.pixelHeight));
         fever.World.SetFlow(feverMaterial,Math.Max(1,board.pixelWidth),Math.Max(1,board.pixelHeight));
         RenderScoreMask();
-        float hide=scoreMaskReady?(V==null?1:Value(V.circuitScoreMaskStrength,1,0,1)):0;
+        float hide=ScoreMaskEnabled&&scoreMaskReady?(V==null?1:Value(V.circuitScoreMaskStrength,1,0,1)):0;
         normalMaterial.SetTexture("_CircuitScoreMask",scoreMask!=null?scoreMask:Texture2D.blackTexture);normalMaterial.SetFloat("_ScoreHide",hide);
         feverMaterial.SetTexture("_CircuitScoreMask",scoreMask!=null?scoreMask:Texture2D.blackTexture);feverMaterial.SetFloat("_ScoreHide",hide);
         RenderNormal();
@@ -286,7 +305,8 @@ public sealed class CursorDashCircuits : MonoBehaviour
     private void RenderScoreMask()
     {
         scoreMaskReady=false;
-        if(!ScoreMaskEnabled||scoreMaskMaterial==null||normalMask==null)return;
+        bool scoreOptics=fever.Model.Current==FeverState.Phase.Fever&&(V==null||V.feverScoreChromatic>1);
+        if((!ScoreMaskEnabled&&!scoreOptics)||scoreMaskMaterial==null||normalMask==null)return;
         UpdateScoreRoot(scoreRoot,fever.BackgroundScoreRenderer);
         if(!scoreRoot.Visible)return;
         int w=normalMask.width,h=normalMask.height;
@@ -320,13 +340,13 @@ public sealed class CursorDashCircuits : MonoBehaviour
     public void ResetSpace()
     {
         enabledOverride=hitsOverride=retreatOverride=scoreMaskOverride=ambientOverride=twoTierOverride=null;ContrastPreview=false;
-        dying=restoring=deathFever=false;deathAge=0;previousPhase=FeverState.Phase.Normal;reactions?.Clear();ambient?.Clear();
+        dying=restoring=deathFever=false;deathAge=0;nexusWaveAge=-1;previousPhase=FeverState.Phase.Normal;reactions?.Clear();ambient?.Clear();
         if(graph==null)return;
         int density=Mathf.Clamp(V==null?12:V.circuitDensity,4,12);if(density!=graph.Roots.Length)RebuildLayout();
         CaptureEntry();CaptureExit();CaptureRetreat();
         for(int n=0;n<graph.Roots.Length;n++){normalFronts[n]=graph.RootLengths[n];feverFronts[n]=deathFronts[n]=0;feverStarts[n]=restoreStarts[n]=float.PositiveInfinity;}
     }
-    private void OnDisable(){scoreMaskReady=false;if(legacy!=null)legacy.DynamicCircuits=false;if(view!=null)view.enabled=false;reactions?.Clear();ambient?.Clear();normalMesh?.Clear();feverMesh?.Clear();}
+    private void OnDisable(){nexusWaveAge=-1;scoreMaskReady=false;if(legacy!=null)legacy.DynamicCircuits=false;if(view!=null)view.enabled=false;reactions?.Clear();ambient?.Clear();normalMesh?.Clear();feverMesh?.Clear();}
     private void OnDestroy()
     {
         Camera.onPreCull-=BeforeBoardRender;

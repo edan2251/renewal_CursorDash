@@ -52,8 +52,13 @@ public sealed class FeverNexusRig
         dotted.localScale=scale*s;
     }
     public void Restore(bool completed){if(bound&&dotted!=null)dotted.localScale=scale;SetOpacity(1);spin.Clear();actualSpeed=24;recall=null;}
-    public void Release()
+    public void Suspend()
     {
-        if(!bound)return;if(dotted!=null){dotted.localScale=scale;dotted.localRotation=rotation;}SetOpacity(1);recall=null;if(rotator!=null)rotator.enabled=enabledBefore;bound=false;spin.Clear();
+        if(!bound)return;if(dotted!=null){dotted.localScale=scale;dotted.localRotation=rotation;angle=rotation.eulerAngles.z;}SetOpacity(1);recall=null;spin.Clear();actualSpeed=24;
+        // Retain ownership while disabled: enabling Rotator here can recreate DOTween during scene teardown.
+    }
+    public void Release(bool resumeLegacy=true)
+    {
+        if(!bound)return;Suspend();if(resumeLegacy&&rotator!=null)rotator.enabled=enabledBefore;bound=false;
     }
 }

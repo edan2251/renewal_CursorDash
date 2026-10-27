@@ -51,6 +51,30 @@ namespace CursorDashTests
             var graph=new Graph(1,1.8);var pulse=new Pulses(graph);
             Assert.IsFalse(pulse.Hit(Point(0,0),.13,4));Assert.AreEqual(0,pulse.Count);
         }
+        [Test] public void ScoreWaveReachesIndependentRoutesFromTheActualHitAndSharesTheExistingCap()
+        {
+            var graph=new Graph(1,1.7777778);var field=Activator.CreateInstance(Runtime("CircuitPulseField"),new[]{graph.Value});var origin=graph.Midpoint(2);int count=graph.Edges.Length;
+            Assert.IsTrue((bool)Call(field,"HitRadial",origin,4,2.6d,.32d));var peaks=new double[count];
+            for(int n=0;n<400;n++){Call(field,"Advance",.005d,1.65d,.34d,.40d,4);for(int e=0;e<count;e++)peaks[e]=Math.Max(peaks[e],(double)Call(field,"Level",e,.5d,1.65d,.34d,.40d));}
+            Assert.IsTrue(peaks.All(p=>p>.1),"Every independent visible route can receive the spatial score wave");
+            for(int n=0;n<40;n++){Call(field,"HitRadial",origin,4,2.6d,.32d);Assert.LessOrEqual((int)Property(field,"Count"),4);}
+            Call(field,"Advance",.06d,1.65d,.34d,.40d,4);double before=(double)Call(field,"Level",2,.5d,1.65d,.34d,.40d);Call(field,"Advance",0d,1.65d,.34d,.40d,4);Assert.AreEqual(before,Call(field,"Level",2,.5d,1.65d,.34d,.40d));
+            Call(field,"Advance",3d,1.65d,.34d,.40d,4);Assert.AreEqual(0,Property(field,"Count"));Assert.AreEqual(12,graph.Roots.Length);Assert.AreEqual(82,graph.Edges.Length);
+        }
+        [Test] public void VisibleDamageHasPriorityOverSuccessRatherThanAddingBothEmphases()
+        {
+            var priority=Runtime("CircuitPulseField").GetMethod("DamagePriority");
+            Assert.AreEqual(0d,priority.Invoke(null,new object[]{0d}));Assert.AreEqual(1d,priority.Invoke(null,new object[]{.08d}));
+            for(int n=8;n<=100;n++){double p=(double)priority.Invoke(null,new object[]{n/100d});Assert.AreEqual(0d,.44*(1-p));Assert.AreEqual(1d,p);}
+        }
+        [Test] public void NexusSpatialWaveReachesFartherCircuitsLaterAndHasAFiniteEnvelope()
+        {
+            var sample=Runtime("CircuitPulseField").GetMethod("RadialLevel");
+            double Level(double distance,double age)=>(double)sample.Invoke(null,new object[]{distance,age,2.6d,.26d,.8d});
+            Assert.Greater(Level(.2,.11),.1);Assert.AreEqual(0,Level(.8,.11));Assert.Greater(Level(.8,.35),.1);
+            for(int n=0;n<=100;n++){double age=n*.01;Assert.That(Level(.4,age),Is.InRange(0d,1d));}
+            Assert.AreEqual(0,Level(.2,.8));Assert.AreEqual(0,Level(1.2,.9));Assert.AreEqual(0,Level(.2,double.NaN));
+        }
         [Test] public void ConnectedBranchReceivesADelayedWeakerPulseButOtherTreesStayQuiet()
         {
             var graph=new Graph(1,1.8);var pulse=new Pulses(graph);var midpoint=graph.Midpoint(2);

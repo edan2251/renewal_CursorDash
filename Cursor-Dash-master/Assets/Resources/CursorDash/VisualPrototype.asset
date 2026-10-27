@@ -36,8 +36,9 @@ MonoBehaviour:
   feverOpticsSeconds: 0.3
   feverLensStrength: 0.0175
   feverLensRadius: 0.58
-  feverChromaticHit: 0.0042
-  feverChromaticAmbient: 0.0008
+  feverChromaticHit: 0.008
+  feverChromaticAmbient: 0.0018
+  feverScoreChromatic: 3
   feverShakeScale: 0.45
   feverExitAppear: 0.20
   feverExitAbsorb: 0.51
@@ -58,7 +59,7 @@ MonoBehaviour:
   feverExitRecoilHold: 0.06
   backgroundScoreEnabled: 1
   backgroundScoreX: 0.5
-  backgroundScoreY: 0.5
+  backgroundScoreY: .5
   backgroundScoreSize: 0.42
   backgroundScoreWidth: 0.80
   backgroundScoreTint: {r: 0.36, g: 0.76, b: 0.84, a: 1}
@@ -85,18 +86,24 @@ MonoBehaviour:
   circuitNormalContrast: 0.075
   circuitFeverContrast: 0.065
   circuitAmbientEnabled: 1
-  circuitAmbientSpeed: 0.24
-  circuitAmbientInterval: 2.6
-  circuitAmbientStrength: 0.10
-  circuitAmbientTail: 0.20
-  circuitAmbientHead: 0.025
+  circuitAmbientSpeed: .28
+  circuitAmbientInterval: 2.2
+  circuitAmbientStrength: .12
+  circuitAmbientTail: .28
+  circuitAmbientHead: .032
   circuitAmbientLimit: 2
-  circuitHitRange: 0.13
+  circuitHitRange: 0.18
   circuitTransferSpeed: 1.65
-  circuitHitDecay: 0.26
-  circuitHitSeconds: 0.24
-  circuitMaxEmphasis: 0.18
+  circuitHitDecay: 0.40
+  circuitHitSeconds: 0.34
+  circuitMaxEmphasis: 0.44
+  circuitScoreWaveSpeed: 2.6
+  circuitScoreWaveWidth: 0.32
   circuitReactionLimit: 4
+  circuitNexusEmphasis: 0.44
+  circuitNexusSpeed: 2.6
+  circuitNexusWidth: 0.26
+  circuitNexusSeconds: 0.80
   circuitBuildSpeed: 1.8
   circuitRestoreSpeed: 2.1
   circuitPathStagger: 0.018
@@ -129,20 +136,37 @@ MonoBehaviour:
   spaceCursorAcceleration: 0.18
   spaceRingBoost: 780
   spaceRingDecay: 0.30
-  spaceMainScoreScale: 0.82
+  spaceMainScoreScale: .68
   spaceMainScoreOpacity: 0.85
   spaceMainScoreLift: 0.28
   spaceLogoWidth: 840
   spaceLogoY: 0.79
-  nexusGaugeRewindSeconds: 0.16
-  nexusDamageSeconds: 0.24
-  nexusDamageFlash: 0.26
-  nexusDamageChromatic: 0.0055
+  nexusGaugeRewindSeconds: 0.38
+  nexusDamageSeconds: .48
+  nexusDamageFlash: 0
+  nexusDamageChromatic: .018
+  nexusDamageSpatialLight: 1.15
   nexusDamageWaveEnabled: 1
-  nexusDamageWaveStrength: 0.008
-  nexusDamageWaveWidth: 0.12
-  nexusDamageWaveSpeed: 2.6
-  nexusDamageWaveRange: 0.72
-  nexusDamageCompression: 0.85
-  nexusDamageReleasePower: 1.4
+  nexusDamageWaveStrength: .03
+  nexusDamageWaveWidth: .24
+  nexusDamageWaveSpeed: 4.2
+  nexusDamageWaveRange: 1.25
+  nexusDamageCompression: 1.10
+  nexusDamageReleasePower: .85
   nexusDamageTint: {r: 1, g: 0.04, b: 0.08, a: 1}
+  spaceReturnMove: .70
+  spaceReturnHold: .80
+  spaceReturnReveal: .45
+  spaceFinalScoreBreath: 0.025
+  spaceFinalScoreBreathSeconds: 2.4
+  nexusBreath: .04
+  nexusBreathLight: .15
+  nexusChargeExpand: .24
+  nexusHitCompress: .32
+  nexusMagnetSeconds: .48
+  nexusArcDrift: .028
+  nexusChargeGap: .08
+  nexusArcMotion: 0.8
+  nexusArcStagger: 0.12
+  nexusDamageFlashSeconds: .10
+  backgroundScoreRollSeconds: .24

@@ -1,5 +1,60 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-059 — 2026-10-27 전체회로/점수RGB·호흡/치명피격
+
+- **PASS 참조컴파일:** runtime112/test14/Editor2 오류0·기존134경고/test·Editor0. Native/Shader 결과와 구분한다.
+- **PASS 순수생산.NET:** 기존4672999 + 집중106885. 세 원점에서각82/82 독립회로 점등/최저정점.767/.772/.778, 같은풀동시4/시간0정지·정리, 가시피격우선의처치기여0, 이번점수±2.5%상하한·확인fade뒤정확히1을검사했다. 손조작/실픽셀밝기 검증은아니다.
+- **PASS 정적:** 1547기준삭제0/백업해시/허용13게임·설정·검사파일변경·설정8항목, 씬/meta·노드/입력·HP/점수/저장·최종파괴소스보존. 치명옛DamageSignal(false)/중복왜곡 제거·공용접촉점호출1회/회로기존가시길이·획가림·마스크토글분리를확인했다.
+- **작성·참조컴파일만:** 신규공식4(전체회로공간전달/피격우선/호흡수학/이번점수호흡Play). 기존피버GPU는점수3배/OFF단언추가, 실제3번째피격은사용자통일사양에따라waveON/.018/flash0/접촉점·1회실행단언으로갱신했다. 기존테스트삭제·핵심단언제거없음.
+- **NOT_RUN:** 이번UnityNative/Shader/GPU/공식TestRunner·Play/손조작·모바일/WebGL/성능·수정후화면/영상. D-057 PASS와기존PNG를이번증거로사용하지않는다.
+
+사용자순서: Cyberpunk각타격위치전체회로→처치/피격겹침우선→피버점수RGB/강도OFF·회로가림OFF→HP3→2→1→0동일피격/기존최종파괴→이번점수호흡·새클릭BEST→Pause/Retry/Home. [구현13파일·전후값·검사/수동절차](SCORE_WAVE_FINAL_HIT_20261027.md).
+
+## D-058 — 2026-10-27 원호/역감소/피버RGB/중앙점수/회로 검증
+
+- **PASS 참조 컴파일:** runtime112/EditorTests14/Editor2 오류0·기존runtime134경고/test·Editor0. 대상Unity Native/Shader 성공의 증거가 아니다.
+- **PASS 실제 생산 C# 순수.NET:** 기존4672999단언 및 집중19855. 원호5개의 결정적 위상·동일샘플재현/80%변위, .38초 역감소의 첫상태/중간50%/Pause·재충전·재피격/정확종단, 중앙공간파동의 근거리→원거리 시차/상한/해소·실Gauge0/점수불변을 확인했다. 손조작·GPU와 구분한다.
+- **PASS 정적 보존:** 기존파일 삭제0/백업해시 동일, 승인본체/파편/노드·입력·공격/점수·저장·FeverState·씬/프리팹/meta/설정·패키지 보존. 실제원호표시 경로의 첫프레임 가드와 마스크/가시길이 공유를 코드로 확인했다.
+- **작성·참조 컴파일만 / NOT_RUN 공식실행:** 신규6사례 — 원호위상/역감소수학/피버RGB점수영역GPU/실점수중앙Play/실게이지표시Play/회로공간전파. 기존정상TestRunner 메뉴에 연결했다. D-057의70PASS·117PNG는 현재소스 검증이 아니다.
+- **NOT_RUN:** 이번 NativeUnity·Shader/GPU/Play/실화면·모바일/WebGL/성능·손조작·연속영상. Unity앱직접조작/빌드/Git게시 없음.
+
+사용자순서: Cyberpunk 중앙점수→처치/불규칙 원호/강한회로빛→충전중피격·.38역감소/중앙붉은회로/재충전·재피격→피버점수RGB/HUD→Pause/Retry/Home/최종파괴. [변경13파일·전후값·검사/수동절차](ARC_REWIND_FEVER_CIRCUIT_20261027.md).
+
+## D-057 — 2026-10-27 실제 처치 저장·강한 붉은 굴절 검증
+
+- **FAIL→PASS:** 정상프레임1.2초/실제 원형 ContactAt 처치에서 색상 조회가 기록제외를 일으킴을 원본으로 재현(0/1 실패·스택 보존). FeedbackColorValue만 분리하고 정상처치 자격/점수1 단언을 통과했다.
+- **PASS 정상 Unity TestRunner 집중70/70:** 2026-10-27 20:33:34 KST, 실패0/skip0. 실제 처치→비치명피격→정산1→Main BEST1→Exit/EnterPlayMode→같은 QA키1, 실제사용자기록 보존/명시Dev·훈련 제외·중복정산; 원형/육각레이저 실제 확정피해 통지·1회효과·일반wash0/RGB.018·큰 본체 반응/경계불변/무효0피해/Pause정리·최종파괴 별도값; 기존 피버/회로/점수/중단 검사. 전체suite/손전투 통과는 아니다.
+- **PASS GPU DX11:** 이전RGB.0055와 새.018 실제 채널 변위 비교7.8588→29.4784, 국소red 합5016.2553/먼영역 평균0/보호획 변화0. 실제게임 카메라 OpticsFrames 증가 및 세기 uniform·시간감쇠를 확인했다. GameView PNG117장, 연속영상 아님.
+- **PASS 컴파일·순수:** 최종Native 오류0/기존7경고; 참조runtime112/test14/Editor2 오류0·기존134경고. 생산 수학.NET4,672,999단언. Shader/GPU와 순수 검사를 혼동하지 않는다.
+- **PASS 보존:** 작업전1588파일 삭제0/씬·프리팹/meta/설정/노드·입력·기존미추적 보존, imported dirty6·확인prefs7동일·PlayOFF/timeScale1/Cyberpunkclean. QA키만 정리/사용자기록 초기화 없음.
+- **NOT_RUN:** 실제 손전투·앱 전체 재시작·모바일/터치/WebGL/성능·연속영상·최종시각승인. 과장 시안의 적절성은 사용자 검수 대상이다.
+
+실패이력68/70(테스트재진입 임시변수/먼영역잔광), 진단2/3(비교용 임시문자열)와 최종70/70을 함께 보존했다. 저장 로직을 테스트에 맞춰 변경하거나 단언을 제거하지 않았다. [상세 원인·절대값·변경12파일·검수](NEXUS_HIT_RECORD_FIX_20261027.md). 수동순서: 정상처치/피격/게임오버→확인클릭 BEST/Play재진입→양쪽 비치명공격의 붉은 굴절·큰Nexus반응→Pause/Retry/Home/피버·최종파괴.
+
+## D-056 — 2026-10-27 점수·넥서스 보완 검증
+
+- **FAIL→PASS 재현:** 정상 비치명 피격으로 기록 제외되는 원본 오류1건을 새 테스트로 재현했다. `reproduced-record-failure.json/xml`에 실제 스택 보존. 효과 읽기의 오인만 수정하고 명시Dev 제외/훈련 규칙은 유지한다.
+- **PASS 실제 Unity6000.3.23f1/DX11:** 정상메뉴 집중67/67, 2026-10-27 19:34:10KST 최종JSON/XML. Native C#오류0/기존7경고. 정상 피격뒤 고유QA키 저장·Main BEST읽기/제외·중복정산, +1/+N표시·D-053탄성, 0/8/20자리 TMP종단 bounds·색 동일, CP3 실제표시 진폭/HP·경계불변, Returning 대기·중복확인/Home/Retry·기존피버/회로·리소스 수명 PASS. 전체suite/실손전투의 통과가 아니다.
+- **PASS 실제GPU:** 공간굴절/획보호·국소red 비교: 합477.408/먼영역 평균0/보호획RGB0. HUD는 나중에 별도 합성한다. 93 GameView PNG는 내부호출/시간 간격 표본이며 연속촬영영상이 아니다.
+- **PASS 참조/순수:** 런타임112/테스트14/Editor2 오류0(기존134경고), .NET4672999. 보존1587파일 기준 삭제0·씬/프리팹/meta/패키지/설정·노드/커서 그대로, imported dirty6·확인prefs7 동일/PlayOFF/timeScale1/저장폐기없음.
+- **NOT_RUN:** 실기기/모바일터치/WebGL/성능·손전체전투·실사용자점수의앱재실행지속/연속영상/최종시각승인. 실제 저장되지 않은 과거점수를 가짜로 복원하지 않는다.
+
+현재 수동 순서: Cyberpunk 정상라운드(DEV/훈련 제외)→득점/비치명피격/사망→최종점수·회로복원 뒤 대기→새클릭 BEST/로고→새입력 시작/숫자끝→CP3/공간피격→Pause/Retry/Home·피버회귀. [상세 근거/설정/범위](SCORE_NEXUS_REVIEW_20261027.md). D-055 기록테스트에는 비치명 정상피격이 없었으므로 이번 오류를 배제하는 증거로 사용하지 않는다.
+
+
+## D-055 CP6 최종 실제 검사 (2026-10-27)
+
+- **PASS native compile:** Unity6000.3.23f1/DX11 최종소스보다새로운runtime/test DLL, 오류0·기존경고7. 정상Assets/Refresh만 사용/강제재임포트·저장폐기없음.
+- **PASS 정상 TestRunner 집중62:** 회로15/피버규칙23/공유수학·실GPU14/Play통합10. 최종09:23:51UTC JSON/XML/완료로그·Editor상태 교차확인. 전체공식suite가아니다.
+- **PASS 실제 Play 내부호출:** 같은manager/camera/score하나·start중복/실시계guard·0/8/20자리glyph중심/안전폭·정확총점/roll·충전/HP손실·.16역감소·Pause/재충전·fever0소진/종료Pause/배율1회·최종파괴→이번점수→BEST/Main/Retry/Home중단·기록제외·임시고유QA맵정상신기록/한번정산·Nexus owner disable수명.
+- **PASS GPU/표본:** 실제shader 픽셀변위와점수획보호, red를instance에서만0으로한HP피해표본. 실제GameView PNG65장(1080×1920). 연속영상·실모바일·손플레이아님.
+- **실패 이력→보완:** first57/59의Out(.998)/DrainHead(1+2e-16)끝값, second60/61의Play종료[DOTween]재생성. 정확endpoint/넥서스해제경로만수정·단언/실패case그대로/Ignore·로그숨김·전역KillAll없음. 최종62PASS는그수정후실행이다.
+- **PASS 보존:** prefs확인7키동일·point키는보호fixture/각사례검사·QA키만정리. PlayOFF/compileOFF/timeScale1/씬clean/imported6동일. 삭제/이동·씬/meta/프로젝트설정/입력/노드·참고원본변경없음/HEAD18b25da/index빈상태.
+- **PASS 순수/참조:** 생산수학.NET4,672,999 / runtime112·test14·Editor2오류0(참조runtime경고134·테스트0).
+- **NOT_RUN:** 실제모바일/터치/WebGL·성능·전체전투/실기록앱재시작·연속영상. 실제UI훈련버튼클릭은성공했으나도구drag의커서변위는확인못해이동통과로판정하지않음.
+
+[최종 범위·미검증·원본보존](CONTINUOUS_FLOW_20261027.md). 근거 Logs/continuous-flow-20261027의 native-first/second/final.json/xml, native-compiled-source.json, editor-cp6-before/after.json, native-captures.json/evidence.html. 빌드·커밋·push·배포없이사용자검수대기.
+
 ## D-054 누적본 WebGL·공개 배포 — 실제 결과 (2026-10-27)
 
 - **PASS:** source f6e5f8a/68파일선별·원격main push, WebGL Succeeded/오류0/경고7/326.289초·입력1489파일전후동일, 기존gh-pages3195915 정상push·Pages40422372912 completed/success/정확한head.

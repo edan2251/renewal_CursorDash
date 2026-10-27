@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,11 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     private GameObject canvasRoot,pauseButton;private RectTransform logoRect;private Image logo;private TextMeshProUGUI prompt,bestCaption;
     private Vector2 direction=Vector2.up,endpoint;private float age,distance;
     private System.Numerics.BigInteger bestNumber;
-    private bool quick,ringStarted,cursorStarted,pauseWasActive;private string bestValue="0";
+    private bool quick,ringStarted,cursorStarted,pauseWasActive,releaseToStart,newRecord;private string bestValue="0",roundValue="0";
+    private float returnMove,returnHold,returnReveal,ackAge,finalBreathAge;private bool acknowledged,releaseToAcknowledge;
+    public bool AwaitingReturnClick=>IsReturning&&!acknowledged&&age>=returnMove+returnHold;
+    public float ReturnRevealProgress=>acknowledged?(float)CursorDashStartTimeline.Smooth(ackAge/returnReveal):0;
+    public string RoundText=>roundValue;
     private readonly List<RaycastResult> uiHits=new List<RaycastResult>();private EventSystem pointerSystem;private PointerEventData pointerData;
     public MeshRenderer BestScoreRenderer=>stage.Fever.BackgroundScoreRenderer; // Same numeric text, never a second renderer.
     public float BestMaskWeight=>0;
@@ -20,11 +25,15 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     public float LastStartSeconds {get;private set;}
     public bool IsMenu=>stage!=null&&stage.State==StageManager.RoundState.Main;
     public bool IsStarting=>stage!=null&&stage.State==StageManager.RoundState.Starting;
-    public bool AtmosphereActive=>IsMenu||IsStarting;
+    public bool IsReturning=>stage!=null&&stage.State==StageManager.RoundState.Returning;
+    public bool AtmosphereActive=>IsMenu||IsStarting||IsReturning;
     public string BestText=>bestValue;
-    public bool UsesBestProjection=>IsMenu||IsStarting&&!quick;
-    public float ScoreTravel=>IsMenu?0:IsStarting&&!quick?(float)timeline.ScoreTravel:1;
-    public string DisplayedPoints=>IsMenu?bestValue:IsStarting&&!quick?CursorDashScoreCountdown.At(bestNumber,timeline.ScoreCountProgress).ToString(System.Globalization.CultureInfo.InvariantCulture):stage.Fever.Model.PointsText;
+    public bool UsesBestProjection=>IsMenu||IsReturning||IsStarting&&!quick;
+    public float ScoreTravel=>IsMenu?0:IsReturning?1-(float)CursorDashStartTimeline.Cubic(age/returnMove):IsStarting&&!quick?(float)timeline.ScoreTravel:1;
+    public bool ShowingFinal=>IsReturning&&!acknowledged;
+    public float FinalScoreScale=>IsReturning&&CursorDashTuning.Toggle("fx.enabled",true)?(float)FeverFlowMath.FinalScoreBreath(finalBreathAge,profile==null?.025:profile.spaceFinalScoreBreath,profile==null?2.4:profile.spaceFinalScoreBreathSeconds,1-ReturnRevealProgress):1;
+    public string DisplayedPoints=>IsMenu?bestValue:IsReturning?(ShowingFinal?roundValue:CursorDashScoreCountdown.Blend(CursorDashPointsRecord.Parse(roundValue),bestNumber,ReturnRevealProgress).ToString(System.Globalization.CultureInfo.InvariantCulture)):IsStarting&&!quick?CursorDashScoreCountdown.At(bestNumber,timeline.ScoreCountProgress).ToString(System.Globalization.CultureInfo.InvariantCulture):stage.Fever.Model.PointsText;
+    public float ScoreFontRelease=>IsStarting?(float)CursorDashStartTimeline.Smooth((StartProgress-.35)/.35):IsMenu?0:1;
     public float StartProgress=>quick?Mathf.Clamp01(age/.24f):(float)(timeline?.Progress??0);
     public void Initialize(StageManager owner)
     {
@@ -52,7 +61,7 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     }
     public void Home()
     {
-        timeline=null;age=0;quick=ringStarted=false;CursorDashSession.EnterGameOnLoad=false;CursorDashSession.CurrentMode=CursorDashSession.Mode.Normal;
+        timeline=null;age=ackAge=0;acknowledged=false;releaseToAcknowledge=true;quick=ringStarted=false;releaseToStart=true;newRecord=false;CursorDashSession.EnterGameOnLoad=false;CursorDashSession.CurrentMode=CursorDashSession.Mode.Normal;
         stage.PrepareSpace();stage.SetSpaceState(StageManager.RoundState.Main);stage.Fever.Circuits?.ResetSpace();
         bestNumber=CursorDashPointsRecord.Read(GameManager.instance.MapInformation.mapName);bestValue=bestNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
         canvasRoot.SetActive(true);
@@ -73,11 +82,13 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     }
     private void Update()
     {
-        if(!IsMenu||CursorDashRuntimeUI.InputBlocked)return;
+        if((!IsMenu&&!AwaitingReturnClick)||CursorDashRuntimeUI.InputBlocked)return;
+        if(AwaitingReturnClick&&releaseToAcknowledge){if(!Input.GetMouseButton(0)&&Input.touchCount==0)releaseToAcknowledge=false;return;}
+        if(releaseToStart){if(!Input.GetMouseButton(0)&&Input.touchCount==0)releaseToStart=false;return;}
         bool pressed=Input.GetMouseButtonDown(0);Vector2 screen=Input.mousePosition;
         if(Input.touchCount>0){var touch=Input.GetTouch(0);pressed=touch.phase==TouchPhase.Began;screen=touch.position;}
         if(!pressed||CursorDashRuntimeUI.IsScreenPointBlocked(screen))return;
-        RequestStart(screen);
+        if(AwaitingReturnClick)RequestReturnContinue(screen);else RequestStart(screen);
     }
     private bool OverControl(Vector2 screen)
     {
@@ -88,9 +99,14 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
         foreach(var hit in uiHits)if(hit.gameObject.GetComponentInParent<Selectable>()!=null)return true;
         return false;
     }
+    public bool RequestReturnContinue(Vector2 screen)
+    {
+        if(!AwaitingReturnClick||releaseToAcknowledge||CursorDashRuntimeUI.InputBlocked||CursorDashRuntimeUI.IsScreenPointBlocked(screen)||OverControl(screen))return false;
+        acknowledged=true;ackAge=0;return true;
+    }
     public bool RequestStart(Vector2 screen)
     {
-        if(!IsMenu||CursorDashRuntimeUI.InputBlocked||CursorDashRuntimeUI.IsScreenPointBlocked(screen)||OverControl(screen))return false;
+        if(!IsMenu||releaseToStart||CursorDashRuntimeUI.InputBlocked||CursorDashRuntimeUI.IsScreenPointBlocked(screen)||OverControl(screen))return false;
         CursorDashSession.CurrentMode=CursorDashSession.FirstGuideNeeded?CursorDashSession.Mode.Tutorial:CursorDashSession.Mode.Normal;CursorDashTuning.EnableDev(false);
         Vector2 aim=(Vector2)Camera.main.ScreenToWorldPoint(screen)-stage.NexusPosition;return Begin(false,aim);
     }
@@ -104,6 +120,7 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     public void LaunchSelectedMode(){timeline=null;stage.SetSpaceState(StageManager.RoundState.Ended);Begin(true,Vector2.up);}
     public void Advance(float delta)
     {
+        if(IsReturning){AdvanceReturn(delta);return;}
         if(!IsStarting)return;
         if(CursorDashRuntimeUI.InputBlocked){Home();return;}
         age+=Mathf.Max(0,delta);timeline.Advance(delta);float progress=StartProgress;
@@ -126,8 +143,31 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
             SetNexus(1,1);SetCursor(true,endpoint);PlayerCharacterAfterImage.instance?.FinishEntry();SetHud(true);stage.BeginSpaceGameplay();
         }
     }
+    public void ReturnFromRound(string finalPoints,bool record)
+    {
+        timeline=null;age=ackAge=0;acknowledged=false;releaseToAcknowledge=true;quick=false;newRecord=record;roundValue=finalPoints;
+        finalBreathAge=0;returnMove=profile==null?.70f:Mathf.Clamp(profile.spaceReturnMove,.3f,1.2f);
+        returnHold=profile==null?.80f:Mathf.Clamp(profile.spaceReturnHold,.25f,2);
+        returnReveal=profile==null?.45f:Mathf.Clamp(profile.spaceReturnReveal,.2f,1);
+        stage.SetSpaceState(StageManager.RoundState.Returning);SetHud(false);SetCursor(false,stage.NexusPosition);SetNexus(0,0);
+        stage.Fever.Circuits?.ResetSpace();
+        bestNumber=CursorDashPointsRecord.Read(GameManager.instance.MapInformation.mapName);bestValue=bestNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        canvasRoot.SetActive(true);logo.color=new Color(1,1,1,0);prompt.color=Color.clear;
+        GameManager.instance.CurrentSceneType=GameManager.SceneType.NotInGame;
+    }
+    private void AdvanceReturn(float delta)
+    {
+        if(CursorDashRuntimeUI.InputBlocked)return;
+        age=Mathf.Min(returnMove+returnHold,age+Mathf.Max(0,delta));
+        if(AwaitingReturnClick)finalBreathAge+=Mathf.Max(0,delta);
+        if(acknowledged)ackAge+=Mathf.Max(0,delta);
+        float reveal=ReturnRevealProgress;
+        logo.color=new Color(1,1,1,reveal);logoRect.anchoredPosition=new Vector2(150*(1-reveal),0);prompt.color=new Color(.85f,.92f,1,reveal*.7f);
+        if(acknowledged&&ackAge>=returnReveal){bool keepRecord=newRecord;Home();newRecord=keepRecord;}
+    }
     public double CircuitFront(double length)
     {
+        if(IsReturning)return length*CursorDashStartTimeline.Smooth((age-.15)/Math.Max(.3,returnMove+returnHold-.15));
         if(!IsStarting||quick||timeline==null)return length;
         return timeline.Progress<=timeline.RetreatEnd?length*(1-timeline.Retreat):length*timeline.Rebuild;
     }
@@ -135,14 +175,17 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     {
         if(logo==null)return;
         if(IsMenu){logo.color=Color.white;logoRect.anchoredPosition=Vector2.zero;prompt.color=new Color(.85f,.92f,1,.35f+.50f*(.5f+.5f*Mathf.Sin(Time.unscaledTime*2.7f)));}
-        if(IsMenu||IsStarting&&!quick){
+        if(IsMenu||IsReturning||IsStarting&&!quick){
             var canvas=canvasRoot.GetComponent<RectTransform>();float width=Mathf.Min(profile==null?840:profile.spaceLogoWidth,canvas.rect.width*.86f);
             logoRect.sizeDelta=new Vector2(width,logo.sprite==null?240:width*logo.sprite.rect.height/Mathf.Max(1,logo.sprite.rect.width));
             logoRect.anchorMin=logoRect.anchorMax=new Vector2(.5f,profile==null?.79f:profile.spaceLogoY);
-            Vector2 point=Camera.main.WorldToScreenPoint(stage.NexusPosition+Vector2.up*(profile==null?.28f:profile.spaceMainScoreLift));
+            Vector2 point=Camera.main.ViewportToScreenPoint(new Vector3(.5f,.5f,0));
             if(BestScoreRenderer!=null)point.y=Mathf.Max(point.y,Camera.main.WorldToScreenPoint(BestScoreRenderer.bounds.max).y+22);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas,point,null,out Vector2 local);bestCaption.rectTransform.anchoredPosition=local;
-            bestCaption.color=new Color(1,1,1,IsMenu? .75f: .75f*(1-(float)CursorDashStartTimeline.Smooth(timeline.Progress/.30)));
+            bestCaption.text=ShowingFinal?(stage.RecordEligible?"이번 점수":"이번 점수 · 기록 제외"):newRecord?"NEW BEST":"BEST";
+            float recordPulse=IsReturning&&!ShowingFinal&&newRecord?Mathf.Sin(Mathf.Clamp01(ackAge/returnReveal)*Mathf.PI):0;
+            bestCaption.rectTransform.localScale=Vector3.one*(1+.10f*recordPulse); // One eligible record accent, never another numeric text.
+            bestCaption.color=new Color(1,1,1,IsMenu||IsReturning? .75f: .75f*(1-(float)CursorDashStartTimeline.Smooth(timeline.Progress/.30)));
         }
     }
     private void SetHud(bool value){if(pauseButton!=null)pauseButton.SetActive(value&&pauseWasActive);}

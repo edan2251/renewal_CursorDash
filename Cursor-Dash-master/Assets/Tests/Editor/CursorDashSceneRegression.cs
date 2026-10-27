@@ -174,8 +174,8 @@ namespace CursorDashTests
             Set(score, "Hp", 0f);
             // D-025 exclusive finale lasts .64s; keep the result assertion after that boundary.
             yield return WaitRealtime(0.75f);
-            Assert.AreEqual("Ended", Get(stage, "State").ToString());
-            Assert.IsTrue(GameObject.Find("RemakeHUD/ResultPanel").activeInHierarchy);
+            Assert.AreEqual("Returning", Get(stage, "State").ToString());
+            Assert.IsNull(GameObject.Find("RemakeHUD/ResultPanel"),"Shared scene returns through the same score, without the legacy result panel.");
             Assert.AreEqual(0, (int)Get(trail, "ActiveSegmentCount"));
             float endedScore = (float)Get(score, "TimeScore");
             yield return WaitRealtime(0.1f);
@@ -183,7 +183,7 @@ namespace CursorDashTests
             Assert.IsTrue(AllNodes().All(node => !node.gameObject.activeSelf));
             ScreenCapture.CaptureScreenshot("Captures/result-runtime.png");
             yield return WaitRealtime(0.15f);
-            Click("RemakeHUD/ResultPanel/Retry");
+            Call(stage,"Retry");
             yield return WaitForScene("Cyberpunk");
             stage = Find("StageManager");
             score = (Component)Get(stage, "scoreManager");
@@ -617,9 +617,9 @@ namespace CursorDashTests
             Assert.AreEqual("Ended", Get(stage, "State").ToString());
             Assert.AreEqual(0f, (float)Get((Component)Get(stage, "scoreManager"), "Hp"));
             Assert.AreEqual(1, (int)Get(normal, "ImpactsThisExecution"));
-            // D-025 final break now precedes result display for .64s.
+            // D-055 final break precedes the shared-score Main return for .64s.
             yield return WaitRealtime(0.75f);
-            Click("RemakeHUD/ResultPanel/Retry");
+            Assert.AreEqual("Returning",Get(stage,"State").ToString());Call(stage,"Retry");
             yield return WaitForScene("Cyberpunk");
             stage = Find("StageManager"); normal = NodesOfType("NormalNode").First();
             Assert.AreEqual(3f, (float)Get((Component)Get(stage, "scoreManager"), "Hp"));

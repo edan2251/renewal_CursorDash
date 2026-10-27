@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(-50)]
 public class StageManager : MonoBehaviour
 {
-    public enum RoundState { Playing, Paused, Ended, Main, Starting }
+    public enum RoundState { Playing, Paused, Ended, Main, Starting, Returning }
     public static StageManager instance;
     public ScoreManager scoreManager;
 
@@ -43,6 +43,7 @@ public class StageManager : MonoBehaviour
     private bool pendingLethal;
     private bool finalDamageConfirmed;
     private Vector2 lastContact,lastIncoming;
+    private bool contactInProgress,lastRoundRecord;private string lastRoundPoints="0";
     private NexusImpactVfx.Cause lastCause;
     public NexusImpactVfx Finale=>finale;
     public NexusGameboardPresentation NexusPresentation=>nexusPresentation;
@@ -57,7 +58,7 @@ public class StageManager : MonoBehaviour
 
     public NodeCreator NodeCreator => nodeCreator;
     public RoundState State => state==RoundState.Playing&&!IsPlaying?RoundState.Paused:state;
-    public bool IsDeath => state == RoundState.Ended;
+    public bool IsDeath => state == RoundState.Ended||state==RoundState.Returning;
     public bool IsPlaying => boundaryReady && state == RoundState.Playing && !panelPaused && !devPaused;
     public int DestroyedNodes { get; private set; }
     public int BlockedBeams { get; private set; }
@@ -160,7 +161,7 @@ public class StageManager : MonoBehaviour
         stick?.ResetInput();
         PlayerCharacterController.instance?.MoveStop();
         if (pauseHandler != null) pauseHandler.gameObject.SetActive(paused);
-        if (paused) { feedback?.Clear();cameraShake?.Reset(); cameraFlash?.ResetFlash(); }
+        if (paused) { feedback?.Clear();Fever?.ClearNexusResponses();cameraShake?.Reset(); cameraFlash?.ResetFlash(); }
         if (paused) GameManager.instance.soundManager.BGMSource.Pause();
         else GameManager.instance.soundManager.BGMSource.UnPause();
         ApplyTimeScale();
@@ -213,7 +214,7 @@ public class StageManager : MonoBehaviour
         if(state==RoundState.Main||state==RoundState.Starting)return;
         Fever?.NexusHit();
         if(scoreManager.Hp<=0)finalDamageConfirmed=true;
-        else feedback?.ConfirmedNexusDamage();
+        else {Fever?.NexusVisualHit(contactInProgress,contactInProgress?lastContact-NexusPosition:Vector2.zero);feedback?.ConfirmedNexusDamage(contactInProgress?lastContact:NexusPosition);}
     }
 
     public void DamageNexus(float amount)=>DamageNexusAt(amount,NexusPosition);
@@ -232,14 +233,14 @@ public class StageManager : MonoBehaviour
         // HP setter synchronously calls Death. Never emit the normal final hit before that callback.
         if(protectedHp){Fever?.NexusHit();feedback.EmitNexusCommitted(cause,contact,lastIncoming,tint,life,false);return;}
         float before=scoreManager.Hp;
-        pendingLethal=lethal;scoreManager.Hp-=amount;pendingLethal=false;
+        pendingLethal=lethal;contactInProgress=true;try{scoreManager.Hp-=amount;}finally{pendingLethal=contactInProgress=false;}
         if(!lethal&&scoreManager.Hp<before)feedback.EmitNexusCommitted(cause,contact,lastIncoming,tint,life,true);
     }
     public void DisqualifyRecord(){RecordEligible=false;RecordExclusionReason="개발자 설정 또는 검수 조작";}
     private void RefreshRuntimeClock()=>ApplyTimeScale();
     public void SetPanelPaused(bool value){panelPaused=value;ResetTransientInput(value);ApplyTimeScale();}
     public void SetDevPaused(bool value){devPaused=value;ResetTransientInput(value);ApplyTimeScale();}
-    private void ResetTransientInput(bool paused){stick?.ResetInput();PlayerCharacterController.instance?.MoveStop();if(paused)feedback?.Clear();}
+    private void ResetTransientInput(bool paused){stick?.ResetInput();PlayerCharacterController.instance?.MoveStop();if(paused){feedback?.Clear();Fever?.ClearNexusResponses();}}
     public void Heal()=>scoreManager.Hp=scoreManager.MaxHp;
     public void RequestFeedbackStop(float duration)=>RequestHitStop(duration);
 
@@ -287,7 +288,10 @@ public class StageManager : MonoBehaviour
             string key = "CursorDash_Best_" + map.mapName;
             PlayerPrefs.SetFloat(key, Mathf.Max(PlayerPrefs.GetFloat(key), map.highScore));
         }
-        CursorDashPointsRecord.Save(map.mapName,Fever.Model.Points,RecordEligible&&!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled);
+        var bestBefore=CursorDashPointsRecord.Read(map.mapName);bool eligible=RecordEligible&&!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled;
+        CursorDashPointsRecord.Save(map.mapName,Fever.Model.Points,eligible);
+        lastRoundPoints=Fever.Model.PointsText;lastRoundRecord=eligible&&Fever.Model.Points>bestBefore&&string.IsNullOrEmpty(CursorDashPointsRecord.LastError)&&CursorDashPointsRecord.Read(map.mapName)==Fever.Model.Points;
+        Fever.SnapDisplayedScore();
         manager.soundManager.PullSound(manager.soundManager.BGMSource);
         Vector2 point=pendingLethal?lastContact:NexusPosition;
         Vector2 incoming=pendingLethal?lastIncoming:Vector2.down;
@@ -312,6 +316,7 @@ public class StageManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(NexusImpactVfx.FinaleDuration);
         HideNexusVisuals();CancelFinale();cameraShake?.Reset();cameraFlash?.ResetFlash();Time.timeScale=1;
         resultRoutine=null;
+        if(Space!=null){Space.ReturnFromRound(lastRoundPoints,lastRoundRecord);yield break;}
         if (deathUIController == null) yield break;
         deathUIController.SetScoreText(Fever.Model.PointsText);
         deathUIController.SetRunSummary(DestroyedNodes,HexDestroyed,BlockedBeams,scoreManager.TimeScore);

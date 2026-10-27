@@ -94,6 +94,10 @@ public sealed class CursorDashNexusReview : EditorWindow
                 EditorGUILayout.LabelField("배경 점수 / 아틀라스",fever.BackgroundScoreText+" / "+(fever.BackgroundScoreAtlasMatches?"일치":"확인 필요"));
                 EditorGUILayout.Space();EditorGUILayout.LabelField("피버 C — 전투·곡선 흑백 전환 (사용자 검수 대기)",EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("점수 / 배율",model.PointsText+" / "+model.MultiplierText+" (최대 x4)");
+                var recordMap=GameManager.instance?.MapInformation;
+                EditorGUILayout.LabelField("기록 자격",stage.RecordEligible?"기록 가능":stage.RecordExclusionReason);
+                if(recordMap!=null)EditorGUILayout.LabelField("저장된 최고점",CursorDashPointsRecord.Read(recordMap.mapName).ToString());
+                EditorGUILayout.LabelField("마지막 정산",CursorDashPointsRecord.LastSaveStatus);
                 EditorGUILayout.LabelField("상태 / 게임시계",model.Current+" / "+(model.Paused?"정지":"진행"));
                 EditorGUILayout.LabelField("게이지 / 정상 완료",model.Gauge.ToString("0.000")+" / "+model.CompletedFevers);
                 EditorGUILayout.LabelField("마지막 초기화 원인",model.LastReset);

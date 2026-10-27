@@ -32,6 +32,7 @@ public static class CursorDashTuning
     public static bool DevEnabled { get; private set; }
     public static event Action Changed;
     public static Action RuleSessionChanged;
+    public static string LastRuleReadMismatch {get;private set;}="";
     public static string LastMessage { get; private set; } = "";
     public static string BuildId => Resources.Load<TextAsset>("CursorDash/BuildIdentity")?.text.Trim() ?? "editor-cp14-20261024";
     static CursorDashTuning()
@@ -373,11 +374,14 @@ public static class CursorDashTuning
             bool ok=TrySet(key,value,out error,user);if(ok)error="";return ok;
         } catch {error="숫자·토글·색 입력 형식을 확인하세요.";return false;}
     }
-    private static JToken Read(string key,JToken fallback)
+    private static JToken Read(string key,JToken fallback,bool affectsRecord=true)
     {
         liveFallbacks[key]=fallback.DeepClone();
         var parameter=Find(key);
-        if(Application.isPlaying&&parameter!=null&&parameter.scope=="개발자"&&!Equivalent(key,fallback,parameter.defaultValue))RuleSessionChanged?.Invoke();
+        if(affectsRecord&&Application.isPlaying&&parameter!=null&&parameter.scope=="개발자"&&!Equivalent(key,fallback,parameter.defaultValue)){
+            LastRuleReadMismatch=key+": source="+fallback+", metadata="+parameter.defaultValue;
+            RuleSessionChanged?.Invoke();
+        }
         JToken value;
         if(DevEnabled&&requested.TryGetValue(key,out value)) {}
         else if(Find(key)?.scope=="사용자"&&userValues.TryGetValue(key,out value) && Validate(Find(key),value,out _)) {}
@@ -386,11 +390,17 @@ public static class CursorDashTuning
         return value;
     }
     public static float Number(string key,float fallback) => (float)Read(key,new JValue(fallback));
+    // Effect readers may use event-specific authored defaults; reading them is not a rule change.
+    // Explicit Dev/setting/import operations still disqualify, as do changed gameplay fallbacks.
+    public static float FeedbackNumber(string key,float fallback) => (float)Read(key,new JValue(fallback),false);
     public static double DoubleNumber(string key,double fallback) => (double)Read(key,new JValue(fallback));
     public static int Integer(string key,int fallback) => Mathf.RoundToInt(Number(key,fallback));
     public static bool Toggle(string key,bool fallback) => (bool)Read(key,new JValue(fallback));
     public static Color ColorValue(string key,Color fallback) {
         Color parsed; return ColorUtility.TryParseHtmlString((string)Read(key,"#"+ColorUtility.ToHtmlStringRGBA(fallback)),out parsed)?parsed:fallback;
+    }
+    public static Color FeedbackColorValue(string key,Color fallback) {
+        Color parsed;return ColorUtility.TryParseHtmlString((string)Read(key,"#"+ColorUtility.ToHtmlStringRGBA(fallback),false),out parsed)?parsed:fallback;
     }
     public static JToken Requested(string key) {
         JToken v; if(DevEnabled&&requested.TryGetValue(key,out v)) return v;

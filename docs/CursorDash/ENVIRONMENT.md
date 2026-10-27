@@ -1,5 +1,38 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-059 로컬 수정·격리검사 (2026-10-27)
+
+기존 .NET/Unity 참조만 사용해 runtime112/test14/Editor2 격리컴파일 오류0·기존134경고, 실제생산순수.NET4672999+106885/정적보존을 확인했다. 이는 대상Unity Native/Shader/GPU·Play 성공이 아니다. 실시간미저장조회·Unity창/Play/저장폐기/재임포트·앱재실행/다른프로세스종료·설치/전역·새연결/빌드/Git게시는없다.
+
+시작1547파일/백업Backups/global-scorewave-final-hit-20261027·로그Logs/global-scorewave-final-hit-20261027, 사용자미커밋·미추적과HEAD/main/index보존. 신규화면/Native·모바일/WebGL성능은NOT_RUN이다. [구현13파일·전후값·검사/수동절차](SCORE_WAVE_FINAL_HIT_20261027.md); 다음은사용자Unity검수다.
+
+## D-058 로컬 파일 수정·격리 참조 검사 (2026-10-27)
+
+기존Unity/연결·설정은 변경하지 않았다. Unity창/Play·미저장상태 저장폐기·강제재임포트/재시작·다른프로세스종료 없음. 이번 시작/종료의 실시간 dirty 메모리 조회는 하지 않았으며 D-057 snapshot을 현재 검사로 간주하지 않는다. Assets 밖 `Backups/arc-rewind-fever-circuit-20261027`에 작업전 사본, `Logs/arc-rewind-fever-circuit-20261027`에1546파일 해시/참조·순수·정적 결과를 남겼다.
+
+기존 .NET/Unity참조로 runtime112/test14/Editor2를 격리 컴파일(오류0·기존134경고)하고 생산 순수수학만 실행했다. 새 설치/새 연결/전역변경·빌드·Git게시 없음. 이번 Native/Shader/GPU/Play·모바일/WebGL성능은 NOT_RUN이며 사용자검수를 기다린다. [변경13파일·전후값·검사/수동절차](ARC_REWIND_FEVER_CIRCUIT_20261027.md).
+
+## D-057 대상 인스턴스의 저장·강한 피해 효과 확인 (2026-10-27)
+
+기존 CursorDash Unity6000.3.23f1/DX11/Cyberpunk를 그대로 사용했다. 정상 Assets Refresh/기존 TestRunner 메뉴로 최종컴파일 오류0·기존Native경고7/집중70PASS(2026-10-27 20:33:34 KST)를 확인하고 새 JSON/XML·DLL/종료상태를 교차검사했다. Play 재진입 검사는 테스트 로컬값이 domain reload 때 유실되어 SessionState에 비교자료를 보존하며 핵심 단언을 유지했다. 실제 저장값은 재진입 뒤에도 유지됐다. 앱 전체 재실행은 NOT_RUN이다.
+
+기존 미저장 imported6개는 전후동일, 저장/폐기·강제재임포트/재시작 없음. Cyberpunkclean·PlayOFF/compileOFF/timeScale1·확인prefs7동일, 실제 점수 키는 보호fixture/격리QA맵에서 검증하고 QA 소유키만 정리했다. 다른 Unity/프로세스를 종료하지 않았다. 빌드/설치/새연결/전역설정/Git게시 없음·D-014 유지. [상세 원인·절대값·변경12파일·검수](NEXUS_HIT_RECORD_FIX_20261027.md).
+
+## D-056 로컬 검사 종료 상태 — 2026-10-27
+
+기존 대상 Unity6000.3.23f1/DX11 Cyberpunk 인스턴스만 사용. 새 연결/설치·다른 프로젝트 종료 없음. Native 최종컴파일오류0/기존7경고·정상TestRunner 집중67PASS/최종JSON/XML19:34:10KST, 실제GPU 국소red·획보호 및 Play 내부호출. 보존 끝상태 PlayOFF/compileOFF/timeScale1/Cyberpunk dirty=false·기존 imported dirty6/확인prefs7 동일. 저장·폐기·재임포트없음/D-014 확대없음. main18b25da/빈index·미커밋, 빌드/Git게시 없음.
+
+이번 작업 전 사본 `D:/renewal_CursorDash/Backups/score-nexus-review-20261027`; 로그/93PNG/최종소스 해시/검사 `Cursor-Dash-master/Logs/score-nexus-review-20261027`. 앱재실행 실기록·모바일/WebGL/성능/손입력은 NOT_RUN. [최신 인계](SCORE_NEXUS_REVIEW_20261027.md). 이전 환경 조사부터 다시 반복할 필요는 없으며 다음은 사용자 검수다.
+
+
+## D-055 CP6 실행 환경과 종료 상태 (2026-10-27)
+
+사용자대상창활성화후기존Cursor-Dash-master/Cyberpunk/Unity6000.3.23f1DX11창658488만사용. 최종컴파일오류0·native집중62PASS/GPU/Play확인. 참고WaveGame6000.5.7f1창은조작/실행/종료하지않고원본보호해시유지. 새설치·전역·연결·빌드없음.
+
+종료진단: PlayOFF/compileOFF/timeScale1/Cyberpunkdirty=false, 확인prefs전후동일, Assets dirty6동일(TMP shader3/LiberationTexture/이사만루Medium·Bold FontTexture). Library기본scriptdirty는별도진단항목/에셋변경으로저장하지않음. 포괄저장·폐기·재임포트없음/D-014확대없음. UI/GameView일시확대뒤Play종료시기존분할뷰로복귀. 실제훈련버튼클릭성공·drag변위확인은미완료.
+
+시작1884/CP6재개3104파일보호·Before/외부복구본Backups/continuous-flow-20261027유지. 최종근거는Logs/continuous-flow-20261027. 실제모바일/WebGL성능·정상기록재실행은NOT_RUN. [상태·미검증·사용자검수](CONTINUOUS_FLOW_20261027.md).
+
 ## D-054 WebGL·기존 Pages 릴리스 실제 실행 (2026-10-27)
 
 시작Unity프로세스/창/lock없음확인후기존6000.3.23f1 batchmode빌드만실행/정상Exit했다. 자동Play·저장폐기/다른프로젝트종료·설치/전역변경없음. 빌드입력1489파일전후해시동일·새출력cursordash-20261027-space-e0c721d84748. 기존main/gh-pages/URL유지, source f6e5f8a/pages3195915 정상push·Pages성공이다.

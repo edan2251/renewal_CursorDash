@@ -1,5 +1,60 @@
 # CursorDash 현재 상태와 다음 한 작업
 
+## 최신 — D-059 전체 회로 득점 전파·피버 점수RGB·이번점수 호흡·치명피격 통일 (2026-10-27)
+
+**IMPLEMENTED / REFERENCE_COMPILE_PASS / PURE_LOGIC_PASS / NATIVE_VISUAL_NOT_RUN / 사용자검수대기.** 원형/육각·피버보너스 처치는 실제타격점의 공간전면이 독립회로까지 지나가도록 기존8슬롯/동시4 풀을 확장했다(속도2.6/폭.32·강조.44). 기존 방어의 국소연결·기본회로/평상시흐름·숫자획가림·피버가시길이/퇴장 유지. 기존 Max밝기/색혼합만으로는 우선권이 확실하지 않아 **같은 Tint 안에서 피격 붉은전면이 가시구간의 처치/quiet강조를 억제**하게 했다. 별도관리자/매타격메시·재질 생성 없음.
+
+피버RGB 타격.006→.008/유지.0012→.0018·기본상한.012, 실제점수획 RGB배율3/상한.024·기존동적글자마스크재사용/회로가림OFF와분리·안정HUD/일반피해획보호유지. 이번점수 이동/회로복원 뒤 클릭대기에서 ±2.5%/2.4초 호흡, BEST확인 전환에서1로복귀/공유숫자·Scale1/중앙·저장불변.
+
+**치명피격의 예전 DamageSignal(false)/전체red .26·RGB.0055/waveOFF를 공용 DamageSignal(contact)로 대체**했다. 모든 확정공격은 기존일반피해의.48초/RGB.018/wash0/실제접촉점굴절·동일흔들림, 치명타회로도중앙red를기존바깥퇴장과함께표시한다. 중복옛왜곡삭제·최종파괴파편/방향·슬로모션/정산·복귀시계는그대로다. 강제수동Death는실제HP감소와구분한다.
+
+**PASS** 참조112/14/Editor2오류0·기존134경고, 순수생산.NET4672999+집중106885(3원점각82/82경로도달/동시4·Pause/정리·피격우선/호흡상한·복귀), 정적보존/백업. 신규공식4작성·컴파일만/기존2개피버GPU·치명통일단언보완. **NOT_RUN** 이번NativeUnity/Shader/GPU/Play·수정후화면/손조작/모바일/WebGL성능. 기존PASS/PNG는이번결과가아니다. 1547시작파일/사용자미커밋·미추적보존, main18b25da/index빈상태·Unity조작/저장폐기·빌드/Git게시없음. [구현13파일·전후값·검사/수동절차](SCORE_WAVE_FINAL_HIT_20261027.md); 근거Logs/global-scorewave-final-hit-20261027·사본Backups/global-scorewave-final-hit-20261027.
+
+**다음한작업:** 사용자Cyberpunk타격점→전체회로/피격겹침우선→피버점수RGB→HP3→2→1→0공용피격/기존파괴→이번점수호흡/확인클릭→Pause/Retry/Home검수. 육각타이밍재검토·노드겹침/새Flash그림·별도사이버재구축/설정개편은계속제외·보류한다.
+
+## 최신 — D-058 원호 시간차·피격 되감기·피버 RGB·중앙 점수·회로 반응 (2026-10-27)
+
+**IMPLEMENTED / REFERENCE_COMPILE_PASS / PURE_LOGIC_PASS / UNITY_VISUAL_NOT_RUN / 사용자 검수 대기.** 사용자가 긍정한 Nexus 본체 호흡.04/충전.24/압축.32와 기존 반응길이·밝기를 보존했다. 바깥 충전 원호만 고정된 각도별 시간차/작은 강도 차이로 움직이고 이동 배율.8/시차.12초를 적용했다. 매 프레임 랜덤·새회전 없음. 피격 표시 되감기는 **.16초 cubic초반급감→.38초 SmoothStep 역감소**, 첫 렌더 보존/최신실값 재독·재피격/재충전 처리이며 실제Gauge즉시0/배율1은 불변이다.
+
+실제 설정/소스의 배경점수Y .58→.5(화면중앙), Rect4×4/Scale1/Auto1~3.5·득점반응/저장 유지. 기존 완료게임판 경로의 피버 RGB 타격.0042→.006/유지.0008→.0012/피버합성상한.008로 점수도 함께 처리하고 안정HUD는 제외한다. 일반피해 글자보호·승인피버종료는 유지한다. 처치회로 강조.18→.32/길이.24→.34초·거리감쇠.26→.40/탐색.13→.18, 동시4/전달속도·기본회로·평상시흐름 동일. 확정 비치명HP감소에서 실제 Nexus 중심의 단일 붉은 회로 전파(.44/속도2.6/폭.26/최대.80초)를 연결했다. 신규선/메시·재질생성없음·기존가시길이/숫자획가림/접근성·정리경로 사용.
+
+**PASS** 참조runtime112/test14/Editor2 오류0·기존134경고/순수생산.NET 기존4672999+집중19855(원호위상/80%변위·읽히는역감소·재충전·붉은파동전파/상한·Gauge실값/점수불변)·정적보존/백업. **NOT_RUN** 이번소스의NativeUnity컴파일/Shader/GPU/Play·손조작·모바일/WebGL성능·새화면. 신규공식6사례 작성/참조컴파일만이며 D-057의70PASS/117PNG는 이번결과로 재사용하지 않는다. Unity창조작/저장폐기·앱재시작/빌드/Git게시 없음, 미커밋/main18b25da/index비어있음·작업전1546파일/사용자미추적보존. [변경13파일·전후값·검사/수동절차](ARC_REWIND_FEVER_CIRCUIT_20261027.md). 근거 `Logs/arc-rewind-fever-circuit-20261027`, 작업전 사본 `Backups/arc-rewind-fever-circuit-20261027`.
+
+**다음 한 작업:** 사용자 Cyberpunk에서 중앙점수→충전 원호 시간차→충전중피격/역감소·재충전·붉은회로→피버RGB/점수→Pause/Retry/Home/최종파괴 검수. 육각재검토·노드겹침/새Flash그림·별도사이버재구축·설정개편 제외/보류 유지. 본체 크기 승인을 공통 타격감 전체 승인으로 확대하지 않는다.
+
+## 최신 — D-057 BEST0 추가 원인 수정·강한 붉은 굴절 피격 시안 (2026-10-27)
+
+**IMPLEMENTED / NATIVE_FOCUSED_70_PASS / 사용자 시각·손조작 검수 대기.** D-056 숫자 조회 수정 뒤에도 남은 실제 원형 처치의 **효과 색상 조회**가 정상 라운드를 기록 제외시켰다. 실제 ContactAt→HitFeedback→ColorValue의 #BF4CFFFF/메타 #BF4DFFFF 차이(1/255)를 원본에서 재현해 실패 스택을 보존하고 FeedbackColorValue로 읽기만 분리했다. 효과 색·파편/훈련·명시DEV·게임규칙 변경의 제외 규칙은 유지한다. **Editor도 저장한다:** 정상 게임오버 정산의 기존 PlayerPrefs.Save 경로이며 Stop 중단 자동정산은 추가하지 않았다. 과거 미저장 점수를 가짜로 복원하지 않는다.
+
+일반 피해 전체red wash .025→0, 실제 접촉점(없으면 실제 Nexus)의 압축→바깥 굴절 전파에 붉은 빛/RGB .0055→.018을 연결했다. 변위/RGB 상한은 이 경로만 .035/.024, .48초/빛1.15·강도.03/폭.24/속도4.2/범위1.25. 넥서스 호흡±4%/충전24%/피격압축32%·.48초/arc .028/gap .08은 요청한 **과장 비교 시안·최종 미승인**이다. 히트스톱 중 표시 반응, 실제 Pause에서는 정지한다. 모든 확정 HP 감소의 원형/레이저 비치명 피해에 연결·무효/중복 방지, 성공/최종파괴는 보존한다.
+
+**PASS 실제 Unity6000.3.23f1/DX11:** 정상 TestRunner 70/70·0실패·0skip, 2026-10-27 20:33:34 KST JSON/XML·현재DLL·Editor상태 교차확인. 실제 원형처치→일반피격→고유QA키 정산1→Main BEST1→Play종료/재진입 뒤1 유지/사용자 키 보호, 양쪽 실제 피해 경로·강한 진폭/경계불변·GPU RGB/국소red/획보호·기존피버/회로 PASS. 실제 GameView PNG117장(내부호출/표본, 연속영상·손전투 아님). 참조112/14/Editor2 오류0·기존134경고/순수.NET4672999. 종료PlayOFF/compileOFF/timeScale1/Cyberpunkclean/imported6·확인prefs7동일/작업전1588파일 삭제0·씬/프리팹/meta/설정·노드/입력 그대로. main18b25da/index비어있음·기존미커밋 보존/빌드·Git게시없음.
+
+**NOT_RUN:** Editor 앱 전체 재시작·실사용자기록 정상손전투·모바일/터치·WebGL/성능·최종시각승인. [상세 원인·절대값·변경12파일·검수](NEXUS_HIT_RECORD_FIX_20261027.md) / 근거 `Cursor-Dash-master/Logs/nexus-hit-save-20261027`, 작업전 사본 `Backups/nexus-hit-save-20261027`. **다음 한 작업:** 사용자 Cyberpunk 정상라운드 저장/Play재진입·강한 넥서스/RGB 시각 검수. 육각재검토·노드겹침/새Flash그림·별도재구축/설정개편 제외·보류 유지. D-056의 검사 한계를 이번 재현으로 보완했으며 이전 PASS를 전체 기록 경로 해결로 확대하지 않는다.
+
+## 최신 — D-056 최고점 저장 오류·점수/넥서스/확인 클릭 보완 (2026-10-27)
+
+**IMPLEMENTED / NATIVE_FOCUSED_67_PASS / 사용자 검수 대기.** 실제 정상 비치명 피격의 효과 fallback .008과 메타 .006 차이를 규칙 변경으로 오인해 기록을 제외하는 오류를 Unity에서 재현(0/1 FAIL)한 뒤, **피드백 수치 읽기만** 자격 판정에서 분리했다. 명시 Dev/훈련·게임 규칙 fallback의 제외는 유지한다. 고유QA맵 피격→정산/저장3→Main읽기·중복정산/제외 보호 PASS. 사용자 실제 BEST를 가짜로 채우거나 미저장 과거 점수를 추정 복구하지 않는다.
+
+시작의 같은 TMP는 끝의 AutoSize 재설정을 없애고 크기·위치·색을 전체1.35초 한 진행으로 연결했다(.945초 조기 정지 제거). 득점 탄성은 D-053 감쇠/하강으로 복원, +1 즉시/+2이상 .24초 표시roll·정산 불변. CP3 맥동 정규화/표시진폭 보완, CP4 실제접촉점의 굴절/RGB·붉은 국소광과 낮은 wash로 분리, 승인된 처치/최종파괴 보존. 파괴뒤 같은 최종점수 이동·회로복원→**새 클릭 대기**→숫자BEST roll/로고복귀 .45초이며 D-055 자동BEST복귀를 대체한다.
+
+**PASS 실제 Unity6000.3.23f1/DX11:** 최종 오류0/기존경고7, 정상 TestRunner 집중67/67(0실패/0skip), 19:34:10KST JSON/XML·DLL/상태 교차확인. 실제 픽셀굴절/점수획 보호·국소redGPU/0·8·20자리 실제 TMP handoff·표시용 충전/피격/경계불변·기록/대기/중단·기존 피버/회로를 검사했다. GameView PNG93장(연속영상·손플레이아님), 참조112/14/2 오류0/기존134경고·순수.NET4672999. 종료 PlayOFF/compileOFF/timeScale1/Cyberpunk clean/imported dirty6·확인prefs7 동일·삭제0/씬·메타·승인노드/입력/설정 보존. 전부 미커밋/main18b25da/index비어있음.
+
+**NOT_RUN:** 실손전투·모바일/터치·WebGL/성능·실사용자 기록의 앱 재실행 지속성/시각최종승인. [변경13파일·전후값·원인·수동절차](SCORE_NEXUS_REVIEW_20261027.md). 작업전 사본 `Backups/score-nexus-review-20261027`, 근거 `Cursor-Dash-master/Logs/score-nexus-review-20261027`. **다음 한 작업:** 사용자 Cyberpunk 정상라운드 기록·전환끝·CP3/4·클릭대기 검수. 빌드/커밋/push/배포 없음·추가구현 대기. 육각재검토 제외/노드겹침·새Flash·별도사이버재구축/설정창개편 보류유지.
+
+
+## 최신 — D-055 연속 공간 CP6 로컬 검수 완료 (2026-10-27)
+
+**IMPLEMENTED / NATIVE_FOCUSED_62_PASS / 사용자 시각·입력 검수 대기.** 같은 점수 TMP의 무반동 시작·득점 roll/작은undershoot·표시 전용 자성Nexus/원호·낮고 짧은red+실공간굴절·국소ambient·기존finale뒤결과창대신Returning→Main 구현을 최종소스로 검수했다. [현재 인계·조절값·수동순서](CONTINUOUS_FLOW_20261027.md).
+
+**PASS 실제 Unity6000.3.23f1/DX11:** 최종 DLL은 소스보다 새롭고 컴파일오류0(기존native경고7), 정상메뉴 TestRunner **62/62·실패0·skip0**(회로15/피버규칙23/공유수학·GPU14/Play통합10). 최종JSON/XML **2026-10-27 18:23:51 KST**/완료로그·실제Editor상태 교차확인. 실제GameView1080×1920 PNG65장: 0/8/20자리중심·하나의숫자/countdown/충전·피해red제외표본·피버·기존파괴/최종점수→BEST복원. [실제화면 갤러리](../../Cursor-Dash-master/Logs/continuous-flow-20261027/evidence.html) — 연속영상/손플레이아님.
+
+발견·수정: 기존Out/DrainHead의 부동소수점 끝값2개 정확포화(단언유지), Play종료중Nexus legacyRotator재활성화→[DOTween]재생성 경로만 Suspend/Release(false)·외곽정지유지로보완(공유Rotator/육각파일미수정). 1차57/59·2차60/61 실패근거도 보존했다. 사용자기록과분리한 고유QA맵/키로 정상정산·신기록/제외·중복Death를 확인하고 해당QA키만정리했다. 실제사용자최고점을가짜값으로덮지않았다.
+
+**PASS 보존/순수:** .NET4,672,999/참조112·14·2오류0, 시작CP6 3104파일 삭제0·씬/프리팹/meta·프로젝트설정·노드/입력·참고원본미수정. 종료PlayOFF/compileOFF/timeScale1/Cyberpunkdirty=false·확인prefs전후동일·Assets imported dirty6동일, 저장·폐기없음. main18b25da/index비어있음/전부미커밋. 빌드·커밋·push·배포없음.
+
+**NOT_RUN/제약:** 실제모바일·터치·WebGL/성능/전체전투·실기록재실행지속성·연속영상. 실제UI훈련클릭성공, 도구의짧은마우스drag는커서변위확인못해이동통과로표시하지않음. Native모델/내부호출·GPU/실제손입력을구분한다. **다음 한 작업:** 사용자가Cyberpunk에서실제조작·시각검수. 육각재검토제외·노드겹침/설정창개편/새Flash그림·별도사이버재구축은보류.
+
 ## 최신 — D-054 현재 로컬 누적본 공개 배포 완료 (2026-10-27)
 
 **DEPLOYED_PUBLIC_RUNTIME_VERIFIED / 사용자 공개 버전 검수 대기.** 소스 main **f6e5f8a6c9f1d10946ba35f7a4381f8088408168**(선별68파일), 웹 gh-pages **3195915a14e1e06b3867ed4cc0db530f3260b81a**, [Pages 작업40422372912 성공](https://github.com/edan2251/renewal_CursorDash/actions/runs/40422372912). 공개 [https://edan2251.github.io/renewal_CursorDash/](https://edan2251.github.io/renewal_CursorDash/), buildId **cursordash-20261027-space-e0c721d84748**. D-046~053 누적본이며 새 게임/디자인/밸런스 변경은 없다. build helper의 옛 고정 씬 순서만 현재 enabled 설정 Cyberpunk→legacy01로 읽게 수정했다. [완료 결과·소스/배포 구분·미검증](RELEASE_20261027.md).
