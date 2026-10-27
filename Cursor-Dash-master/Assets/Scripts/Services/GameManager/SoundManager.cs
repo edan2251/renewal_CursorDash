@@ -24,6 +24,8 @@ public class SoundManager : MonoBehaviour
     
     private Dictionary<ClipTag, AudioSource> sfxDictionary = new Dictionary<ClipTag, AudioSource>();
     private readonly Dictionary<AudioSource, Coroutine> pitchRoutines = new Dictionary<AudioSource, Coroutine>();
+    private readonly Dictionary<AudioSource,float> eventVolumes=new Dictionary<AudioSource,float>();
+    private float masterVolume=1;
 
     private float bgmVolume = 0.5f;
     private float sfxVolume = 0.5f;
@@ -38,7 +40,7 @@ public class SoundManager : MonoBehaviour
         set{
             bgmVolume = Mathf.Clamp01(value);
             PlayerPrefs.SetFloat("BGM", bgmVolume);
-            if (bgmSource != null) bgmSource.volume = bgmVolume;
+            RefreshVolumes();
         }
     }
 
@@ -49,9 +51,7 @@ public class SoundManager : MonoBehaviour
         set{
             sfxVolume = Mathf.Clamp01(value);
             PlayerPrefs.SetFloat("SFX", sfxVolume);
-            if (sfxSource != null) sfxSource.volume = sfxVolume;
-            foreach (AudioSource source in sfxDictionary.Values)
-                if (source != null) source.volume = sfxVolume;
+            RefreshVolumes();
         }
     }
 
@@ -96,22 +96,27 @@ public class SoundManager : MonoBehaviour
     }
 
     public void PlaySFX(){
+        sfxSource.volume=sfxVolume*masterVolume;
         sfxSource.Play();
     }
 
     public void PlaySFX(ClipTag tag){
-        if (sfxDictionary.TryGetValue(tag, out AudioSource source) && source != null) source.Play();
+        if (sfxDictionary.TryGetValue(tag, out AudioSource source) && source != null){eventVolumes[source]=1;source.volume=sfxVolume*masterVolume;source.Play();}
     }
     public void PlaySFX(ClipTag tag,float volume,float pitch) {
         if(!sfxDictionary.TryGetValue(tag,out AudioSource source)||source==null)return;
-        source.volume=sfxVolume*Mathf.Clamp01(volume);source.pitch=Mathf.Clamp(pitch,.25f,3f);source.Play();
+        eventVolumes[source]=Mathf.Clamp01(volume);source.volume=sfxVolume*masterVolume*eventVolumes[source];source.pitch=Mathf.Clamp(pitch,.25f,3f);source.Play();
     }
-    public void ApplyRuntimeVolumes(float bgm,float sfx) {
+    public void ApplyRuntimeVolumes(float bgm,float sfx,float master=1) {
         // v2 user settings do not overwrite the legacy BGM/SFX preference keys.
-        bgmVolume=Mathf.Clamp01(bgm);sfxVolume=Mathf.Clamp01(sfx);
-        if(bgmSource!=null)bgmSource.volume=bgmVolume;
-        if(sfxSource!=null)sfxSource.volume=sfxVolume;
-        foreach(var source in sfxDictionary.Values)if(source!=null)source.volume=sfxVolume;
+        bgm=Mathf.Clamp01(bgm);sfx=Mathf.Clamp01(sfx);master=Mathf.Clamp01(master);
+        if(bgmVolume==bgm&&sfxVolume==sfx&&masterVolume==master)return;
+        bgmVolume=bgm;sfxVolume=sfx;masterVolume=master;RefreshVolumes();
+    }
+    private void RefreshVolumes(){
+        if(bgmSource!=null)bgmSource.volume=bgmVolume*masterVolume;
+        if(sfxSource!=null)sfxSource.volume=sfxVolume*masterVolume;
+        foreach(var source in sfxDictionary.Values)if(source!=null)source.volume=sfxVolume*masterVolume*(eventVolumes.TryGetValue(source,out float gain)?gain:1);
     }
     
     public void PullSound(AudioSource audioSource){

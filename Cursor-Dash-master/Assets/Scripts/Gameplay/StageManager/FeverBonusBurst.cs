@@ -38,7 +38,7 @@ public sealed class FeverBonusBurst : MonoBehaviour
         mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.SetUVs(1,edges);
         material=new Material(Resources.Load<Shader>("CursorDash/ImpactFlat")){hideFlags=HideFlags.DontSave};material.color=Color.white;
         gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;View=gameObject.AddComponent<MeshRenderer>();View.sharedMaterial=material;View.sortingOrder=30;
-        flash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;Draw();
+        flash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0;Draw();
     }
     // ImpactFlat has four edge-distance channels. Convex shapes with more sides need a fan
     // whose triangles each carry their ONE outer edge; internal spokes must not become AA seams.

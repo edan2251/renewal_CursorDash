@@ -51,7 +51,33 @@ namespace CursorDashTests
                 "CursorDashTests.CursorDashSceneRegression.CP3_FeverNoticeAfterBuiltWorldPreviewsNodesAndCleansHomeRetry",
                 "CursorDashTests.CursorDashSceneRegression.CP3_PanelOwnsInputAndPreservesIndependentPause"}}));
         }
+        [MenuItem("Tools/CursorDash Remake/Run Settings UI Focused")]
+        private static void RunSettingsUI()
+        {
+            if(EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling)throw new InvalidOperationException("Requires idle target Editor; no forced Play stop.");
+            for(int i=0;i<UnityEngine.SceneManagement.SceneManager.sceneCount;i++)if(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("User scene is unsaved; UI checks did not save or discard it.");
+            if(api==null)Register();SessionState.SetString("CursorDash.FocusedOutput","Logs/settings-input-fix-20261028");
+            CaptureGuideState("before");SessionState.SetBool("CursorDash.GuideFocused",true);
+            api.Execute(new ExecutionSettings(new Filter{testMode=TestMode.EditMode,testNames=new[]{
+                "CursorDashTests.CursorDashSceneRegression.UI_MainSheetRealPointerEventsBlockStartAndSaveOnlyAtGestureEnd",
+                "CursorDashTests.CursorDashSceneRegression.UI_MasterAndReductionAreSingleMultipliersAndSelectiveResetProtectsRecords",
+                "CursorDashTests.CursorDashSceneRegression.UI_PausePreservesStateAndSharedSlidersRetryHomeUseExistingFlow",
+                "CursorDashTests.CursorDashSceneRegression.UI_TutorialReentryDoesNotEraseFlagsAndZeroEffectsKeepFeverGuideWhite",
+                "CursorDashTests.CursorDashSceneRegression.CP3_ConcurrentTutorialCountsOnlyRealContactsAndReturnsThenStartsCleanCombat",
+                "CursorDashTests.CursorDashSceneRegression.CP3_FeverNoticeAfterBuiltWorldPreviewsNodesAndCleansHomeRetry",
+                "CursorDashTests.CursorDashSceneRegression.CP3_PanelOwnsInputAndPreservesIndependentPause"}}));
+        }
         [Serializable] private sealed class GuideState {public bool playing;public float timeScale;public string[] scenes,dirty,preferenceHashes;}
+        [MenuItem("Tools/CursorDash Remake/Run Settings Pause Recheck")]
+        private static void RecheckSettingsPause()
+        {
+            if(EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling)throw new InvalidOperationException("Requires idle target Editor.");
+            for(int i=0;i<UnityEngine.SceneManagement.SceneManager.sceneCount;i++)if(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("User scene is unsaved; no save or discard.");
+            if(api==null)Register();SessionState.SetString("CursorDash.FocusedOutput","Logs/settings-input-fix-20261028");CaptureGuideState("before");SessionState.SetBool("CursorDash.GuideFocused",true);
+            api.Execute(new ExecutionSettings(new Filter{testMode=TestMode.EditMode,testNames=new[]{
+                "CursorDashTests.CursorDashSceneRegression.UI_PausePreservesStateAndSharedSlidersRetryHomeUseExistingFlow",
+                "CursorDashTests.CursorDashSceneRegression.UI_TutorialReentryDoesNotEraseFlagsAndZeroEffectsKeepFeverGuideWhite"}}));
+        }
         private static void CaptureGuideState(string suffix)
         {
             var keys=new[]{"CursorDash.v2.tutorial","CursorDash.v3.feverGuide","CursorDash.v2.user","CursorDash.v2.presets","CursorDash_BestPoints_v1_Cyberpunk","CursorDash_BestPoints_v1_Flame"};
@@ -59,7 +85,7 @@ namespace CursorDashTests
             var snapshot=new GuideState{playing=EditorApplication.isPlaying,timeScale=Time.timeScale,
                 scenes=Enumerable.Range(0,UnityEngine.SceneManagement.SceneManager.sceneCount).Select(i=>{var s=UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);return s.path+"|dirty="+s.isDirty;}).ToArray(),
                 dirty=Resources.FindObjectsOfTypeAll<UnityEngine.Object>().Where(x=>x!=null&&EditorUtility.IsPersistent(x)&&EditorUtility.IsDirty(x)).Select(x=>x.GetType().Name+"|"+x.name+"|"+AssetDatabase.GetAssetPath(x)).OrderBy(x=>x).ToArray(),preferenceHashes=keys.Select(Hash).ToArray()};
-            var folder=Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028");Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"native-"+suffix+".json"),JsonUtility.ToJson(snapshot,true));
+            var folder=Path.GetFullPath(SessionState.GetString("CursorDash.FocusedOutput","Logs/tutorial-poweron-fever-order-20261028"));Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"native-"+suffix+".json"),JsonUtility.ToJson(snapshot,true));
         }
 
         [Serializable]

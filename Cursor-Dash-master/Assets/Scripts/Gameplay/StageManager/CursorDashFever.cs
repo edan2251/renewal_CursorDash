@@ -33,7 +33,7 @@ public sealed class CursorDashFever : MonoBehaviour
     private bool MagnetActive=>stage.IsPlaying&&(Model.Current==FeverState.Phase.Normal||Model.Current==FeverState.Phase.Closing)&&CursorDashTuning.Toggle("fx.enabled",true);
     private double MagneticSeconds=>Visuals==null?.48:Mathf.Clamp(Visuals.nexusMagnetSeconds,.15f,.6f);
     public float MagneticBody=>MagnetActive?(float)magnet.Body(nexusFeedbackClock,Visuals==null?.04:Visuals.nexusBreath,Visuals==null?.24:Visuals.nexusChargeExpand,Visuals==null?.32:Visuals.nexusHitCompress,MagneticSeconds):1;
-    public float MagneticLight=>MagnetActive?(float)magnet.Light(nexusFeedbackClock,Visuals==null?.15:Visuals.nexusBreathLight,MagneticSeconds)*Mathf.Clamp01(CursorDashTuning.Number("user.flash",1))*(PlayerPrefs.GetString("OnFlash","true")=="true"?1:0):0;
+    public float MagneticLight=>MagnetActive?(float)magnet.Light(nexusFeedbackClock,Visuals==null?.15:Visuals.nexusBreathLight,MagneticSeconds)*Mathf.Clamp01(CursorDashTuning.EffectGain("user.flash"))*(PlayerPrefs.GetString("OnFlash","true")=="true"?1:0):0;
     public float MagneticRing=>MagnetActive?(float)magnet.Ring(nexusFeedbackClock,(Visuals==null?.24:Visuals.nexusChargeExpand)*.65,Visuals==null?.32:Visuals.nexusHitCompress,MagneticSeconds):1;
     public float MagneticArc(float radians)=>MagnetActive?(float)magnet.ArcShaped(nexusFeedbackClock,radians,Model.Gauge,Visuals==null?.028:Visuals.nexusArcDrift,Visuals==null?.24:Visuals.nexusChargeExpand,Visuals==null?.32:Visuals.nexusHitCompress,Visuals==null?.08:Visuals.nexusChargeGap,MagneticSeconds,Visuals==null?.8:Visuals.nexusArcMotion,Visuals==null?.12:Visuals.nexusArcStagger):1;
     public void NexusVisualHit(bool directionKnown,Vector2 side)
@@ -126,7 +126,7 @@ public sealed class CursorDashFever : MonoBehaviour
             entryImpulse=true;
             if(CursorDashSession.FirstFeverGuideNeeded&&!Model.PracticeOnly){entryNotice=true;noticeReveal=0;DrawNoticePresentation();GuideView?.ShowNotice(1);stage.ResetPresentationInput();stage.RefreshPresentationClock();}
             if(CursorDashTuning.Toggle("fx.enabled",true)){
-                stage.GetComponent<CameraShake>()?.Kick(Vector2.up,.08f*CursorDashTuning.Number("user.shake",1),.16f,2,24,.30f);ownsShake=true;
+                stage.GetComponent<CameraShake>()?.Kick(Vector2.up,.08f*CursorDashTuning.EffectGain("user.shake"),.16f,2,24,.30f);ownsShake=true;
                 GameManager.instance.soundManager.PlaySFX(ClipTag.nodeExplosion,.65f,.80f);
             }
         }
@@ -209,7 +209,7 @@ public sealed class CursorDashFever : MonoBehaviour
         float gain=BonusImpactGain;
         if(feelGate.Stop(Clock,FeverSettings.Safe(Settings.bonusStopGap,.18,.08)))stage.RequestFeedbackStop(Mathf.Clamp((float)FeverSettings.Safe(Settings.bonusStop,.012,0)*gain,0,.035f));
         if(feelGate.Screen(Clock,FeverSettings.Safe(Settings.bonusScreenGap,.10,.06))){
-            stage.GetComponent<CameraShake>()?.Kick(incoming,Mathf.Min(.40f,(float)FeverSettings.Safe(Settings.bonusShake,.06,0)*3*gain)*(Visuals==null?.45f:Mathf.Clamp01(Visuals.feverShakeScale))*CursorDashTuning.Number("user.shake",1),.14f,2,28,.35f);ownsShake=true;
+            stage.GetComponent<CameraShake>()?.Kick(incoming,Mathf.Min(.40f,(float)FeverSettings.Safe(Settings.bonusShake,.06,0)*3*gain)*(Visuals==null?.45f:Mathf.Clamp01(Visuals.feverShakeScale))*CursorDashTuning.EffectGain("user.shake"),.14f,2,28,.35f);ownsShake=true;
             GameManager.instance.soundManager.PlaySFX(ClipTag.nodeExplosion,.6f,Mathf.Lerp(.97f,1.12f,Mathf.Repeat(Clock*.7f,1)));
         }
     }

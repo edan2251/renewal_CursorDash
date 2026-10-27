@@ -13,7 +13,7 @@ using UnityEngine.Scripting;
 public sealed class CursorDashRuntimeUI : MonoBehaviour
 {
     public static CursorDashRuntimeUI Instance {get;private set;}
-    public static bool InputBlocked=>Instance!=null&&(Instance.PanelOpen||Instance.webFocus||Instance.webCapture);
+    public static bool InputBlocked=>CursorDashSettingsUI.BlocksInput||Instance!=null&&(Instance.PanelOpen||Instance.webFocus||Instance.webCapture);
     public bool PanelOpen {get;private set;}
     public bool DeveloperPanel {get;private set;}
     public string Message {get;private set;}="";
@@ -37,7 +37,7 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
 #endif
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Ensure(){if(Instance==null)new GameObject("CursorDashTools").AddComponent<CursorDashRuntimeUI>();}
-    private void Awake(){if(Instance!=null){Destroy(gameObject);return;}Instance=this;DontDestroyOnLoad(gameObject);SceneManager.sceneLoaded+=SceneLoaded;}
+    private void Awake(){if(Instance!=null){Destroy(gameObject);return;}Instance=this;DontDestroyOnLoad(gameObject);SceneManager.sceneLoaded+=SceneLoaded;CursorDashTuning.Changed+=RefreshAudio;}
     private void SceneLoaded(Scene scene,LoadSceneMode mode){PanelOpen=false;webFocus=webCapture=false;nextSnapshot=0;Time.timeScale=1;}
     private void Update(){
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -48,16 +48,17 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
             hexPool=stage!=null&&CursorDashTuning.DevEnabled?FindObjectsByType<ArrowNode>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(n=>n.gameObject.scene==stage.gameObject.scene).ToArray():Array.Empty<ArrowNode>();}
         if(reflectionTrial!=null){var stage=StageManager.instance;if(!CursorDashTuning.DevEnabled||stage==null||stage.IsDeath||!reflectionTrial.gameObject.activeSelf||reflectionTrial.BlocksThisExecution>0)reflectionTrial=null;else if(stage.IsPlaying&&reflectionTrial.Phase.ToString()=="Fired"){Vector2 origin=reflectionTrial.transform.position;Vector2 delta=stage.NexusPosition-origin;Vector2 contact=origin+delta*.5f;Vector2 side=new Vector2(-delta.y,delta.x).normalized*.6f;PlayerCharacterAfterImage.instance?.RecordMovement(contact-side,contact+side,Time.time);}}
         frameMs=Mathf.Lerp(frameMs,Time.unscaledDeltaTime*1000,.05f);
-        if(GameManager.instance!=null&&GameManager.instance.soundManager!=null){var s=GameManager.instance.soundManager;if(!soundCaptured){baseBgm=s.BGMVolume;baseSfx=s.SFXVolume;soundCaptured=true;}s.ApplyRuntimeVolumes(CursorDashTuning.Number("user.bgm",baseBgm),CursorDashTuning.Number("user.sfx",baseSfx));}
+        RefreshAudio();
 #if UNITY_WEBGL && !UNITY_EDITOR
         if(!htmlReady){htmlReady=CDPanelAttach(gameObject.name)!=0;UnityEngine.WebGLInput.captureAllKeyboardInput=false;}
         if(htmlReady&&Time.unscaledTime>=nextSnapshot){nextSnapshot=Time.unscaledTime+.25f;CDPanelReceive(Snapshot().ToString(Formatting.None));}
 #endif
     }
-    public void Open(bool developer){if(!developer){Message="이번 버전에서는 설정 진입을 숨깁니다.";return;}CursorDashTuning.EnableDev(true);DeveloperPanel=true;PanelOpen=true;StageManager.instance?.SetPanelPaused(true);ResetInput();nextSnapshot=0;}
+    public void RefreshAudio(){if(GameManager.instance==null||GameManager.instance.soundManager==null)return;var s=GameManager.instance.soundManager;if(!soundCaptured){baseBgm=s.BGMVolume;baseSfx=s.SFXVolume;soundCaptured=true;}s.ApplyRuntimeVolumes(CursorDashTuning.Number("user.bgm",baseBgm),CursorDashTuning.Number("user.sfx",baseSfx),CursorDashTuning.Number("user.master",1));}
+    public void Open(bool developer){if(!developer){CursorDashSettingsUI.Instance?.SetSheet(true);return;}CursorDashTuning.EnableDev(true);DeveloperPanel=true;PanelOpen=true;StageManager.instance?.SetPanelPaused(true);ResetInput();nextSnapshot=0;}
     public void Close(){PanelOpen=false;webFocus=webCapture=false;StageManager.instance?.SetPanelPaused(false);ResetInput();nextSnapshot=0;}
     private static void ResetInput(){FindFirstObjectByType<VirtualJoyStick>()?.ResetInput();PlayerCharacterController.instance?.MoveStop();}
-    public static bool IsScreenPointBlocked(Vector2 screen){if(InputBlocked)return true;if(Instance==null||Instance.htmlReady||!CursorDashTuning.DevEnabled)return false;float scale=Mathf.Max(1,Screen.width/900f);return new Rect(0,0,Screen.width,52*scale).Contains(new Vector2(screen.x,Screen.height-screen.y));}
+    public static bool IsScreenPointBlocked(Vector2 screen){if(InputBlocked||CursorDashSettingsUI.HitsHandle(screen))return true;if(Instance==null||Instance.htmlReady||!CursorDashTuning.DevEnabled)return false;float scale=Mathf.Max(1,Screen.width/900f);return new Rect(0,0,Screen.width,52*scale).Contains(new Vector2(screen.x,Screen.height-screen.y));}
     private void Load(CursorDashSession.Mode mode,bool home=false){Close();CursorDashSession.CurrentMode=mode;CursorDashSession.EnterGameOnLoad=!home;if(mode==CursorDashSession.Mode.Normal)CursorDashTuning.EnableDev(false);var stage=StageManager.instance;if(stage?.Space!=null){if(home)stage.ReturnHome();else stage.Space.LaunchSelectedMode();}else if(stage!=null)stage.ChangeScene(home?"01.StageSelectScene":"Cyberpunk");else SceneManager.LoadScene("Cyberpunk");}
     public void SafeTrial(){
         var stage=StageManager.instance;if(stage==null||!CursorDashTuning.DevEnabled){Message="개발자 전투 장면에서 실행하세요";return;}
@@ -189,5 +190,5 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
     }
     private void Set(string key,JToken value){BrowserCommand(new JObject{["cmd"]="set",["key"]=key,["value"]=value}.ToString());}
     private void SetDisplayed(CursorDashTuning.Parameter p,double value){if(double.IsNaN(value)||double.IsInfinity(value)||(p.reciprocal&&value<=0)){Message="양수인 유한 속도를 입력하세요.";return;}Set(p.key,new JValue(CursorDashTuning.StoredValue(p,value)));}
-    private void OnDestroy(){SceneManager.sceneLoaded-=SceneLoaded;if(ownedSkin!=null){ownedSkin.font=null;Destroy(ownedSkin);}if(Instance==this)Instance=null;}
+    private void OnDestroy(){CursorDashTuning.Changed-=RefreshAudio;SceneManager.sceneLoaded-=SceneLoaded;if(ownedSkin!=null){ownedSkin.font=null;Destroy(ownedSkin);}if(Instance==this)Instance=null;}
 }

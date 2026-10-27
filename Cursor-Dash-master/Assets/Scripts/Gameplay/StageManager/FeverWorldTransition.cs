@@ -36,9 +36,9 @@ public sealed class FeverWorldTransition : MonoBehaviour
     {
         get {
             if(optics==null||fever?.Model==null||fever.ContactDiagnostics||!CursorDashTuning.Toggle("fx.enabled",true))return false;
-            if(DamageActive&&(damageField.x>0||damageChroma>0)&&CursorDashTuning.Number("user.distortion",1)>0)return true;
-            if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null)return fever.Exit.Pressure(fever.Model.Elapsed)>0&&((CursorDashTuning.Number("user.distortion",1)>0&&(fever.Exit.Chromatic>0||fever.Exit.Lens>0))||(CursorDashTuning.Number("user.shake",1)>0&&PlayerPrefs.GetString("OnVibe","true")=="true"&&fever.Exit.Shake>0));
-            if(fever.Model.Current!=FeverState.Phase.Fever||CursorDashTuning.Number("user.distortion",1)<=0)return false;
+            if(DamageActive&&(damageField.x>0||damageChroma>0)&&CursorDashTuning.EffectGain("user.distortion")>0)return true;
+            if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null)return fever.Exit.Pressure(fever.Model.Elapsed)>0&&((CursorDashTuning.EffectGain("user.distortion")>0&&(fever.Exit.Chromatic>0||fever.Exit.Lens>0))||(CursorDashTuning.EffectGain("user.shake")>0&&PlayerPrefs.GetString("OnVibe","true")=="true"&&fever.Exit.Shake>0));
+            if(fever.Model.Current!=FeverState.Phase.Fever||CursorDashTuning.EffectGain("user.distortion")<=0)return false;
             var v=fever.Visuals;if((v==null?.0018f:v.feverChromaticAmbient)>0)return true;
             float seconds=v==null?.30f:Mathf.Clamp(v.feverOpticsSeconds,.1f,.6f);
             for(int i=0;i<count;i++)if(fever.Clock-started[i]<seconds)return true;
@@ -129,7 +129,7 @@ public sealed class FeverWorldTransition : MonoBehaviour
             material.SetFloat("_VisualBodyScale",(float)FeverFlowMath.BodyScale(fever.Model.Current,fever.Model.Progress,fever.Visuals==null?.115:fever.Visuals.feverGatherCompression)*fever.MagneticBody*(stage.NexusPresentation==null?1:stage.NexusPresentation.FinaleScale*stage.NexusPresentation.EntryBodyScale));
             material.SetFloat("_Level",stage.Energy.DisplayedLevel);material.SetFloat("_Press",stage.Energy.SurfacePress);
             material.SetColor("_CoreTint",Color.Lerp(fever.TutorialInk,CursorDashTuning.ColorValue("nexus.color",new Color(.04f,.7f,.9f)),fever.TutorialPower));
-            bool fx=CursorDashTuning.Toggle("fx.enabled",true);material.SetFloat("_Light",fx&&PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0);material.SetFloat("_Warp",fx?CursorDashTuning.Number("user.distortion",1):0);
+            bool fx=CursorDashTuning.Toggle("fx.enabled",true);material.SetFloat("_Light",fx&&PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0);material.SetFloat("_Warp",fx?CursorDashTuning.EffectGain("user.distortion"):0);
             material.SetFloat("_FlowClock",fever.Clock);material.SetFloat("_Clock",Time.unscaledTime);material.SetVector("_Aspect",new Vector4(centerAspect.z,centerAspect.w,0,0));SetDotted();SetCircuit();
             material.SetVectorArray("_Hits",hits);material.SetVectorArray("_Shapes",shapes);material.SetVectorArray("_Responses",responses);
             material.SetFloat("_SuccessActive",success?1:0);material.SetFloat("_OffsetCap",cap);
@@ -143,19 +143,19 @@ public sealed class FeverWorldTransition : MonoBehaviour
         if(!ShouldRenderOptics){Graphics.Blit(source,destination);return;}
         Vector2 coreCenter=board.WorldToViewportPoint(stage.NexusPosition),damageCenter=board.WorldToViewportPoint(damageWorldPoint),damageEdge=board.WorldToViewportPoint(stage.NexusPosition+Vector2.right*stage.NexusRadius);
         if(DamageActive)DamageViewportCenter=damageCenter;
-        float damageUser=Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1));
+        float damageUser=Mathf.Clamp01(CursorDashTuning.EffectGain("user.distortion"));
         optics.SetVector("_NexusDamage",DamageActive?new Vector4(damageCenter.x,damageCenter.y,Mathf.Clamp01((Time.unscaledTime-damageAt)/damageSeconds),damageUser):Vector4.zero);
         optics.SetVector("_DamageField",damageField);optics.SetVector("_DamageCore",new Vector4(Mathf.Abs(damageEdge.x-coreCenter.x)*source.width/Mathf.Max(1,Mathf.Min(source.width,source.height)),damageChroma,damageSeconds,0));
         optics.SetVector("_DamageShape",damageShape);
         optics.SetColor("_DamageTint",fever.Visuals==null?new Color(1,.04f,.08f):fever.Visuals.nexusDamageTint);
         optics.SetVector("_DamageNexusCenter",new Vector4(coreCenter.x,coreCenter.y,damageHasContact?1:0,0));
-        optics.SetFloat("_DamageLightUser",PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)):0);optics.SetTexture("_DamageTextMask",fever.Circuits==null?Texture2D.blackTexture:fever.Circuits.ScoreGlyphMask);
+        optics.SetFloat("_DamageLightUser",PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.EffectGain("user.flash")):0);optics.SetTexture("_DamageTextMask",fever.Circuits==null?Texture2D.blackTexture:fever.Circuits.ScoreGlyphMask);
         optics.SetFloat("_ScoreChromaticGain",fever.Model.Current==FeverState.Phase.Fever?Mathf.Clamp(fever.Visuals==null?3:fever.Visuals.feverScoreChromatic,1,4):1);
         if(fever.Model.Current==FeverState.Phase.Exiting&&fever.Exit!=null){
-            var exit=fever.Exit;float pressure=(float)exit.Pressure(fever.Model.Elapsed),distort=Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1));
+            var exit=fever.Exit;float pressure=(float)exit.Pressure(fever.Model.Elapsed),distort=Mathf.Clamp01(CursorDashTuning.EffectGain("user.distortion"));
             float exitShort=Mathf.Max(1,Mathf.Min(source.width,source.height));Vector2 center=board.WorldToViewportPoint(stage.NexusPosition);
             float worldShort=2*board.orthographicSize*Mathf.Min(1,board.aspect),cap=Mathf.Clamp(CursorDashTuning.Number("fx.distortionCap",.025f),0,.018f);
-            float shake=PlayerPrefs.GetString("OnVibe","true")=="true"?Mathf.Min((float)exit.Shake,CursorDashTuning.Number("fx.shakeCap",.2f)/Mathf.Max(.001f,worldShort))*Mathf.Clamp01(CursorDashTuning.Number("user.shake",1)):0;
+            float shake=PlayerPrefs.GetString("OnVibe","true")=="true"?Mathf.Min((float)exit.Shake,CursorDashTuning.Number("fx.shakeCap",.2f)/Mathf.Max(.001f,worldShort))*Mathf.Clamp01(CursorDashTuning.EffectGain("user.shake")):0;
             optics.SetVector("_Optics",Vector4.zero);optics.SetVector("_LensAspect",new Vector4(source.width/exitShort,source.height/exitShort,0,0));
             optics.SetVector("_ExitOptics",new Vector4((float)exit.Chromatic*distort,shake,(float)exit.Lens*distort,pressure));
             optics.SetVector("_ExitCenter",new Vector4(center.x,center.y,(float)(fever.Model.Elapsed-exit.Impact),cap));Graphics.Blit(source,destination,optics);OpticsFrames++;return;
@@ -170,7 +170,7 @@ public sealed class FeverWorldTransition : MonoBehaviour
         float shorter=Mathf.Max(1,Mathf.Min(source.width,source.height));
         optics.SetVector("_LensAspect",new Vector4(source.width/shorter,source.height/shorter,0,0));
         float weight=fever.Model.Current==FeverState.Phase.Fever?(float)FeverFlowMath.OpticsWeight(fever.Model.Elapsed,fever.Model.PhaseSeconds-fever.Model.Elapsed):0;
-        float user=Mathf.Clamp(CursorDashTuning.Number("user.distortion",1),0,2);
+        float user=Mathf.Clamp(CursorDashTuning.EffectGain("user.distortion"),0,2);
         // This completed-board pass includes the projected score; only the later stable HUD is excluded.
         optics.SetVector("_Optics",new Vector4(Mathf.Clamp(v==null?.0175f:v.feverLensStrength,0,.025f),Mathf.Clamp(v==null?.008f:v.feverChromaticHit,0,.012f),Mathf.Clamp(v==null?.0018f:v.feverChromaticAmbient,0,.003f),weight*user));
         optics.SetFloat("_LensRadius",v==null?.58f:Mathf.Clamp(v.feverLensRadius,.2f,.9f));

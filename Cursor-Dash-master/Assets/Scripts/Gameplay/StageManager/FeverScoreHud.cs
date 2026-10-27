@@ -180,7 +180,7 @@ public sealed class FeverBackgroundScore
         root.transform.localScale=Vector3.one; // World-unit Rect/TMP controls are authoritative; no screen-fit transform.
         Color color=v==null?new Color(.36f,.76f,.84f):v.backgroundScoreTint;
         float rest=Value(v==null?.105f:v.backgroundScoreOpacity,.105f,0,.22f),boost=Value(v==null?.14f:v.backgroundScoreOpacityBoost,.14f,0,.3f),maximum=Value(v==null?.24f:v.backgroundScoreOpacityCap,.24f,.05f,.35f);
-        boost*=PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)):0;
+        boost*=PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.EffectGain("user.flash")):0;
         // The existing white-world alpha mask turns this low-alpha text into low-contrast grey per pixel.
         color.a=(float)pulse.Opacity(rest,boost,maximum);
         // D-053 score tint/response: no additional cyan recoloring during an award.

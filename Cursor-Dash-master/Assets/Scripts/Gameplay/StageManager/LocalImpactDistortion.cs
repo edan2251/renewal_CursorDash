@@ -67,7 +67,7 @@ public class LocalImpactDistortion : MonoBehaviour
         pulses.RemoveAll(p=>Time.unscaledTime-p.started>=p.duration);
         bool enabled=CursorDashTuning.Toggle("fx.enabled",true);
         bool renderEffect=material!=null&&pulses.Count>0&&enabled;
-        float user=CursorDashTuning.Number("user.distortion",1);
+        float user=CursorDashTuning.EffectGain("user.distortion");
         bool success=false;
         for(int i=0;i<hits.Length;i++)
         {
@@ -77,7 +77,7 @@ public class LocalImpactDistortion : MonoBehaviour
             float fade=Mathf.Pow(1-Mathf.Clamp01((Time.unscaledTime-p.started)/p.duration),2);
             hits[i]=new Vector4(uv.x,uv.y,p.radius,p.strength*(p.success?1:fade)*user);
             shapes[i]=new Vector4(p.circle?2:p.success?1:0,Mathf.Clamp01((Time.unscaledTime-p.started)/p.duration),p.recovery,p.duration);
-            responses[i]=p.response;responses[i].w*=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;success|=p.success;
+            responses[i]=p.response;responses[i].w*=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0;success|=p.success;
         }
         float cap=success?CursorDashTuning.Number("visual.successDistortionCap",.06f):CursorDashTuning.Number("fx.distortionCap",.025f);
         bool composite=originalBackground!=null&&originalBackground.CanComposite;

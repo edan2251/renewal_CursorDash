@@ -1,5 +1,42 @@
 # CursorDash 현재 상태와 다음 한 작업
 
+## 최신 — D-066 사용자 UI 확인·WebGL 릴리스 진행 (2026-10-28)
+
+**USER_VERIFIED UI 조작 / RELEASE_IN_PROGRESS / NOT_DEPLOYED.** 사용자최신요청으로현관련변경검사·WebGL빌드·선별커밋/push·기존GitHubPages게시를이번에만허용한다. mainbded6a4/원격동일·미푸시0/index빈,gh-pages de9ec5f 기존대상확인. 씬clean/PlayOFF·기존imported6보존,게임변경없이ID·기존빌드메뉴guard만갱신/새전용출력. [진행기록](RELEASE_SETTINGS_20261028.md). 실패는완료로기록하지않으며성공후소스/배포/사후문서커밋과검수범위를기록한다. 다음한작업은빌드→로컬검수→기존Pages배포/공개확인이다.
+
+아래 D-065 미커밋/Git금지는이번릴리스범위에서만대체한다. 기존사용자보존·보류범위는유지한다.
+
+
+## 최신 — D-065 후속 패널 입력 복구·슬라이더·Unity 검수 (2026-10-28)
+
+**FIX_IMPLEMENTED / NATIVE_COMPILE_PASS / FOCUSED_NATIVE_PLAY_PASS / 사용자 검수 대기.** [원인·수치·7항목과 실패수정/조절·증거](SETTINGS_PAUSE_UI_20261028.md).
+
+사용자 패널무반응은 Safe area 뒤에 생성한 전체 Menu shade가 UI보다앞에서클릭을가로챈원인→같은Canvas 첫형제로이동. Slider세로stretch의42+14=56손잡이를0높이이동영역+12×12표시로고정, Track/Fill2→4/Track알파.60→.82·터치42→48. 원래전투입력차단·Pause시간/기존게임·기록·튜토리얼/피버보존. 이번시작해시1573개 중 게임변경은SettingsUI1/테스트2+문서뿐·삭제0/기존미커밋보존,사본Backups/settings-input-fix-20261028.
+
+사용자이번Unity검수허용으로 실제6000.3.23f1/DX11컴파일오류0/참조118-test17-Editor2오류0·기존133경고. 정상Focused 최초5PASS/2검사준비FAIL→기존정상생성과비동기GPU캡처로검사만수정/핵심단언유지→재검사2PASS(04:46:47KST), 고유7항목최종PASS. 실제화면좌표raycast최상단/모든메인조작·실Slider포인터·PauseContinue/Retry/Home/공유설정·완화/기록·튜토리얼2+2/첫피버회귀를내부이벤트·실물리로확인,GameViewPNG39장/동영상아님. 손·실터치/모바일/WebGL·성능·재실행저장/전체테스트NOT_RUN.
+
+최종JSON/XML/새DLL/PlayOFF·timeScale1/Cyberpunkclean/prefs6·imported6동일교차확인. 추가OS입력은사용자입력감지로전송되지않았고포커스를되가져오지않고즉시컴퓨터조작반환/그뒤문서만정리. 저장폐기/다른프로젝트조작없음. main bded6a4·index빈·후속커밋/push·빌드/배포없음.
+
+**다음 한 작업:** 사용자 Cyberpunk에서메인열기·조절·닫기→시작→Pause계속하기/Retry/Home 직접검수. 전투Pause는의도이며UI는계속동작해야함. 이번컴퓨터조작종료/추가조작은새지시필요. 육각제외/겹침·새Flash·별도재구축보류/D-014유지.
+
+아래 최초D-065의UnityNOT_RUN은이전중단이력이며위실행결과로대체한다.
+
+
+## 최신 — D-065 UI 전 완성본 원격 보존·메인 설정/일시정지 로컬 구현 (2026-10-28)
+
+**CHECKPOINT_PUSH_PASS / UI_IMPLEMENTED_UNVERIFIED / REFERENCE_COMPILE_PASS / NATIVE_PLAY_NOT_RUN.** [현재 파일·설정·검수 인계](SETTINGS_PAUSE_UI_20261028.md).
+
+현재 main 기준 `bded6a49a0292bb49302d6d59e4045e70d54bec5`는 UI 전 완료 게임 변경67파일만 선별 커밋·기존원격 source main 정상push/remoteSHA일치·ahead/behind0/0 확인 후 UI작업을 시작했다. 기존미푸시0/예상원격일치, gh-pages de9ec5f 변경없음/빌드·배포없음. 사본 Backups/settings-pause-20261028/checkpoint, 진단 Logs/settings-pause-20261028. Cyberpunkclean/PlayOFF·기존imported6 보존/저장폐기없음.
+
+기존 Tuning/Storage 한 저장소에 user.master=1/user.vfxReduction=0 추가, 기존세부값과별도출력1회곱/오디오사건배율보존·선택적7개초기화·171키이전full호환. Stage뷰하나에서 메인하단7슬라이더·손잡이/중앙Pause2슬라이더·기존Retry/Home/튜토리얼재보기/입력해제게이트 연결. 필수표시/흑백안내/평상시회로·기존전투보존, 외부에셋편입없음. UI수정은미커밋이며후속Git/빌드/게시없음.
+
+참조컴파일118/test17/Editor2 오류0, diff check PASS. 실제Unity검수 시작 시 도구가 **physical Escape 사용자중단**을 반환하여 이후컴퓨터조작중지. 새native컴파일·TestRunner7개·실제화면/Play·마우스/터치·모바일/WebGL·성능/재실행저장 NOT_RUN, 수정후캡처없음. 이전D-064통과를이번UI검수로대체하지않는다.
+
+**다음 한 작업:** 사용자재개지시후Unity상태재확인→Run Settings UI Focused/실제화면검수. UI모양·동작은검수대기이며완료검증으로간주하지않는다. 육각재검토제외/겹침·새Flash·별도재구축보류/D-014유지.
+
+아래 D-064 및 이전은 이력이다. UI 권한과 현재 미검증은 D-065와 최신 사용자 지시를 따른다.
+
+
 ## 최신 — D-064 고스트 늦은 접촉·전원 복귀·첫 피버 즉시 안내 (2026-10-28)
 
 **IMPLEMENTED / REFERENCE_COMPILE_PASS / PURE_LOGIC_PASS / FOCUSED_NATIVE_PLAY_PASS / 사용자 시각 검수 대기.** [변경·전후값·검수 절차](TUTORIAL_POWERON_FEVER_ORDER_20261028.md). main8d26194/빈index·시작1827파일/이전미커밋·미추적 보존, 사본 `Backups/tutorial-poweron-fever-order-20261028`.

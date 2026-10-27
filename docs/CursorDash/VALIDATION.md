@@ -1,5 +1,15 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## 최신 후속 — 패널 입력 복구 (2026-10-28)
+
+D-065 후속: NativeUnity컴파일0오류/참조118-test17-Editor2오류0·기존133경고,실제raycast최상단검사추가. 정상7중5PASS/2검사준비FAIL을핵심단언유지수정후2개만재검사PASS(04:46:47KST). 고유7항목최종PASS이며단일7PASS실행으로혼합하지않음. Main전조작/Slider31%/12×12·4·48/Pause계속·Retry/Home/설정·완화·기록/기존튜토리얼2+2/필수첫피버흰화면GPU확인. PNG39/동영상아님,실손/모바일/WebGL·성능/앱재실행저장NOT_RUN. PlayOFF/timeScale1/씬clean·보호6키/imported6동일,실패/최종JSON/XML보존. 상세SETTINGS_PAUSE_UI_20261028.md.
+
+
+## 최신 추가 — 설정 UI (2026-10-28)
+
+D-065: pre-UI commit/push/remoteSHA PASS(bded6a4/gh-pages불변), diffcheck·참조컴파일118/test17/Editor2 PASS오류0. 작성된Settings집중7개(신규4/기존3)실행 NOT_RUN. UnityUI조작시physicalEscape중단; 실제Unity최종컴파일/Play/화면/새캡처/터치/모바일/WebGL/재실행저장 NOT_RUN. 이전18PASS를UI통과로전용하지않음. 상세 SETTINGS_PAUSE_UI_20261028.md.
+
+
 ## D-064 — 느린 실제 고스트·고스트와동일회색Nexus전원복귀·즉시첫피버안내 (2026-10-28)
 
 - **PASS/참조·순수:** runtime117/test16/Editor2오류0/기존133경고. 생산C#4107·기존회귀4672999+106885/JS모의19. Unity/물리·손조작과구분한다.

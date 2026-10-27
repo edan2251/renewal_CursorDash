@@ -1,5 +1,10 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## 최신 추가 — 설정 UI (2026-10-28)
+
+D-065: 기존Unity6000.3.23f1/Cyberpunk읽기진단PlayOFF·clean/imported6동일범위, 저장폐기없음. UI참조컴파일성공이나실제Editor확인중physicalEscape사용자중단으로native/Play미검수. 설치/새연결/전역변경/빌드/게시없음. UI전완성본bded6a4 source main push반영확인/배포브랜치불변. 상세 SETTINGS_PAUSE_UI_20261028.md.
+
+
 ## D-064 — 기존 Editor·정상 집중검수 (2026-10-28)
 
 사용자이번Unity검수조작허용범위로기존6000.3.23f1/Cyberpunk/DX11/정상TestRunner·기존보호fixture만재사용했다. 최종18/18 PASS(04:05:30 KST), 최종JSON/XML과PlayOFF/timeScale1/씬clean·확인저장키6/imported6동일을대조했다. 최초activate timeout은새대상선택으로복구했고한번잘못반환된전경캡처에는입력하지않고Unity를재선택했다. 저장/폐기·다른프로젝트/전역·새연결/설치·빌드/Git없음. 참조117/test16/Editor2오류0·기존133경고,순수4107+4672999+106885/JS모의19. [이번인계](TUTORIAL_POWERON_FEVER_ORDER_20261028.md), `Logs/tutorial-poweron-fever-order-20261028/native-final-summary.json`. 이전검수·모바일/릴리스를이번시각승인으로재사용하지않는다.

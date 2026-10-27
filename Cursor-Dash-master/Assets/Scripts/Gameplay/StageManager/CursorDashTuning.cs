@@ -28,7 +28,7 @@ public static class CursorDashTuning
     private static readonly Dictionary<string, JToken> effective = new Dictionary<string, JToken>();
     private static readonly Dictionary<string, JToken> liveFallbacks = new Dictionary<string, JToken>();
     private static JObject userValues = new JObject();
-    private static HashSet<string> legacyKeys,previousVisualKeys,previousTimelineKeys;
+    private static HashSet<string> legacyKeys,previousVisualKeys,previousTimelineKeys,previousSettingsKeys;
     public static bool DevEnabled { get; private set; }
     public static event Action Changed;
     public static Action RuleSessionChanged;
@@ -75,6 +75,9 @@ public static class CursorDashTuning
         DefineFeedbackRevision();
         previousTimelineKeys=new HashSet<string>(Parameters.Select(p=>p.key));
         DefineHexTimeline();
+        previousSettingsKeys=new HashSet<string>(Parameters.Select(p=>p.key));
+        Add("user.master","전체 음량","오디오",1,0,1,.01,"비율","즉시","사용자");
+        Add("user.vfxReduction","전체 VFX 완화","사용자 효과",0,0,1,.01,"감소율","즉시","사용자");
     }
     // Extended checkpoints add only explicitly wired parameters here.
     private static void DefineExtendedParameters()
@@ -393,6 +396,10 @@ public static class CursorDashTuning
     // Effect readers may use event-specific authored defaults; reading them is not a rule change.
     // Explicit Dev/setting/import operations still disqualify, as do changed gameplay fallbacks.
     public static float FeedbackNumber(string key,float fallback) => (float)Read(key,new JValue(fallback),false);
+    // Output only. Never store a reduced result back into a detail preference.
+    public static float EffectGain(string detail) => Mathf.Clamp01(Number(detail,1))*(1-Mathf.Clamp01(Number("user.vfxReduction",0)));
+    public static readonly string[] AudioVisualKeys={"user.master","user.bgm","user.sfx","user.vfxReduction","user.shake","user.flash","user.distortion"};
+    public static void ResetAudioVisual(){foreach(string key in AudioVisualKeys)userValues[key]=Find(key).defaultValue.DeepClone();Changed?.Invoke();}
     public static double DoubleNumber(string key,double fallback) => (double)Read(key,new JValue(fallback));
     public static int Integer(string key,int fallback) => Mathf.RoundToInt(Number(key,fallback));
     public static bool Toggle(string key,bool fallback) => (bool)Read(key,new JValue(fallback));
@@ -452,7 +459,8 @@ public static class CursorDashTuning
                 bool original=next.Count==legacyKeys.Count&&legacyKeys.All(next.ContainsKey);
                 bool visual=next.Count==previousVisualKeys.Count&&previousVisualKeys.All(next.ContainsKey);
                 bool timeline=next.Count==previousTimelineKeys.Count&&previousTimelineKeys.All(next.ContainsKey);
-                if(!previous||(!original&&!visual&&!timeline))throw new Exception("전체 설정의 key가 누락됐습니다. 이전 141/157/161 또는 현재 전체 key가 필요합니다.");
+                bool settings=next.Count==previousSettingsKeys.Count&&previousSettingsKeys.All(next.ContainsKey);
+                if(!settings&&(!previous||(!original&&!visual&&!timeline)))throw new Exception("전체 설정의 key가 누락됐습니다. 지원하는 이전 전체 설정 또는 현재 전체 key가 필요합니다.");
                 foreach(var p in Parameters.Where(p=>!next.ContainsKey(p.key)))next[p.key]=p.defaultValue.DeepClone();
             }
             double V(string key)=>next.TryGetValue(key,out var value)?(double)value:(double)Find(key).defaultValue;

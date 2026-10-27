@@ -92,7 +92,7 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
         material.SetVectorArray("_Flashes", flashData);
         material.SetVectorArray("_LensHits", lensHits); material.SetVectorArray("_LensShapes", lensShapes);
         material.SetFloat("_OffsetCap", offsetCap);
-        float gain = PlayerPrefs.GetString("OnFlash", "true") == "true" ? CursorDashTuning.Number("user.flash", 1) : 0;
+        float gain = PlayerPrefs.GetString("OnFlash", "true") == "true" ? CursorDashTuning.EffectGain("user.flash") : 0;
         material.SetFloat("_FlashGain", CursorDashTuning.Number("visual.impactExposure", .65f) * gain);
         Graphics.Blit(input, destination, material);
     }

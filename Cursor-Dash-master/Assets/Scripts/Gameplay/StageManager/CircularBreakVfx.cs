@@ -49,7 +49,7 @@ public sealed class CircularBreakVfx : MonoBehaviour
             Polygon(new[]{f-drift*radius*.22f,f+side*flank*radius*.2f,f+drift*radius*.38f,f-side*flank*radius*.06f},-1);
         }
         basis=verts.ToArray();points=(Vector3[])basis.Clone();owners=ids.ToArray();colors=new Color[points.Length];tint=color;
-        contactFlash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;
+        contactFlash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0;
         started=Time.unscaledTime;duration=Mathf.Clamp(life,.18f,.55f);
         if(mesh==null){mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();}else mesh.Clear();
         mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.uv=new Vector2[points.Length];mesh.SetUVs(1,edgeData);

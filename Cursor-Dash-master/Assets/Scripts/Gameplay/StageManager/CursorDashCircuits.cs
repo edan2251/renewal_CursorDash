@@ -14,7 +14,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
     private Material normalMaterial,feverMaterial,compositeMaterial,scoreMaskMaterial;private RenderTexture normalMask,scoreMask;
     private Mesh normalMesh,feverMesh,displayMesh;private GameObject artwork;private MeshRenderer view;private CommandBuffer buffer;
     private readonly Geometry normal=new Geometry(),mono=new Geometry();
-    private float clock,deathAge,worldUnit,layoutAspect=-1,layoutSize,flashGain,distortionGain;private Vector2 restCenter;
+    private float clock,deathAge,worldUnit,layoutAspect=-1,layoutSize,flashGain,ambientGain,distortionGain;private Vector2 restCenter;
     private float[] feverStarts,restoreStarts;private double[] normalFronts,feverFronts,deathFronts;private bool restoring,dying,lastEnabled,deathFever;
     private FeverState.Phase previousPhase=FeverState.Phase.Normal;
     private float buildSpeed=1.8f,restoreSpeed=2.1f,buildStagger=.018f,restoreStagger=.018f,entryPush=.075f,deathSpeed=1.6f,deathStagger=.018f;
@@ -189,7 +189,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
         Color color=feverLayer?(V==null?new Color(.18f,.19f,.20f):V.circuitFeverTint):(V==null?new Color(.40f,.47f,.52f):V.circuitNormalTint);
         if(!feverLayer)color=Color.Lerp(color,new Color(.65f,.92f,.96f),Mathf.Clamp01((float)level*.55f+(float)tip*.45f+(float)quiet*.42f));
         color=Color.Lerp(color,V==null?new Color(1,.04f,.08f):V.nexusDamageTint,priority);
-        float soft=(float)quiet*(V==null?.12f:Value(V.circuitAmbientStrength,.12f,0,.16f))*accessible;
+        float soft=(float)quiet*(V==null?.12f:Value(V.circuitAmbientStrength,.12f,0,.16f))*ambientGain;
         // Quiet flow and impacts compete by max; reduced resting contrast never scales down event emphasis.
         float damageBoost=red*(V==null?.44f:Value(V.circuitNexusEmphasis,.44f,0,.6f));
         float opacity=contrast*.80f+Mathf.Max(Mathf.Max(soft,boost+(float)tip*tipGain*accessible)*(1-priority),damageBoost);
@@ -263,8 +263,9 @@ public sealed class CursorDashCircuits : MonoBehaviour
     private void Draw()
     {
         // Read user settings once for both reusable meshes, rather than once per warped vertex/segment.
-        bool effects=CursorDashTuning.Toggle("fx.enabled",true);distortionGain=effects?Mathf.Clamp01(CursorDashTuning.Number("user.distortion",1)):0;
-        flashGain=effects&&PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)):0;
+        bool effects=CursorDashTuning.Toggle("fx.enabled",true);distortionGain=effects?Mathf.Clamp01(CursorDashTuning.EffectGain("user.distortion")):0;
+        flashGain=effects&&PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.EffectGain("user.flash")):0;
+        ambientGain=effects&&PlayerPrefs.GetString("OnFlash","true")=="true"?Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)):0;
         DrawLayer(normal,false);DrawLayer(mono,true);normal.Upload(normalMesh);mono.Upload(feverMesh);
         if(dying){normalMaterial.SetVector("_FeverFlow",Vector4.zero);normalMaterial.SetFloat("_CircuitFever",0);}
         else fever.World.SetFlow(normalMaterial,Math.Max(1,board.pixelWidth),Math.Max(1,board.pixelHeight));

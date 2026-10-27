@@ -115,7 +115,7 @@ public sealed class NexusImpactVfx : MonoBehaviour
     private void FinishMesh()
     {
         var shader=Resources.Load<Shader>("CursorDash/ImpactFlat");if(shader==null||!shader.isSupported){Destroy(gameObject);return;}
-        flashOpacity=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;
+        flashOpacity=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0;
         material=new Material(shader){hideFlags=HideFlags.DontSave};material.color=Color.white;
         points=basis.ToArray();colors=new Color[points.Length];mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();
         mesh.vertices=points;mesh.triangles=triangles.ToArray();mesh.SetUVs(1,edges);

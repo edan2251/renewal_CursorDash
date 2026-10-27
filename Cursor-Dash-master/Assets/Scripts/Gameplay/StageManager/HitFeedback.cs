@@ -50,17 +50,17 @@ public class HitFeedback : MonoBehaviour
         if(!CursorDashTuning.Toggle("fx.enabled",true))return;
         if(confirmedDamage){
             var profile=stage.Fever?.Visuals;
-            shake?.Viberate(CursorDashTuning.FeedbackNumber("fx.nexusDamage.shake",.10f)*CursorDashTuning.Number("user.shake",1),profile==null?.48f:Mathf.Clamp(profile.nexusDamageSeconds,.1f,.5f),CursorDashTuning.FeedbackNumber("fx.nexusDamage.shakeDecay",1.8f));
+            shake?.Viberate(CursorDashTuning.FeedbackNumber("fx.nexusDamage.shake",.10f)*CursorDashTuning.EffectGain("user.shake"),profile==null?.48f:Mathf.Clamp(profile.nexusDamageSeconds,.1f,.5f),CursorDashTuning.FeedbackNumber("fx.nexusDamage.shakeDecay",1.8f));
             DamageSignal(point);stage.Fever?.Circuits?.NexusDamaged(true);
         }
-        else {shake?.Kick(incoming,.16f*CursorDashTuning.Number("user.shake",1),.24f,1.8f,26,.35f);flash?.Flash(Color.white,.28f*CursorDashTuning.Number("user.flash",1),.18f);distortion?.Add(point,.018f,.24f,.30f);}
+        else {shake?.Kick(incoming,.16f*CursorDashTuning.EffectGain("user.shake"),.24f,1.8f,26,.35f);flash?.Flash(Color.white,.28f*CursorDashTuning.EffectGain("user.flash"),.18f);distortion?.Add(point,.018f,.24f,.30f);}
         GameManager.instance.soundManager.PlaySFX(ClipTag.coreDamaged,CursorDashTuning.Number("fx.nexusDamage.volume",.8f),CursorDashTuning.Number("fx.nexusDamage.pitch",1));
     }
     private void DamageSignal(Vector2? contact=null)
     {
         // Every confirmed impact, including lethal HP loss, uses this one profile and spatial response.
         var profile=stage.Fever?.Visuals;float duration=profile==null?.48f:Mathf.Clamp(profile.nexusDamageSeconds,.1f,.5f);
-        flash?.ConfirmedDamage(profile==null?new Color(1,.04f,.08f):profile.nexusDamageTint,(profile==null?0:profile.nexusDamageFlash)*Mathf.Clamp01(CursorDashTuning.Number("user.flash",1)),profile==null?.10f:Mathf.Clamp(profile.nexusDamageFlashSeconds,.04f,.2f));
+        flash?.ConfirmedDamage(profile==null?new Color(1,.04f,.08f):profile.nexusDamageTint,(profile==null?0:profile.nexusDamageFlash)*Mathf.Clamp01(CursorDashTuning.EffectGain("user.flash")),profile==null?.10f:Mathf.Clamp(profile.nexusDamageFlashSeconds,.04f,.2f));
         stage.Fever?.World?.NexusDamaged(duration,true,contact);
     }
     public void ConfirmedNexusDamage(Vector2 point){if(CursorDashTuning.Toggle("fx.enabled",true))DamageSignal(point);}
@@ -81,7 +81,7 @@ public class HitFeedback : MonoBehaviour
         float stop=Read("stop",kind=="hexBlock"?0:kind=="triangleBreak"?.05f:kind=="circleRemove"?.04f:.08f);
         stage.RequestFeedbackStop(stop);
         float amount=Read("shake",kind=="hexBlock"?.018f:kind=="nexusDamage"?.10f:kind=="triangleBreak"?.065f:.055f);
-        float shakeAmount=amount*CursorDashTuning.Number("user.shake",1),shakeDuration=Read("shakeDuration",.14f),shakeDecay=Read("shakeDecay",1.8f);
+        float shakeAmount=amount*CursorDashTuning.EffectGain("user.shake"),shakeDuration=Read("shakeDuration",.14f),shakeDecay=Read("shakeDecay",1.8f);
         if(kind=="nexusDamage"&&confirmedDamage)shakeDuration=stage.Fever?.Visuals==null?.24f:Mathf.Clamp(stage.Fever.Visuals.nexusDamageSeconds,.1f,.5f);
         if(success)shake?.Kick(incoming,shakeAmount,shakeDuration,shakeDecay,
             Read("frequency",26),Read("rebound",.35f));
@@ -90,7 +90,7 @@ public class HitFeedback : MonoBehaviour
         if(kind=="circleRemove")distortion?.AddSuccess(point,strength,Read("radius",.14f),Read("duration",.18f),Read("recovery",2));
         else if(success)distortion?.AddSuccess(point,strength,Read("radius",.14f),Read("duration",.18f),Read("recovery",2));
         else if(kind!="nexusDamage"||!(confirmedDamage||protectedContact))distortion?.Add(point,strength,CursorDashTuning.Number(prefix+"radius",.14f),CursorDashTuning.Number(prefix+"duration",.18f));
-        float opacity=Read("flash",0)*CursorDashTuning.Number("user.flash",1);
+        float opacity=Read("flash",0)*CursorDashTuning.EffectGain("user.flash");
         // Red/optics came exactly once from the authoritative HP-decrease notification.
         if(!(kind=="nexusDamage"&&(confirmedDamage||protectedContact))&&opacity>0)flash?.Flash(kind=="hexBlock"?Color.yellow:Color.white,opacity,CursorDashTuning.Number(prefix+"duration",.18f));
         ClipTag clip=kind=="hexBlock"?ClipTag.arrowDefence:kind=="nexusDamage"?ClipTag.coreDamaged:ClipTag.nodeExplosion;

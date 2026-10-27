@@ -42,7 +42,7 @@ public static class CursorDashLocalPreviewBuild
     {
         if(Path.GetFullPath(Application.dataPath).Replace('\\','/')!="D:/renewal_CursorDash/Cursor-Dash-master/Assets")throw new InvalidOperationException("Unexpected project");
         string id=CursorDashTuning.BuildId;
-        if(!id.StartsWith("cursordash-20261027-feedback-")||id.IndexOfAny(Path.GetInvalidFileNameChars())>=0)throw new InvalidOperationException("Explicit current release identity required");
+        if(!id.StartsWith("cursordash-20261028-settings-")||id.IndexOfAny(Path.GetInvalidFileNameChars())>=0)throw new InvalidOperationException("Explicit current release identity required");
         Begin(Path.GetFullPath(Path.Combine(Application.dataPath,"../../Builds/LocalDevPreview",id)));
     }
     [MenuItem("Tools/CursorDash Graphics/7 Build Circle Punch Release (No Play)")]

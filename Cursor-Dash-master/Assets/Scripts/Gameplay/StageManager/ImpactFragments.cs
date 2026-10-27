@@ -57,7 +57,7 @@ public class ImpactFragments : MonoBehaviour
         for(int j=0;j<4;j++)ids.Add(-1);
         indices.AddRange(new[]{flashStart,flashStart+1,flashStart+2,flashStart,flashStart+2,flashStart+3});
         AddEdges(verts,flashStart,4,edgeData);
-        contactFlash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;
+        contactFlash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.EffectGain("user.flash"):0;
         basis=verts.ToArray();points=(Vector3[])basis.Clone();owners=ids.ToArray();colors=new Color[points.Length];
         for(int i=0;i<colors.Length;i++)colors[i]=i>=flashStart?new Color(1,1,1,contactFlash):color;
         tint=color;started=Time.unscaledTime;duration=Mathf.Max(.05f,life);

@@ -38,6 +38,7 @@ public class StageManager : MonoBehaviour
     public CursorDashFever Fever {get;private set;}
     public CursorDashSpaceFlow Space {get;private set;}
     public CursorDashPractice Practice {get;private set;}
+    public CursorDashSettingsUI SettingsUI {get;private set;}
     public bool IsUserPaused=>state==RoundState.Paused||panelPaused||devPaused;
     private RoundState resumeState=RoundState.Playing;
     public bool AtmosphereActive=>IsPlaying||(Space!=null&&Space.AtmosphereActive&&!panelPaused&&!devPaused);
@@ -135,6 +136,7 @@ public class StageManager : MonoBehaviour
         manager.soundManager.PlayBGM();
         if(sceneName=="Cyberpunk"){Space=gameObject.AddComponent<CursorDashSpaceFlow>();Space.Initialize(this);}
         else if(CursorDashSession.IsPractice){Practice=gameObject.AddComponent<CursorDashPractice>();Practice.Initialize(this);}
+        SettingsUI=gameObject.AddComponent<CursorDashSettingsUI>();SettingsUI.Initialize(this);
         gameObject.AddComponent<CursorDashBoundaryView>();
         StartCoroutine(CaptureSettledBoundary());
     }
@@ -151,7 +153,7 @@ public class StageManager : MonoBehaviour
         if (IsPlaying&&Practice?.Guided!=true&&Fever?.NoticeActive!=true&&Fever?.NoticePending!=true) scoreManager.TimeScore += Time.deltaTime;
         Fever?.Advance(Time.deltaTime,!IsPlaying||Time.deltaTime<=0);
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (Input.GetKeyDown(KeyCode.Escape) && !IsDeath) TogglePause();
+        if (SettingsUI==null && Input.GetKeyDown(KeyCode.Escape) && !IsDeath) TogglePause();
 #endif
     }
 
@@ -164,7 +166,7 @@ public class StageManager : MonoBehaviour
         else if(state==RoundState.Paused)state=resumeState;
         stick?.ResetInput();
         PlayerCharacterController.instance?.MoveStop();
-        if (pauseHandler != null) pauseHandler.gameObject.SetActive(paused);
+        if (pauseHandler != null) pauseHandler.gameObject.SetActive(paused&&SettingsUI==null);
         if (paused) { feedback?.Clear();Fever?.ClearNexusResponses();cameraShake?.Reset(); cameraFlash?.ResetFlash(); }
         if (paused) GameManager.instance.soundManager.BGMSource.Pause();
         else GameManager.instance.soundManager.BGMSource.UnPause();

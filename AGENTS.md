@@ -18,6 +18,15 @@
 
 ## 환경과 범위
 
+- 최신D-066(2026-10-28)진행: 사용자UI조작정상확인/현본검사·WebGL빌드·선별소스/웹정상커밋push·기존Pages배포이번한정허용. STATUS→RELEASE_SETTINGS_20261028.md. mainbded6a4/remote동일·미푸시0,index빈/기존gh-pages de9ec5f. 게임수정없이기존EditorNoPlay빌드/새출력·ID만갱신,실패게시금지·공개최신ID/HTTP해시·UI검수완료후기록. 이전게시금지를이번범위만대체/사용자미저장저장폐기·force/설치·전역·새연결금지/육각제외·기존보류유지. 완료뒤추가권한자동연장없음.
+
+
+- D-065후속(2026-10-28): 패널무반응원인은dim이Safe area뒤형제라전면입력차단→첫형제로이동. Slider실12×12/터치48/막대4·Track알파.82,이번게임변경SettingsUI1·테스트2+문서만/기존사용자미커밋보존. 사용자이번Unity검수허용·실컴파일오류0/집중최초5PASS·2검사준비FAIL→핵심단언유지검사수정후2PASS(04:46:47KST)/고유7항목PASS/실좌표raycast·UI이벤트/실물리·PNG39. 손/모바일/WebGL·성능/재실행저장·전체suite NOT_RUN. PlayOFF·timeScale1/Cyberpunkclean/보호prefs6·imported6동일/저장폐기없음、추가OS입력은사용자입력감지로전송안됨·포커스되가져오지않고컴퓨터조작즉시반환. STATUS→SETTINGS_PAUSE_UI_20261028.md최상단을읽고다음은사용자검수. mainbded6a4/index빈·이번커밋/push·빌드배포없음/추가UI조작새지시필요. D014/육각제외·보류범위유지. 아래최초D065 NOT_RUN은이전중단이력이다.
+
+
+- 최신 D-065(2026-10-28): UI 전완성본67파일을main bded6a4로선별커밋/기존origin main 정상push·원격SHA확인후UI만로컬구현. gh-pages de9ec5f불변/빌드배포없음. 현재SettingsUI/Tuning/Stage/Sound/효과출력/테스트·문서변경은미커밋/후속Git권한없음. STATUS→SETTINGS_PAUSE_UI_20261028.md. 단일UserKey/master1·완화0/세부값보존·1회출력·선택적7개초기화/메인시트·중앙Pause·재보기/입력해제게이트. 참조118/test17/Editor2오류0/diffPASS이나Unity검수시physicalEscape사용자중단→컴퓨터조작중지/native最終compile/7TestRunner/Play·실화면/모바일·WebGL·성능/재실행저장NOT_RUN. 이전Play결과를UI통과로사용하지않음. 다음한작업은사용자재개지시후기존Unity상태확인·집중QA다. 게임/튜토리얼/D-014/미저장보존·육각제외/겹침·새Flash·별도재구축보류유지.
+
+
 - 최신 D-064(2026-10-28): 흰색첫확산(Entering66%)부터Nexus/게이지/숫자대신정확안내·입력차단/실제회로완성뒤2초hold→2초문구fade·개별노드선행공급→노드보존/조작·Nexus/게이지복귀/실제8초. D063만충3초정지·3초슬로복귀폐기. 고스트입력.70(최종사용자변경;이전.51대체)/더어두운회색·경량고정손그림윤곽팝업승인/원형90%부근실접촉·넓은곡선·실반사/양쪽Nexus추가여유.85world. 마지막2+2실파편종료최소.35→ghost.4fade→기존2.2회로/점수0/고스트와동일회색Nexus정상크기유지·점선가속/색power복귀;수축재등장폐기. 실제판정/HP/공격·육각타임라인·승인VFX/파편·8초/점수·저장·사망대기보존. main8d26194/index빈/1827기준·Backups/tutorial-poweron-fever-order-20261028보존. 참조117/test16/Editor2오류0·기존133경고/순수4107+4672999+106885/JS모의19. 이번승인Unity6000.3.23f1/DX11/정상TestRunner최종18/18 PASS(04:05:30 KST)·JSON/XML/PlayOFF/timeScale1/Cyberpunkclean/prefs6/imported6동일. 중간FAIL원인수정/로그보존. 손/모바일·WebGL·성능/실재시작저장/연속녹화NOT_RUN. STATUS→TUTORIAL_POWERON_FEVER_ORDER_20261028.md를읽고다음은사용자시각검수. 로컬미커밋유지/빌드·커밋/push/배포·포괄저장폐기·설치/전역/새연결금지, D014/겹침·새Flash/별도재구축보류유지. 이번UnityQA승인은완료후자동연장하지않는다.
 
 아래 D-063 및 이전은 이력이며 안내순서/고스트값/Nexus인계는 D-064가 우선한다.
