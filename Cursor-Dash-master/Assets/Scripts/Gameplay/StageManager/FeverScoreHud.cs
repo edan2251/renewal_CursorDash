@@ -151,6 +151,9 @@ public sealed class FeverBackgroundScore
     {
         if(text==null||View==null)return;
         var space=stage.Space;bool best=space!=null&&space.UsesBestProjection;
+        var practice=stage.Practice;bool tutorial=practice?.Guided==true;
+        float reveal=tutorial&&practice.Resetting?(float)CursorDashGuideFlow.ResetScore(practice.ResetProgress):tutorial?0:1;
+        if(tutorial&&reveal<=0||fever.NoticeBlocking){View.enabled=false;pulse.Clear();return;}
         bool show=(best||Visible)&&fever.isActiveAndEnabled&&(best||stage.IsDeath||fever.Model.Current!=FeverState.Phase.Stopped);View.enabled=show;if(!show){pulse.Clear();return;}
         if(text.fontSharedMaterial!=material)text.fontSharedMaterial=material;
         var v=fever.Visuals;float x=Value(v==null?.5f:v.backgroundScoreX,.5f,.15f,.85f),y=Value(v==null?.5f:v.backgroundScoreY,.5f,.15f,.85f);
@@ -182,6 +185,7 @@ public sealed class FeverBackgroundScore
         color.a=(float)pulse.Opacity(rest,boost,maximum);
         // D-053 score tint/response: no additional cyan recoloring during an award.
         if(best)color=Color.Lerp(new Color(1,1,1,Value(v==null?.85f:v.spaceMainScoreOpacity,.85f,.4f,1)),color,space.ScoreTravel);
+        if(tutorial){glyphScale*=Mathf.Lerp(.025f,1,reveal);root.transform.position=Vector2.Lerp(stage.NexusPosition,destination,reveal);color.a*=reveal;}
         text.color=color;
         text.ForceMeshUpdate(); // Fresh base geometry each frame prevents vertex-pulse accumulation.
         if(!best)combatFontSize=text.fontSize;

@@ -4,6 +4,12 @@ using UnityEngine;
 /// <summary>User-operated training checks and fever run settings. Never starts Play or saves scenes/assets.</summary>
 public sealed class CursorDashNexusReview : EditorWindow
 {
+    [MenuItem("Tools/CursorDash/개발자 도구 (Play 중)")]
+    private static void DeveloperTools(){if(EditorApplication.isPlaying)CursorDashRuntimeUI.Instance?.Open(true);}
+    [MenuItem("Tools/CursorDash/고스트 튜토리얼 다시 보기 (기록 보존)")]
+    private static void ReplayGuide(){if(EditorApplication.isPlaying){CursorDashSession.ReplayTutorial=true;CursorDashRuntimeUI.Instance?.BrowserCommand("{\"cmd\":\"tutorial\"}");}}
+    [MenuItem("Tools/CursorDash/최초 피버 안내 다시 보기 (기록 보존)")]
+    private static void ReplayFeverGuide(){if(EditorApplication.isPlaying)StageManager.instance?.Fever?.ReplayNotice();else Debug.LogWarning("먼저 Cyberpunk 씬에서 Play한 뒤 최초 피버 안내 다시 보기를 선택해 주세요.");}
     private StageManager burstStage;
     private ArrowNode lastReviewedHex;
     private int hitsLeft;
@@ -17,6 +23,12 @@ public sealed class CursorDashNexusReview : EditorWindow
         try{
         EditorGUILayout.HelpBox("사용자가 Play → 훈련에 진입한 뒤 버튼으로 검수합니다. 체력 조작은 현재 훈련 라운드에만 적용됩니다.",MessageType.Info);
         var stage=StageManager.instance;
+        if(EditorApplication.isPlaying&&stage?.Fever!=null)EditorGUILayout.LabelField("피버 안내 검수",stage.Fever.NoticeReplayStatus);
+        if(EditorApplication.isPlaying&&stage?.Practice?.Guided==true){
+            var guide=stage.Practice;EditorGUILayout.LabelField("실습",guide.Flow.CircleWins+"/2 · "+guide.Flow.HexWins+"/2");
+            if(guide.Ghost!=null)EditorGUILayout.LabelField("고스트 실제 처치/반사",guide.Ghost.CircleKills+" / "+guide.Ghost.HexKills+" · 반사 "+guide.Ghost.Reflections+" · 실패 "+guide.Ghost.Misses);
+            foreach(var entry in guide.BeamTrace)EditorGUILayout.LabelField(entry,EditorStyles.miniLabel);
+        }
         if(EditorApplication.isPlaying&&stage?.Space!=null){
             EditorGUILayout.LabelField("공유 씬 상태",stage.State+" / 생존 "+stage.scoreManager.TimeScore.ToString("0.000"));
             EditorGUILayout.LabelField("최고 / 현재 점수",stage.Space.BestText+" / "+stage.Fever.Model.PointsText);

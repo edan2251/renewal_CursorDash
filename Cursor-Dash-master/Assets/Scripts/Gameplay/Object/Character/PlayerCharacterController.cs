@@ -33,6 +33,8 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     }
 
     public float MoveSpeed => CursorDashTuning.Number("player.speed",moveSpeed);
+    public CursorDashGhostDemonstration Demonstration {get;private set;}
+    public void SetDemonstration(CursorDashGhostDemonstration owner)=>Demonstration=owner;
 
     private void Awake()
     {
@@ -57,7 +59,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
 
     private void FixedUpdate()
     {
-        if (StageManager.instance == null || !StageManager.instance.IsPlaying || CursorDashRuntimeUI.InputBlocked)
+        if (StageManager.instance == null || !StageManager.instance.IsPlaying || CursorDashRuntimeUI.InputBlocked || Demonstration!=null&&!Demonstration.Running)
         {
             if (moveVector != Vector2.zero || travelSpeed > 0f) MoveStop();
             return;
@@ -89,7 +91,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         else transform.position = next;
         // Fever samples the rendered head in LateUpdate, without changing this movement or normal defense.
     }
-    private void Update(){if(cursorVisual!=null)cursorVisual.color=CursorDashTuning.ColorValue("user.cursorColor",initialVisualColor);}
+    private void Update(){if(cursorVisual!=null&&Demonstration==null)cursorVisual.color=CursorDashTuning.ColorValue("user.cursorColor",initialVisualColor);}
 
     public static Vector2 AdvanceMotion(ref Vector2 direction, ref float speed, Vector2 input,
         float topSpeed, float acceleration, float deceleration, float turnRate, float deltaTime)
@@ -160,7 +162,7 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
         if (StageManager.instance == null || !StageManager.instance.IsPlaying) return;
         if (!other.CompareTag("Node")) return;
         NormalNode node = other.GetComponent<NormalNode>();
-        if (node == null) return;
+        if (node == null||node.Demonstration!=Demonstration) return;
         Collider2D own=GetComponent<Collider2D>();
         Vector2 contact=own==null?(Vector2)transform.position:other.Distance(own).pointA;
         node.ContactAt(contact,ContactMotionDirection);

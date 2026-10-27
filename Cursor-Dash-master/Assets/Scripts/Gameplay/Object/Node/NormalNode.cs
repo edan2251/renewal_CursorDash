@@ -69,6 +69,11 @@ public class NormalNode : Node
     public Vector2 LastImpactPoint { get; private set; }
     public int ImpactsThisExecution { get; private set; }
     public float MorphProgress => morph;
+    public float PreparationProgress=>Phase==NodePhase.Warning||Phase==NodePhase.Fired?1:activePreparation>0?Mathf.Clamp01(elapsed/activePreparation):0;
+    public float RestContactRadius=>circleCollider==null?.2f:RestColliderRadius*Mathf.Abs(initialScale.x*transform.parent.lossyScale.x);
+    public float PreparationSeconds=>activePreparation;
+    public float LastRemovalCharge {get;private set;}
+    public float TutorialFootprint {get{float r=0;foreach(var path in CircularNodeOutlineA.Paths)foreach(var p in path)r=Mathf.Max(r,p.magnitude);return (r+.02f)*Mathf.Abs(initialScale.x==0?transform.lossyScale.x:initialScale.x*transform.parent.lossyScale.x);}}
 
     private new void Awake()
     {
@@ -270,6 +275,7 @@ public class NormalNode : Node
         cursorRenderer.enabled = false;
         // The contact profile now belongs to Stage feedback, independent of pooled node reset.
         impactTween?.Kill();impactTween=null;impactVisual.gameObject.SetActive(false);
+        if(Demonstration!=null){Demonstration.Missed(this);return;}
         DefenseStreak = 0;
         // Commit before DamageNexus: lethal damage synchronously calls StopNodes/ResetObject.
         StageManager.instance.DamageNexusFromCircle(activeDamage,hit,dashDirection,activeColor,activeImpact);
@@ -335,13 +341,14 @@ public class NormalNode : Node
     public override void Interaction()
     {
         if ((Phase != NodePhase.Preparing && Phase != NodePhase.Warning) || !StageManager.instance.IsPlaying) return;
+        LastRemovalCharge=PreparationProgress;
         bool wasMorphing=Phase==NodePhase.Warning;
         Phase = NodePhase.Resolving;
         elapsed = 0f;
         isInteraction = true;
         cursorRenderer.enabled = false;
         if (ringRotator != null) ringRotator.enabled = false;
-        DefenseStreak++;
+        if(Demonstration==null)DefenseStreak++;
         spriteRenderer.enabled = insideRenderer.enabled = outsideRenderer.enabled = false;
         if (circleCollider != null) circleCollider.enabled = false;
         if(flat!=null)flat.Visible=false;
@@ -350,7 +357,8 @@ public class NormalNode : Node
         if(direction.sqrMagnitude<.1f)direction=Vector2.up;
         var shape=new Vector3[12];
         for(int i=0;i<shape.Length;i++){float a=i*Mathf.PI*2/shape.Length;shape[i]=wasMorphing?cursorVisual.TransformPoint(vertices[i*Segments/shape.Length+1]):transform.TransformPoint(new Vector3(Mathf.Cos(a),Mathf.Sin(a))*CircularNodeArtwork.BodyRadius);}
-        StageManager.instance.RegisterCircleKill(this,point,direction,shape,effectObject);
+        if(Demonstration!=null)Demonstration.Killed(this,0,point,direction,shape);
+        else StageManager.instance.RegisterCircleKill(this,point,direction,shape,effectObject);
     }
 
     public override void ShowEffect(Vector2 position)

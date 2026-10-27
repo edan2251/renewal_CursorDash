@@ -170,3 +170,28 @@ MonoBehaviour:
   nexusArcStagger: 0.12
   nexusDamageFlashSeconds: .10
   backgroundScoreRollSeconds: .24
+  tutorialRespawnSeconds: 0.65
+  tutorialDemoGap: 0.75
+  tutorialResetSeconds: 2.2
+  tutorialGhostScale: 0.88
+  tutorialGhostSupplySeconds: 3.1
+  tutorialGhostLimit: 2
+  tutorialPracticeSupplySeconds: 1.2
+  tutorialPracticeLimit: 1
+  tutorialGhostInput: 0.70
+  tutorialGhostCruiseSeconds: 8
+  tutorialGhostSteering: 7
+  tutorialNodeGap: 0.28
+  tutorialInk: {r: 0.55, g: 0.58, b: 0.62, a: 1}
+  tutorialSketch: 0.30
+  tutorialNexusClearance: 0.85
+  tutorialFinishSettle: 0.35
+  tutorialGhostFade: 0.4
+  feverNoticeFadeIn: 0
+  feverNoticeHold: 2
+  feverNoticeFadeOut: 2
+  feverNoticeRecovery: 0
+  feverNoticeTimeScale: 0
+  circuitOrdinaryHitRange: 0.11
+  circuitOrdinaryHitSeconds: 0.19
+  circuitOrdinaryHitGain: 0.58

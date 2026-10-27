@@ -12,7 +12,7 @@ Shader "CursorDash/NodeFlat"
    #include "UnityCG.cginc"
    struct v2f { float4 pos:SV_POSITION;float2 p:TEXCOORD0; };
    float4 _Color,_Polygon[6];
-   float _Hex,_Radius,_Charge,_Energy,_Piston,_Body,_Ring,_Angle,_Stroke,_Core,_Glow,_FillScale,_ChargePulse;
+   float _Hex,_Radius,_Charge,_Energy,_Piston,_Body,_Ring,_Angle,_Stroke,_Core,_Glow,_FillScale,_ChargePulse,_GuideSketch;
    v2f vert(appdata_base v){v2f o;o.pos=UnityObjectToClipPos(v.vertex);o.p=v.vertex.xy;return o;}
    float polygonDistance(float2 p){
     float dist=100,side=1;
@@ -26,7 +26,9 @@ Shader "CursorDash/NodeFlat"
    float sdf(float2 p){return _Hex>.5?polygonDistance(p):length(p)-_Radius;}
    fixed4 frag(v2f i):SV_Target {
     float2 p=i.p;float aa=max(fwidth(p.x),fwidth(p.y))*1.1;
-    float d=sdf(p),outer=1-smoothstep(-aa,aa,abs(d)-_Stroke*.5);
+    p+=float2(sin(p.y*79+p.x*17),sin(p.x*61-p.y*23))*aa*_GuideSketch*1.4;
+    float stroke=_Stroke*(1+_GuideSketch*.09*sin(p.x*47+p.y*31));
+    float d=sdf(p),outer=1-smoothstep(-aa,aa,abs(d)-stroke*.5);
     float fill=(1-smoothstep(-aa,aa,sdf(p/max(.0001,_Charge*_FillScale))))*step(.0001,_Charge);
     if(_Piston>.5){
      float back=min(_Polygon[3].x,_Polygon[4].x),front=(_Polygon[0].x+_Polygon[1].x)*.5;

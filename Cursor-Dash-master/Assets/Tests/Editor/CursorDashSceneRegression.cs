@@ -20,7 +20,7 @@ namespace CursorDashTests
         private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const string Prefix = "CursorDash.Regression.";
         private static readonly string[] PreferenceKeys = { "CursorDash_Best_Cyberpunk", "BGM", "SFX" };
-        private static readonly string[] V2Keys={"CursorDash.v2.user","CursorDash.v2.presets","CursorDash.v2.tutorial","CursorDash_BestPoints_v1_Cyberpunk","CursorDash_BestPoints_v1_Flame"};
+        private static readonly string[] V2Keys={"CursorDash.v2.user","CursorDash.v2.presets","CursorDash.v2.tutorial","CursorDash.v3.feverGuide","CursorDash_BestPoints_v1_Cyberpunk","CursorDash_BestPoints_v1_Flame"};
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -40,7 +40,7 @@ namespace CursorDashTests
                 SessionState.SetBool(Prefix + mapName + ".unlock", (bool)Get(map, "isUnlock"));
             }
             SessionState.SetBool(Prefix+"CapturedThisRun",true);
-            PlayerPrefs.SetString("CursorDash.v2.user","{}");PlayerPrefs.SetString("CursorDash.v2.presets","{}");PlayerPrefs.SetString("CursorDash.v2.tutorial","skipped");
+            PlayerPrefs.SetString("CursorDash.v2.user","{}");PlayerPrefs.SetString("CursorDash.v2.presets","{}");PlayerPrefs.SetString("CursorDash.v2.tutorial","completed");PlayerPrefs.SetString("CursorDash.v3.feverGuide","completed");
             EditorSceneManager.OpenScene("Assets/Scenes/Cyberpunk.unity", OpenSceneMode.Single);
             yield return new EnterPlayMode();
             yield return null;
@@ -74,22 +74,72 @@ namespace CursorDashTests
         }
 
         [UnityTest]
-        public IEnumerator CP3_TutorialUsesRealMovementContactAndReturnThenStaysInTraining()
+        public IEnumerator CP3_ConcurrentTutorialCountsOnlyRealContactsAndReturnsThenStartsCleanCombat()
         {
             PlayerPrefs.SetString("CursorDash.v2.tutorial","new");Click("RemakeMenu/Start");yield return WaitForScene("Cyberpunk");yield return null;
-            var practice=Find("CursorDashPractice");Assert.IsNotNull(practice);Assert.AreEqual(0,Get(practice,"Step"));
-            var player=Find("PlayerCharacterController");((Behaviour)Find("VirtualJoyStick")).enabled=false;Set(player,"MoveVector",Vector2.right);yield return WaitGameplay(.2f);Set(player,"MoveVector",Vector2.zero);yield return WaitGameplay(.1f);Assert.AreEqual(1,Get(practice,"Step"));
-            var circle=(Component)Call(practice,"Spawn",0);Assert.IsNotNull(circle);var body=player.GetComponent<Rigidbody2D>();body.position=circle.transform.position;Physics2D.SyncTransforms();yield return new WaitForFixedUpdate();yield return WaitGameplay(.15f);
-            Assert.AreEqual(2,Get(practice,"Step"));var hex=(Component)Call(practice,"Spawn",1);Assert.IsNotNull(hex);Set(hex,"preparationDuration",.05f); // current generation was already snapped: wait for its genuine charge.
-            var stage=Find("StageManager");body.position=new Vector2(-1,-2);var trail=Find("PlayerCharacterAfterImage");float deadline=Time.realtimeSinceStartup+7;
-            while((int)Get(stage,"HexDestroyed")==0&&Time.realtimeSinceStartup<deadline){Call(trail,"RecordMovement",new Vector2(-1,1),new Vector2(1,1),Time.time);yield return null;}
-            Assert.AreEqual(1,Get(stage,"BlockedBeams"));Assert.AreEqual(1,Get(stage,"HexDestroyed"));yield return null;Assert.AreEqual(3,Get(practice,"Step"));Assert.AreEqual("completed",PlayerPrefs.GetString("CursorDash.v2.tutorial"));Assert.IsFalse((bool)Get(stage,"RecordEligible"));Assert.AreEqual("Cyberpunk",SceneManager.GetActiveScene().name);
+            var practice=Find("CursorDashPractice");Assert.IsNotNull(practice);Assert.AreEqual(1,Get(practice,"Step"));Assert.IsTrue((bool)Get(practice,"Guided"));
+            var stage=Find("StageManager");var model=Get(Get(stage,"Fever"),"Model");var player=Find("PlayerCharacterController");var body=player.GetComponent<Rigidbody2D>();((Behaviour)Find("VirtualJoyStick")).enabled=false;
+            // Internal control of the REAL player and REAL pooled targets, not a hand/touch validation.
+            for(int n=0;n<2;n++){
+                float deadline=Time.realtimeSinceStartup+5;Component target=null;
+                while(target==null){Assert.Less(Time.realtimeSinceStartup,deadline);target=(Component)Call(practice,"Spawn",0);yield return null;}
+                body.position=target.transform.position;player.transform.position=target.transform.position;Physics2D.SyncTransforms();yield return new WaitForFixedUpdate();yield return WaitGameplay(.12f);
+                Assert.AreEqual(n+1,Get(Get(practice,"Flow"),"CircleWins"));Assert.AreEqual(0,Get(Get(practice,"Flow"),"HexWins"));
+                body.position=new Vector2(-1,-2);player.transform.position=body.position;Physics2D.SyncTransforms();
+            }
+            yield return null;Assert.AreEqual(1,Get(practice,"Step"));var trail=Find("PlayerCharacterAfterImage");
+            for(int n=0;n<2;n++){
+                float deadline=Time.realtimeSinceStartup+8;Component target=null;
+                while(target==null){Assert.Less(Time.realtimeSinceStartup,deadline);target=(Component)Call(practice,"Spawn",1);yield return null;}
+                Vector2 direction=(Vector2)Get(stage,"NexusPosition")-(Vector2)target.transform.position,middle=(Vector2)target.transform.position+direction*.48f,side=new Vector2(-direction.y,direction.x).normalized*.7f;
+                int blockBefore=(int)Get(stage,"BlockedBeams");bool captured=false;
+                while((int)Get(Get(practice,"Flow"),"HexWins")<n+1){
+                    Assert.Less(Time.realtimeSinceStartup,deadline);Call(trail,"RecordMovement",middle-side,middle+side,Time.time);
+                    if(!captured&&(int)Get(stage,"BlockedBeams")>blockBefore){captured=true;System.IO.Directory.CreateDirectory(System.IO.Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028/NativeFrames"));ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028/NativeFrames/player-reflected-"+(n+1)+".png"));}
+                    yield return null;
+                }
+            }
+            Assert.AreEqual("4",Get(model,"PointsText"));Assert.AreEqual(0d,Get(model,"NormalCombatSeconds"));Assert.GreaterOrEqual((int)Get(stage,"BlockedBeams"),2);Assert.AreEqual(2,Get(stage,"HexDestroyed"));
+            Assert.AreEqual("new",PlayerPrefs.GetString("CursorDash.v2.tutorial"),"Completion is stored only after the reset presentation finishes.");
+            bool scoreRevealed=false,sawFade=false,sawPower=false;float finish=Time.realtimeSinceStartup+5;
+            while(Get(stage,"Practice")!=null){
+                Assert.Less(Time.realtimeSinceStartup,finish);Assert.That((float)Get(Get(stage,"NexusPresentation"),"EntryBodyScale"),Is.EqualTo(1f).Within(.0001),"Tutorial power-on must not collapse the nexus body.");
+                var ghost=Get(practice,"Ghost");float opacity=(float)Get(ghost,"Opacity");sawFade|=opacity>0&&opacity<1;
+                float power=(float)Get(Get(stage,"Fever"),"TutorialPower");sawPower|=power>0&&power<1;
+                scoreRevealed|=((Renderer)Get(Get(stage,"Fever"),"BackgroundScoreRenderer")).enabled;yield return null;
+            }
+            Assert.IsTrue(sawFade,"Last kill settles, then the real ghost fades.");Assert.IsTrue(sawPower,"Black tutorial nexus powers on during circuit restoration.");Assert.IsTrue(scoreRevealed,"The shared score reappears during the handoff.");
+            Assert.AreEqual("completed",PlayerPrefs.GetString("CursorDash.v2.tutorial"));Assert.IsTrue((bool)Get(stage,"RecordEligible"));Assert.AreEqual("0",Get(model,"PointsText"));Assert.AreEqual(1,Get(model,"Multiplier"));Assert.AreEqual(0d,Get(model,"Gauge"));
+            Assert.AreEqual(Get(Get(stage,"scoreManager"),"MaxHp"),Get(Get(stage,"scoreManager"),"Hp"));Assert.AreEqual("Cyberpunk",SceneManager.GetActiveScene().name);
+            // Continue the genuinely completed tutorial into the existing first-notice presentation.
+            // Replay flag avoids changing a user's fever completion key; normal storage semantics are a separate check.
+            DisablePatterns();TypeFor("CursorDashSession").GetField("ReplayFeverNotice",BindingFlags.Public|BindingFlags.Static).SetValue(null,true);
+            for(int n=0;n<8;n++){
+                Call(Get(stage,"NodeCreator"),"CreateNode",0,0);var normal=NodesOfType("NormalNode").First(x=>x.gameObject.activeSelf&&Get(x,"Phase").ToString()=="Preparing");
+                body.position=normal.transform.position;player.transform.position=normal.transform.position;Physics2D.SyncTransforms();int wanted=n+1;float hitDeadline=Time.realtimeSinceStartup+2;
+                while((int)Get(stage,"DestroyedNodes")<wanted){Assert.Less(Time.realtimeSinceStartup,hitDeadline);yield return new WaitForFixedUpdate();}
+                body.position=new Vector2(-1,-2);player.transform.position=body.position;Physics2D.SyncTransforms();if(n<7)yield return WaitGameplay(.08f);else yield return null; // Normal explosion and full circuit construction happen before the notice.
+            }
+            var fever=Get(stage,"Fever");float noticeDeadline=Time.realtimeSinceStartup+6;
+            while(!(bool)Get(fever,"NoticeActive")){Assert.Less(Time.realtimeSinceStartup,noticeDeadline);yield return null;}
+            yield return WaitRealtime(.2f);Assert.AreEqual(1d,Get(Get(fever,"notice"),"Alpha"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028/NativeFrames"));ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028/NativeFrames/first-fever-notice.png"));
+            yield return null; // Let the requested game frame render before showing the pause overlay.
+            Assert.AreEqual(1d,Get(model,"Gauge"));Assert.AreEqual(0d,Get(model,"Elapsed"));Assert.AreEqual(0,Get(fever,"ActiveBonuses"));
+            Call(stage,"SetPaused",true);yield return new WaitForSecondsRealtime(.15f);Assert.AreEqual(0,Time.timeScale);Assert.AreEqual(1d,Get(model,"Gauge"));Call(stage,"SetPaused",false);
+            while((bool)Get(fever,"NoticeActive")){Assert.Less(Time.realtimeSinceStartup,noticeDeadline+6);yield return null;}
+            Assert.AreEqual(1,Time.timeScale);Assert.AreEqual("Fever",Get(model,"Current").ToString());
+            float normalDeadline=Time.realtimeSinceStartup+11;while(Get(model,"Current").ToString()!="Normal"){Assert.Less(Time.realtimeSinceStartup,normalDeadline);yield return null;}
+            Assert.AreEqual(2,Get(model,"Multiplier"));Call(model,"FillForReview");float secondDeadline=Time.realtimeSinceStartup+3;
+            while(Get(model,"Current").ToString()!="Fever"){Assert.Less(Time.realtimeSinceStartup,secondDeadline);Assert.IsFalse((bool)Get(fever,"NoticeActive"));yield return null;}
+            Assert.IsFalse((bool)Get(fever,"NoticeActive"));
         }
         [UnityTest]
         public IEnumerator CP3_PanelOwnsInputAndPreservesIndependentPause()
         {
             Click("RemakeMenu/Start");yield return WaitForScene("Cyberpunk");DisablePatterns();var ui=Find("CursorDashRuntimeUI");var stage=Find("StageManager");var player=Find("PlayerCharacterController");
-            Call(ui,"Open",false);Assert.AreEqual(0,Time.timeScale);Set(player,"MoveVector",Vector2.right);Vector3 pos=player.transform.position;yield return WaitRealtime(.15f);Assert.AreEqual(pos,player.transform.position);
+            Call(ui,"Open",false);Assert.IsFalse((bool)Get(ui,"PanelOpen"));Assert.AreEqual(1,Time.timeScale,"Hidden settings cannot leave an input blocker.");
+            Call(ui,"Open",true);Assert.AreEqual(0,Time.timeScale);Set(player,"MoveVector",Vector2.right);Vector3 pos=player.transform.position;yield return WaitRealtime(.15f);Assert.AreEqual(pos,player.transform.position);
             var stick=Find("VirtualJoyStick");Assert.IsFalse((bool)Call(stick,"TryBeginPointer",71,new Vector2(Screen.width/2,Screen.height/2),false));
             Call(stage,"SetPaused",true);Call(ui,"Close");Assert.AreEqual(0,Time.timeScale);Assert.AreEqual(Vector2.zero,Get(player,"MoveVector"));Call(stage,"SetPaused",false);Assert.AreEqual(1,Time.timeScale);
         }
@@ -1107,7 +1157,8 @@ namespace CursorDashTests
         private static Component Find(string name)
         {
             return Resources.FindObjectsOfTypeAll(TypeFor(name)).OfType<Component>()
-                .FirstOrDefault(component => component.gameObject.scene.IsValid() && component.gameObject.activeInHierarchy);
+                .FirstOrDefault(component => component.gameObject.scene.IsValid() && component.gameObject.activeInHierarchy &&
+                    ((name!="PlayerCharacterController"&&name!="PlayerCharacterAfterImage")||component.GetType().GetProperty("Demonstration")?.GetValue(component)==null));
         }
         private static Component[] AllNodes() => GameObject.Find("Nodes").GetComponentsInChildren(TypeFor("Node"), true);
         private static Component[] NodesOfType(string name) => GameObject.Find("Nodes").GetComponentsInChildren(TypeFor(name), true);

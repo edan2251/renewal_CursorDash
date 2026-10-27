@@ -9,7 +9,7 @@ mergeInto(LibraryManager.library, {
     catch(e){window.cdStoreError=String(e);return 0;}
   },
   CDStoreSave: function(key,value) {
-    try {var k=UTF8ToString(key);if(['CursorDash.v2.user','CursorDash.v2.presets','CursorDash.v2.tutorial'].indexOf(k)<0)throw new Error('허용되지 않은 key');localStorage.setItem(k,UTF8ToString(value));window.cdStoreError='';return 1;}
+    try {var k=UTF8ToString(key);if(['CursorDash.v2.user','CursorDash.v2.presets','CursorDash.v2.tutorial','CursorDash.v3.feverGuide'].indexOf(k)<0)throw new Error('허용되지 않은 key');localStorage.setItem(k,UTF8ToString(value));window.cdStoreError='';return 1;}
     catch(e){window.cdStoreError='브라우저 저장 실패: '+String(e);return 0;}
   },
   CDStoreError: function(){var s=window.cdStoreError||'';var p=_malloc(lengthBytesUTF8(s)+1);stringToUTF8(s,p,lengthBytesUTF8(s)+1);return p;},

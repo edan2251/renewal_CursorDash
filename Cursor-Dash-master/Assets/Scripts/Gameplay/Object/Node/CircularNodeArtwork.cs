@@ -42,7 +42,7 @@ public sealed class CircularNodeArtwork : MonoBehaviour
         return art;
     }
 
-    public void Draw(float charge, float absorption, float angle, bool charging)
+    public void Draw(float charge, float absorption, float angle, bool charging, Color? demonstrationTint=null)
     {
         float requestedStroke = Mathf.Clamp(CursorDashTuning.Number("visual.outline", .035f), .01f, .12f);
         if (Mathf.Abs(stroke - requestedStroke) > .00001f)
@@ -55,10 +55,10 @@ public sealed class CircularNodeArtwork : MonoBehaviour
         fill.transform.localScale = new Vector3(Mathf.Clamp01(charge), Mathf.Clamp01(charge), 1);
         ring.transform.localScale = new Vector3(remaining, remaining, 1);
         ring.transform.localRotation = Quaternion.Euler(0, 0, angle);
-        Tint(fill, FillColor);
-        Color rim = BorderColor; rim.a = charging ? 1 : remaining;
+        Tint(fill, demonstrationTint??FillColor);
+        Color rim = demonstrationTint??BorderColor; rim.a = charging ? 1 : remaining;
         Tint(border, rim);
-        Color arcs = FillColor; arcs.a = remaining;
+        Color arcs = demonstrationTint??FillColor; arcs.a = remaining;
         Tint(ring, arcs);
         visible = true;
         SetVisibility(charging && charge > .001f, charging || remaining > .001f, remaining > .001f);

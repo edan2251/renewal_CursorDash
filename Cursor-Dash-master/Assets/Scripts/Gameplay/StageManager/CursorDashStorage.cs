@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-/// <summary>Only v2 setting/preset keys. Web uses synchronous localStorage with explicit failure reporting.</summary>
+/// <summary>Allow-listed settings, presets and independent guidance flags. Web reports synchronous storage failures.</summary>
 public static class CursorDashStorage
 {
     public static string LastError {get;private set;}="";
@@ -23,7 +23,7 @@ public static class CursorDashStorage
     }
     public static bool Save(string key,string value,out string error)
     {
-        if(key!=CursorDashTuning.UserKey&&key!=CursorDashTuning.PresetKey&&key!=CursorDashTuning.TutorialKey){error="지원하지 않는 저장 key";return false;}
+        if(key!=CursorDashTuning.UserKey&&key!=CursorDashTuning.PresetKey&&key!=CursorDashTuning.TutorialKey&&key!=CursorDashSession.FeverGuideKey){error="지원하지 않는 저장 key";return false;}
 #if UNITY_WEBGL && !UNITY_EDITOR
         if(CDStoreSave(key,value)==1){error="";return true;}error=Take(CDStoreError())??"브라우저 저장 실패";return false;
 #else

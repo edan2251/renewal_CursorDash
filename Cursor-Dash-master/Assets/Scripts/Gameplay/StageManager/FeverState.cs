@@ -28,6 +28,8 @@ public sealed class FeverState
     public int Multiplier {get;private set;}=1;
     public double Gauge {get;private set;}
     public bool Paused {get;set;}
+    public bool PracticeOnly {get;set;}
+    public bool PresentationHold {get;set;}
     public int CompletedFevers {get;private set;}
     public string LastReset {get;private set;}="";
     public uint ResetVersion {get;private set;}
@@ -44,29 +46,29 @@ public sealed class FeverState
         Current==Phase.Exiting?FeverSettings.Safe(Settings.exitSeconds,.95,.001):0;
     public double Progress=>PhaseSeconds>0?Math.Min(1,elapsed/PhaseSeconds):0;
     public FeverState(FeverSettings settings=null){Settings=settings??new FeverSettings();}
-    public void ResetRun(){kills.Clear();Points=0;Multiplier=1;Gauge=idle=elapsed=0;NormalCombatSeconds=0;Current=Phase.Normal;CompletedFevers=0;Paused=false;LastReset="";ResetVersion++;}
+    public void ResetRun(){kills.Clear();Points=0;Multiplier=1;Gauge=idle=elapsed=0;NormalCombatSeconds=0;Current=Phase.Normal;CompletedFevers=0;Paused=PresentationHold=PracticeOnly=false;LastReset="";ResetVersion++;}
     public bool Kill(int source,ulong execution)
     {
-        if(Current==Phase.Stopped||execution==0||(kills.TryGetValue(source,out var previous)&&execution<=previous))return false;
+        if(Current==Phase.Stopped||PresentationHold||execution==0||(kills.TryGetValue(source,out var previous)&&execution<=previous))return false;
         kills[source]=execution;BigInteger awarded=Multiplier;Points+=awarded;
-        if(Current==Phase.Normal){idle=0;Gauge=Math.Min(1,Gauge+FeverSettings.Safe(Settings.chargePerKill,.125,0));if(Gauge>=1)Transition(Phase.Closing);}
+        if(Current==Phase.Normal){idle=0;Gauge=Math.Min(PracticeOnly ? .875 : 1,Gauge+FeverSettings.Safe(Settings.chargePerKill,.125,0));if(Gauge>=1&&!PracticeOnly)Transition(Phase.Closing);}
         // Confirmed policy: no recharge from kills during fever or its transitions.
         PointsAwarded?.Invoke(awarded,Points);
         return true;
     }
-    public void NexusHit(){if(Current==Phase.Stopped)return;Gauge=idle=0;Multiplier=1;LastReset="NexusHit";ResetVersion++;Transition(Phase.Normal);}
-    public void CancelFever(){if(Current==Phase.Stopped)return;Gauge=idle=0;LastReset="Cancelled";ResetVersion++;Transition(Phase.Normal);}
-    public void Abort(){Gauge=0;Paused=false;LastReset="RoundEnd";ResetVersion++;Transition(Phase.Stopped);}
-    public void FillForReview(){if(Current==Phase.Normal){Gauge=1;Transition(Phase.Closing);}}
+    public void NexusHit(){if(Current==Phase.Stopped)return;PresentationHold=false;Gauge=idle=0;Multiplier=1;LastReset="NexusHit";ResetVersion++;Transition(Phase.Normal);}
+    public void CancelFever(){if(Current==Phase.Stopped)return;PresentationHold=false;Gauge=idle=0;LastReset="Cancelled";ResetVersion++;Transition(Phase.Normal);}
+    public void Abort(){Gauge=0;Paused=PresentationHold=false;LastReset="RoundEnd";ResetVersion++;Transition(Phase.Stopped);}
+    public void FillForReview(){if(Current==Phase.Normal&&!PracticeOnly){Gauge=1;Transition(Phase.Closing);}}
     private void Transition(Phase next){var previous=Current;Current=next;elapsed=0;if(next==Phase.Closing)LastReset="";Transitioned?.Invoke(previous,next);}
     public void Tick(double delta)
     {
-        if(Paused||Current==Phase.Stopped||delta<=0||double.IsNaN(delta)||double.IsInfinity(delta))return;
-        while(delta>0){
+        if(Paused||PresentationHold||Current==Phase.Stopped||delta<=0||double.IsNaN(delta)||double.IsInfinity(delta))return;
+        while(delta>0&&!PresentationHold){
             if(Current==Phase.Normal){
                 double grace=FeverSettings.Safe(Settings.decayGrace,4,0);
                 double decayTime=Math.Max(0,idle+delta-grace)-Math.Max(0,idle-grace);
-                idle+=delta;NormalCombatSeconds+=delta;Gauge=Math.Max(0,Gauge-decayTime*FeverSettings.Safe(Settings.decayPerSecond,.03,0));return;
+                idle+=delta;if(!PracticeOnly)NormalCombatSeconds+=delta;Gauge=Math.Max(0,Gauge-decayTime*FeverSettings.Safe(Settings.decayPerSecond,.03,0));return;
             }
             double span=PhaseSeconds,step=Math.Min(delta,Math.Max(0,span-elapsed));elapsed+=step;delta-=step;
             if(Current==Phase.Closing)NormalCombatSeconds+=step;

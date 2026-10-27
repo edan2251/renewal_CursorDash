@@ -45,13 +45,13 @@ public sealed class HexagonalNodeRings : MonoBehaviour
         return art;
     }
 
-    public void Draw(Color color, float absorption)
+    public void Draw(Color color, float absorption, bool demonstration=false)
     {
         color.a *= Mathf.Clamp01(absorption);
         for (int i = 0; i < views.Length; i++)
         {
             // One original yellow, one readable deeper yellow; geometry and rotation stay identical.
-            Color tint = i == 0 ? color : new Color(color.r * .82f, color.g * .82f, color.b * .82f, color.a);
+            Color tint = i == 0||demonstration ? color : new Color(color.r * .82f, color.g * .82f, color.b * .82f, color.a);
             properties.SetColor("_Color", tint);
             Transform target = views[i].transform, source = sources[i];
             target.localPosition = source.localPosition; target.localRotation = source.localRotation; target.localScale = source.localScale;

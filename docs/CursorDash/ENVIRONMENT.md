@@ -1,5 +1,29 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-064 — 기존 Editor·정상 집중검수 (2026-10-28)
+
+사용자이번Unity검수조작허용범위로기존6000.3.23f1/Cyberpunk/DX11/정상TestRunner·기존보호fixture만재사용했다. 최종18/18 PASS(04:05:30 KST), 최종JSON/XML과PlayOFF/timeScale1/씬clean·확인저장키6/imported6동일을대조했다. 최초activate timeout은새대상선택으로복구했고한번잘못반환된전경캡처에는입력하지않고Unity를재선택했다. 저장/폐기·다른프로젝트/전역·새연결/설치·빌드/Git없음. 참조117/test16/Editor2오류0·기존133경고,순수4107+4672999+106885/JS모의19. [이번인계](TUTORIAL_POWERON_FEVER_ORDER_20261028.md), `Logs/tutorial-poweron-fever-order-20261028/native-final-summary.json`. 이전검수·모바일/릴리스를이번시각승인으로재사용하지않는다.
+
+## D-063 — 기존 Editor 집중검수 (2026-10-28)
+
+이번 별도 회신으로 대상Unity 컴파일/TestRunner·Play 검수 조작만 허용됐다. 기존6000.3.23f1/Cyberpunk/DX11·기존정상TestRunner·보호fixture를 재사용하고 batchmode/다른프로젝트/저장폐기·패키지·전역·새연결/빌드/Git게시없이 진행한다. 최초창활성화timeout은 새창목록/같은대상재선택1회로복구했다. 최종18/18 PASS(02:55:28 KST), PlayOFF/timeScale1/Cyberpunkclean·확인6저장키/imported dirty6동일을 `Logs/tutorial-pace-notice-20261028/native-final-summary.json`에 기록했다.
+
+기준main8d26194/index빈상태·1826파일/사본Backups/tutorial-pace-notice-20261028. 참조117/test16/Editor2오류0·기존134경고/순수3989+4672999+106885·JS모의19를 실제Native/GPU·손조작과구분한다. [이번인계](TUTORIAL_PACE_FEVER_NOTICE_20261028.md). 과거모바일/빌드 검수를 현재 수정의검증으로재사용하지않는다.
+
+## D-062 — 기존 Unity 정상 검수 경로 (2026-10-28)
+
+사용자이번검수조작명시승인으로 기존 대상Unity6000.3.23f1/Cyberpunk/DX11만 사용했다. 기존 TestRunner API EditMode/EnterPlayMode·ExitPlayMode를 선택했으며 포괄 SaveAssets/저장·폐기·batchmode·중복Editor/다른프로젝트 종료는 없다. 기존 보호 fixture가 실제 설정/프리셋/완료/BEST를 보관·복원하며 native-before/after에서 확인6문자열키 해시·imported6목록 동일/Cyberpunkclean·PlayOFF/timeScale1이다. 도구 목록 존재만으로 성공 처리하지 않는다.
+
+최종 NativeRun4 14/14 PASS(02:12:41 KST, 소유권/실패·Retry 포함)의 결과는 [인계](AUTONOMOUS_GUIDE_20261028.md)·`Logs/autonomous-guide-20261028/native-final-summary.json` 참조. 참조컴파일117/test16/Editor2 오류0·기존134경고, 순수생산검사·JS모의 검사와 실제 Play/GPU 프레임을 구분한다. 1819파일 기준·복구사본 `Backups/autonomous-guide-20261028`, HEAD/index·기존사용자파일보존. 설치/패키지/전역/새연결/빌드/Git게시없음.
+
+010703영상 프레임 추출은 Windows 실행정책 차단으로 관람못했으며 우회·정책변경하지 않았다. Native GameView PNG는 별도 실제증거/연속녹화아님. 손입력·모바일/WebGL·장시간성능·앱재실행저장 NOT_RUN. 일반 환경조사나 이전배포를 반복하지 않았다.
+
+## D-061 로컬 구현·사용자 Play 인계 (2026-10-28)
+
+main `8d26194`/빈 index 기준과 기존 미추적 보존, 시작1808파일 해시 및 `Backups/ghost-tutorial-20261028` 복구 사본을 남겼다. 기존 Unity6000.3.23f1/ .NET10.0.402/Node 도구만 사용했다. 격리 참조 컴파일 runtime116/test15/Editor2 오류0·기존134경고, 실제 순수 생산 C# 실행/모의 DOM·메모리 저장 bridge는 [D-061 검사](GHOST_GUIDE_20261028.md) 참조. 신규 설치/패키지·전역/연결·프로세스 종료/빌드/Git 게시 없다.
+
+처음 대상 Cyberpunk 창/Play OFF/오류0을 확인한 범위와 현재 소스 컴파일을 구분한다. 이후 사용자가 Play를 직접 담당하므로 Unity/브라우저 조작은 중단했다. 현재 dirty 객체 목록·Native 컴파일/Play/GPU/공식 NUnit/모바일·WebGL·실 저장 재실행은 NOT_RUN이며 과거6 imported dirty 기록을 이번 새 조회로 사용하지 않는다. 사용자 씬/에셋을 저장·폐기하지 않았다. 영상은 파일 존재만 확인, 디코딩/관람 불가. 임시 영상용 루프백 서버는 화면에 열지 않고 자기 종료 요청으로 정리했다.
+
 ## D-060 실제 WebGL 빌드·기존 Pages (2026-10-27)
 
 Unity6000.3.23f1 기존 Cyberpunk/WebGL Editor를 사용해 전용 새 폴더에 BuildPipeline 실행, 자동 Play/씬·에셋 저장 없음. 오류0/경고8/259.308초·입력1489파일 동일, 종료Cyberpunkclean/imported6·prefs동일. 기존 등록 Cyberpunk→legacy01/템플릿·비압축/단일스레드 설정 유지. 이전 고정 ID 메뉴를 대체하는 이번 릴리스용 No Play 메뉴를 기존 helper에 추가했다.

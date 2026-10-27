@@ -1,6 +1,7 @@
 using UnityEngine;
 public class ImpactFragments : MonoBehaviour
 {
+    public bool GuidePool {get;set;}
     private Mesh mesh;private Material material;private Vector3[] basis,points,centers,velocities;private Color[] colors;
     private float started,duration;private Color tint;
     private bool directional;private int[] owners;private float[] spins;private int flashStart;private float contactFlash;
@@ -60,11 +61,11 @@ public class ImpactFragments : MonoBehaviour
         basis=verts.ToArray();points=(Vector3[])basis.Clone();owners=ids.ToArray();colors=new Color[points.Length];
         for(int i=0;i<colors.Length;i++)colors[i]=i>=flashStart?new Color(1,1,1,contactFlash):color;
         tint=color;started=Time.unscaledTime;duration=Mathf.Max(.05f,life);
-        mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.colors=colors;mesh.uv=new Vector2[points.Length];mesh.SetUVs(1,edgeData);
-        var flatShader=Resources.Load<Shader>("CursorDash/ImpactFlat");
-        material=flatShader!=null&&flatShader.isSupported?new Material(flatShader):new Material(source);
-        material.hideFlags=HideFlags.DontSave;material.mainTexture=Texture2D.whiteTexture;material.color=Color.white;
-        gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=gameObject.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.sortingOrder=30;
+        if(mesh==null){mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();}else mesh.Clear();
+        mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.colors=colors;mesh.uv=new Vector2[points.Length];mesh.SetUVs(1,edgeData);
+        if(material==null){var flatShader=Resources.Load<Shader>("CursorDash/ImpactFlat");material=flatShader!=null&&flatShader.isSupported?new Material(flatShader):new Material(source);material.hideFlags=HideFlags.DontSave;material.mainTexture=Texture2D.whiteTexture;material.color=Color.white;}
+        var filter=GetComponent<MeshFilter>();if(filter==null)filter=gameObject.AddComponent<MeshFilter>();filter.sharedMesh=mesh;
+        var renderer=GetComponent<MeshRenderer>();if(renderer==null)renderer=gameObject.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.sortingOrder=30;
     }
     private static void AddEdges(System.Collections.Generic.List<Vector3> vertices,int start,int count,System.Collections.Generic.List<Vector4> data)
     {
@@ -112,7 +113,7 @@ public class ImpactFragments : MonoBehaviour
     }
     private void Update()
     {
-        if(mesh==null)return;float t=(Time.unscaledTime-started)/duration;if(t>=1){Destroy(gameObject);return;}
+        if(mesh==null)return;if(GuidePool&&StageManager.instance!=null&&!StageManager.instance.IsPlaying){started+=Time.unscaledDeltaTime;return;}float t=(Time.unscaledTime-started)/duration;if(t>=1){if(GuidePool)gameObject.SetActive(false);else Destroy(gameObject);return;}
         float seconds=t*duration;
         if(directional){
             for(int k=0;k<points.Length;k++){

@@ -40,6 +40,9 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
     private void Awake(){if(Instance!=null){Destroy(gameObject);return;}Instance=this;DontDestroyOnLoad(gameObject);SceneManager.sceneLoaded+=SceneLoaded;}
     private void SceneLoaded(Scene scene,LoadSceneMode mode){PanelOpen=false;webFocus=webCapture=false;nextSnapshot=0;Time.timeScale=1;}
     private void Update(){
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if(Input.GetKey(KeyCode.LeftControl)&&Input.GetKey(KeyCode.LeftShift)&&Input.GetKeyDown(KeyCode.D))Open(true);
+#endif
         if(deferred!=null){var a=deferred;deferred=null;a();}
         if(Time.unscaledTime>=nextHexRead){nextHexRead=Time.unscaledTime+.25f;var stage=StageManager.instance;
             hexPool=stage!=null&&CursorDashTuning.DevEnabled?FindObjectsByType<ArrowNode>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(n=>n.gameObject.scene==stage.gameObject.scene).ToArray():Array.Empty<ArrowNode>();}
@@ -51,10 +54,10 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
         if(htmlReady&&Time.unscaledTime>=nextSnapshot){nextSnapshot=Time.unscaledTime+.25f;CDPanelReceive(Snapshot().ToString(Formatting.None));}
 #endif
     }
-    public void Open(bool developer){if(developer)CursorDashTuning.EnableDev(true);DeveloperPanel=developer;PanelOpen=true;StageManager.instance?.SetPanelPaused(true);ResetInput();nextSnapshot=0;}
+    public void Open(bool developer){if(!developer){Message="이번 버전에서는 설정 진입을 숨깁니다.";return;}CursorDashTuning.EnableDev(true);DeveloperPanel=true;PanelOpen=true;StageManager.instance?.SetPanelPaused(true);ResetInput();nextSnapshot=0;}
     public void Close(){PanelOpen=false;webFocus=webCapture=false;StageManager.instance?.SetPanelPaused(false);ResetInput();nextSnapshot=0;}
     private static void ResetInput(){FindFirstObjectByType<VirtualJoyStick>()?.ResetInput();PlayerCharacterController.instance?.MoveStop();}
-    public static bool IsScreenPointBlocked(Vector2 screen){if(InputBlocked)return true;if(Instance==null||Instance.htmlReady)return false;float scale=Mathf.Max(1,Screen.width/900f);float height=StageManager.instance?.GetComponent<CursorDashPractice>()!=null?165:52;return new Rect(0,0,Screen.width,height*scale).Contains(new Vector2(screen.x,Screen.height-screen.y));}
+    public static bool IsScreenPointBlocked(Vector2 screen){if(InputBlocked)return true;if(Instance==null||Instance.htmlReady||!CursorDashTuning.DevEnabled)return false;float scale=Mathf.Max(1,Screen.width/900f);return new Rect(0,0,Screen.width,52*scale).Contains(new Vector2(screen.x,Screen.height-screen.y));}
     private void Load(CursorDashSession.Mode mode,bool home=false){Close();CursorDashSession.CurrentMode=mode;CursorDashSession.EnterGameOnLoad=!home;if(mode==CursorDashSession.Mode.Normal)CursorDashTuning.EnableDev(false);var stage=StageManager.instance;if(stage?.Space!=null){if(home)stage.ReturnHome();else stage.Space.LaunchSelectedMode();}else if(stage!=null)stage.ChangeScene(home?"01.StageSelectScene":"Cyberpunk");else SceneManager.LoadScene("Cyberpunk");}
     public void SafeTrial(){
         var stage=StageManager.instance;if(stage==null||!CursorDashTuning.DevEnabled){Message="개발자 전투 장면에서 실행하세요";return;}
@@ -87,7 +90,7 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
             case "hp":if((practice!=null||CursorDashTuning.DevEnabled)&&stage!=null&&(stage.Space==null||!stage.Space.AtmosphereActive)){double hp=(double)q["value"];if(double.IsNaN(hp)||double.IsInfinity(hp)||hp<0||hp>stage.scoreManager.MaxHp)throw new Exception("HP 범위 오류");stage.DisqualifyRecord();stage.scoreManager.Hp=(float)hp;}break;
             case "pause":if(CursorDashTuning.DevEnabled)stage?.SetDevPaused(true);else stage?.SetPaused(true);break;
             case "resume":if(CursorDashTuning.DevEnabled)stage?.SetDevPaused(false);else stage?.SetPaused(false);break;
-            case "devOff":CursorDashTuning.EnableDev(false);DeveloperPanel=false;Message="Dev 해제. 현재 라운드의 기록 제외는 유지됩니다.";break;
+            case "devOff":CursorDashTuning.EnableDev(false);DeveloperPanel=false;Close();Message="Dev 해제. 현재 라운드의 기록 제외는 유지됩니다.";break;
             case "preview":Close();break;case "safeTrial":SafeTrial();break;
             case "backgroundScore":RequireDev();if(stage?.Fever!=null)stage.Fever.BackgroundScoreVisible=!stage.Fever.BackgroundScoreVisible;break;
             case "feverKill":case "feverFill":case "feverStep":case "feverHit":case "feverAbort":
@@ -158,12 +161,11 @@ public sealed class CursorDashRuntimeUI : MonoBehaviour
 #endif
     }
     private void DrawGUI(){
-        if(htmlReady)return;
+        if(htmlReady||!CursorDashTuning.DevEnabled&&!PanelOpen)return;
         float scale=Mathf.Max(1,Screen.width/900f);GUI.matrix=Matrix4x4.Scale(new Vector3(scale,scale,1));float w=Screen.width/scale,h=Screen.height/scale;
         GUI.Box(new Rect(0,0,w,50),CursorDashTuning.DevEnabled?"DEV · 기록 제외 · "+PresetName:CursorDashSession.IsPractice?"훈련 · 기록 제외":"CursorDash");
-        if(GUI.Button(new Rect(8,8,85,34),"설정"))Open(false);if(GUI.Button(new Rect(98,8,85,34),"훈련"))Command("training");if(GUI.Button(new Rect(188,8,85,34),"가이드"))Command("tutorial");
+        if(GUI.Button(new Rect(8,8,85,34),"개발자"))Open(true);if(GUI.Button(new Rect(98,8,85,34),"훈련"))Command("training");if(GUI.Button(new Rect(188,8,85,34),"가이드"))Command("tutorial");
         var practice=StageManager.instance?.GetComponent<CursorDashPractice>();
-        if(!PanelOpen&&practice!=null){GUI.Box(new Rect(8,58,w-16,104),practice.Instruction);if(GUI.Button(new Rect(16,94,95,32),"원형 생성"))Command("spawnCircle");if(GUI.Button(new Rect(116,94,95,32),"육각 생성"))Command("spawnHex");if(GUI.Button(new Rect(216,94,95,32),"건너뛰기"))Command("skip");if(GUI.Button(new Rect(316,94,95,32),"개발자"))Open(true);}
         if(!PanelOpen){if(CursorDashTuning.DevEnabled&&(bool)CursorDashTuning.Requested("hex.timelineDebug")){var data=HexTimelineData();GUI.Box(new Rect(12,174,w-24,140),"육각 회전 타임라인 (검수용)");GUI.Label(new Rect(22,199,w-44,110),HexLiveText(data));}return;}
         GUI.Box(new Rect(8,54,w-16,h-62),DeveloperPanel?"개발자 수치 — 원본 저장 없음":"사용자 설정 — 일시정지");
         if(GUI.Button(new Rect(w-100,60,80,32),"닫기"))Close();if(GUI.Button(new Rect(20,82,110,32),"개발자 도구"))Open(true);if(GUI.Button(new Rect(136,82,100,32),"안전 재생성"))Command("safeTrial");if(GUI.Button(new Rect(242,82,90,32),"설정 저장"))Command("userSave");

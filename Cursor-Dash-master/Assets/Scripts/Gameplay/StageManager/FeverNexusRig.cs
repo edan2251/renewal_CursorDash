@@ -52,6 +52,12 @@ public sealed class FeverNexusRig
         dotted.localScale=scale*s;
     }
     public void Restore(bool completed){if(bound&&dotted!=null)dotted.localScale=scale;SetOpacity(1);spin.Clear();actualSpeed=24;recall=null;}
+    public void GuideReset(float progress,float delta)
+    {
+        if(!bound||dotted==null)return;
+        Advance(delta,FeverState.Phase.Normal,0);float amount=(float)CursorDashGuideFlow.ResetRing(progress);
+        dotted.localScale=scale*amount;SetOpacity(Mathf.Clamp01(amount*2));
+    }
     public void Suspend()
     {
         if(!bound)return;if(dotted!=null){dotted.localScale=scale;dotted.localRotation=rotation;angle=rotation.eulerAngles.z;}SetOpacity(1);recall=null;spin.Clear();actualSpeed=24;

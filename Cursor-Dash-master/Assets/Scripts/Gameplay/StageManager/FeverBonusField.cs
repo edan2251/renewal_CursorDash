@@ -24,7 +24,7 @@ public sealed class FeverBonusField
     private readonly List<(FeverBonusNode node,float along,Vector2 point)> contacts=new List<(FeverBonusNode,float,Vector2)>();
     public int Collected {get;private set;}
     public int SweptCollections {get;private set;}
-    public bool CanCollect=>stage.IsPlaying&&fever.Model.Current==FeverState.Phase.Fever;
+    public bool CanCollect=>stage.IsPlaying&&!fever.Model.PresentationHold&&fever.Model.Current==FeverState.Phase.Fever;
     public int ActiveCount {get{int n=0;foreach(var item in nodes)if(item!=null&&item.gameObject.activeSelf)n++;return n;}}
     public FeverBonusField(CursorDashFever controller,StageManager game)
     {
@@ -43,6 +43,14 @@ public sealed class FeverBonusField
         }
     }
     public void Begin(){ClearNodes();spawnSerial=0;Spawned=Collected=SweptCollections=0;supply.Reset();}
+    public void TickPreview(float delta)
+    {
+        if(delta<=0||!fever.NoticeActive||!fever.Model.PresentationHold)return;
+        foreach(var item in nodes)if(item.gameObject.activeSelf)item.AdvancePreview(delta);
+        var profile=fever.Visuals;
+        if(supply.Advance(delta,profile==null?.12:profile.feverSpawnInterval,ActiveCount,Mathf.Clamp(profile==null?14:profile.feverConcurrentLimit,1,nodes.Count)))SpawnOne();
+    }
+    public void EndPreview(){sampledHead=false;}
     public void Tick(float delta)
     {
         if(delta<=0)return;

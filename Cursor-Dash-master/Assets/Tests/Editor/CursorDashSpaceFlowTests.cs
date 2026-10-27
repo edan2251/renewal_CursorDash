@@ -409,7 +409,7 @@ namespace CursorDashTests
             Assert.IsFalse((bool)Get(stage,"RecordEligible"));Assert.AreEqual("new",PlayerPrefs.GetString("CursorDash.v2.tutorial"));
             Call(stage,"ReturnHome");yield return WaitForScene("01.StageSelectScene");
             Click("RemakeMenu/Start");yield return WaitForScene("Cyberpunk");yield return null;
-            Assert.AreEqual(0,Get(Find("CursorDashPractice"),"Step"));
+            Assert.AreEqual(1,Get(Find("CursorDashPractice"),"Step"));Assert.IsTrue((bool)Get(Find("CursorDashPractice"),"Guided"));
         }
         [UnityTest] public IEnumerator SharedSpaceStartsOnceAndHomeKeepsItsManagers()
         {

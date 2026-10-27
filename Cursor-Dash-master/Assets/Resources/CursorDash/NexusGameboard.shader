@@ -12,8 +12,8 @@ Shader "CursorDash/NexusGameboard"
    #include "WorldImpact.cginc"
    #include "NexusSurface.cginc"
    sampler2D _MainTex,_Layer0Tex,_Layer1Tex,_Layer2Tex;
-   float4 _RectsU[3],_RectsV[3],_Tints[3],_TextureRects[3],_EnergyTint,_Bounds,_CoreCircle;
-   float _Level,_SolidFraction,_ImpactPress,_VisualBodyScale,_GatherLight,_Absorbing;int _EnergyIndex;
+   float4 _RectsU[3],_RectsV[3],_Tints[3],_TextureRects[3],_EnergyTint,_TutorialInk,_Bounds,_CoreCircle;
+   float _Level,_SolidFraction,_ImpactPress,_VisualBodyScale,_GatherLight,_Absorbing,_TutorialPower;int _EnergyIndex;
    fixed4 frag(v2f_img i):SV_Target {
     if(i.uv.x<_Bounds.x||i.uv.y<_Bounds.y||i.uv.x>_Bounds.z||i.uv.y>_Bounds.w)return tex2D(_MainTex,i.uv);
     float3 response=CDWorldResponse(i.uv);float2 boardUV=clamp(i.uv+response.xy,.001,.999);
@@ -39,7 +39,7 @@ Shader "CursorDash/NexusGameboard"
      layer.a*=inside;
      nexus.rgb=layer.rgb*layer.a+nexus.rgb*(1-layer.a);nexus.a=layer.a+nexus.a*(1-layer.a);
     }
-    if(nexus.a>1e-6)nexus.rgb=CDWorldLight(nexus.rgb/nexus.a,response.z)*nexus.a;
+    if(nexus.a>1e-6)nexus.rgb=lerp(_TutorialInk.rgb,CDWorldLight(nexus.rgb/nexus.a,response.z),saturate(_TutorialPower))*nexus.a;
     fixed4 board=tex2D(_MainTex,i.uv);
     return fixed4(nexus.rgb+board.rgb*(1-nexus.a),nexus.a+board.a*(1-nexus.a));
    }

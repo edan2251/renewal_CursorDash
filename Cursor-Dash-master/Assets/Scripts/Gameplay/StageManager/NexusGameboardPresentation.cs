@@ -94,7 +94,7 @@ public sealed class NexusGameboardPresentation : MonoBehaviour
         material.SetVector("_Aspect",new Vector4(input.width/shorter,input.height/shorter,0,0));
         material.SetVectorArray("_Hits",hits);material.SetVectorArray("_Shapes",shapes);material.SetVectorArray("_Responses",responses);
         material.SetFloat("_Clock",Time.unscaledTime);material.SetFloat("_OffsetCap",cap);material.SetFloat("_SuccessActive",success?1:0);
-        var fever=stage.Fever;var phase=fever==null?FeverState.Phase.Normal:fever.Model.Current;double progress=fever==null?0:fever.Model.Progress;
+        var fever=stage.Fever;material.SetFloat("_TutorialPower",fever==null?1:fever.TutorialPower);material.SetColor("_TutorialInk",fever==null?Color.gray:fever.TutorialInk);var phase=fever==null?FeverState.Phase.Normal:fever.Model.Current;double progress=fever==null?0:fever.Model.Progress;
         Vector2 center=boardCamera.WorldToViewportPoint(stage.NexusPosition),edge=boardCamera.WorldToViewportPoint(stage.NexusPosition+Vector2.right*stage.NexusRadius);
         material.SetVector("_CoreCircle",new Vector4(center.x,center.y,Mathf.Abs(edge.x-center.x)*input.width/shorter,0));
         material.SetFloat("_VisualBodyScale",(float)FeverFlowMath.BodyScale(phase,progress,fever?.Visuals==null?.115:fever.Visuals.feverGatherCompression)*(fever==null?1:fever.MagneticBody));material.SetFloat("_GatherLight",(float)FeverFlowMath.GatherLight(phase,progress)+(fever==null?0:fever.MagneticLight));

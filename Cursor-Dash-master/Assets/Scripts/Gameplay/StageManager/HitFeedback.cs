@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>Owns only its own event effects. Game counts/damage are committed by StageManager first.</summary>
 public class HitFeedback : MonoBehaviour
 {
-    public struct EventInfo { public int sequence; public string kind,cause; public Vector3 point; public Vector2 incoming; public float gameTime,realTime;public bool confirmedDamage; }
+    public struct EventInfo { public int sequence; public string kind,cause; public Vector3 point; public Vector2 incoming; public float gameTime,realTime;public bool confirmedDamage,protectedContact; }
     private readonly List<EventInfo> recent=new List<EventInfo>();
     private readonly List<MonoBehaviour> fragments=new List<MonoBehaviour>();
     private StageManager stage;
@@ -18,6 +18,7 @@ public class HitFeedback : MonoBehaviour
     public IReadOnlyList<EventInfo> Recent=>recent;
     public LocalImpactDistortion Distortion=>distortion;
     public int FragmentBursts=>fragments.Count;
+    public bool HasLiveFragments {get{foreach(var effect in fragments)if(effect!=null&&effect.gameObject.activeInHierarchy)return true;return false;}}
     private void Awake()
     {
         stage=GetComponent<StageManager>();shake=GetComponent<CameraShake>();flash=GetComponent<CameraFlash>();
@@ -32,10 +33,10 @@ public class HitFeedback : MonoBehaviour
     { EmitCore("circleRemove",point,shape,null,incoming,sheet,false,"A_cursorCircle"); }
     public void EmitNexus(NexusImpactVfx.Cause cause,Vector2 point,Vector2 incoming,Color tint,float circleLife)
     {EmitNexusCommitted(cause,point,incoming,tint,circleLife,false);}
-    public void EmitNexusCommitted(NexusImpactVfx.Cause cause,Vector2 point,Vector2 incoming,Color tint,float circleLife,bool confirmedDamage)
+    public void EmitNexusCommitted(NexusImpactVfx.Cause cause,Vector2 point,Vector2 incoming,Color tint,float circleLife,bool confirmedDamage,bool protectedContact=false)
     {
         bool typed=cause!=NexusImpactVfx.Cause.Manual;
-        EmitCore("nexusDamage",point,null,null,incoming,null,typed,cause==NexusImpactVfx.Cause.Circle?"C_circleNexus":cause==NexusImpactVfx.Cause.Laser?"D_laserNexus":"manual",confirmedDamage);
+        EmitCore("nexusDamage",point,null,null,incoming,null,typed,cause==NexusImpactVfx.Cause.Circle?"C_circleNexus":cause==NexusImpactVfx.Cause.Laser?"D_laserNexus":"manual",confirmedDamage,protectedContact);
         if(!typed||!CursorDashTuning.Toggle("fx.enabled",true)||!CursorDashTuning.Toggle("fx.particles",true))return;
         fragments.RemoveAll(f=>f==null);if(fragments.Count>=CursorDashTuning.Integer("fx.burstCap",16))return;
         var burst=new GameObject("Nexus contact "+cause){hideFlags=HideFlags.DontSave}.AddComponent<NexusImpactVfx>();
@@ -63,11 +64,11 @@ public class HitFeedback : MonoBehaviour
         stage.Fever?.World?.NexusDamaged(duration,true,contact);
     }
     public void ConfirmedNexusDamage(Vector2 point){if(CursorDashTuning.Toggle("fx.enabled",true))DamageSignal(point);}
-    private void EmitCore(string kind,Vector3 point,Vector3[] triangle,Color? triangleTint,Vector2 incoming,GameObject sheet,bool skipParticles,string cause,bool confirmedDamage=false)
+    private void EmitCore(string kind,Vector3 point,Vector3[] triangle,Color? triangleTint,Vector2 incoming,GameObject sheet,bool skipParticles,string cause,bool confirmedDamage=false,bool protectedContact=false)
     {
         bool success=kind=="circleRemove"||kind=="triangleBreak";
         if(success&&incoming.sqrMagnitude<.0001f)incoming=Vector2.up;
-        var evt=new EventInfo{sequence=++sequence,kind=kind,cause=cause??(kind=="triangleBreak"?"B_hexReturn":kind),point=point,incoming=incoming,gameTime=Time.time,realTime=Time.unscaledTime,confirmedDamage=confirmedDamage};
+        var evt=new EventInfo{sequence=++sequence,kind=kind,cause=cause??(kind=="triangleBreak"?"B_hexReturn":kind),point=point,incoming=incoming,gameTime=Time.time,realTime=Time.unscaledTime,confirmedDamage=confirmedDamage,protectedContact=protectedContact};
         recent.Add(evt);if(recent.Count>32)recent.RemoveAt(0);Signaled?.Invoke(evt);
         if(!CursorDashTuning.Toggle("fx.enabled",true))return;
         string prefix="fx."+kind+".";
@@ -88,10 +89,10 @@ public class HitFeedback : MonoBehaviour
         float strength=Read("distortion",kind=="hexBlock"?.002f:kind=="triangleBreak"?.01f:.008f);
         if(kind=="circleRemove")distortion?.AddSuccess(point,strength,Read("radius",.14f),Read("duration",.18f),Read("recovery",2));
         else if(success)distortion?.AddSuccess(point,strength,Read("radius",.14f),Read("duration",.18f),Read("recovery",2));
-        else if(kind!="nexusDamage"||!confirmedDamage)distortion?.Add(point,strength,CursorDashTuning.Number(prefix+"radius",.14f),CursorDashTuning.Number(prefix+"duration",.18f));
+        else if(kind!="nexusDamage"||!(confirmedDamage||protectedContact))distortion?.Add(point,strength,CursorDashTuning.Number(prefix+"radius",.14f),CursorDashTuning.Number(prefix+"duration",.18f));
         float opacity=Read("flash",0)*CursorDashTuning.Number("user.flash",1);
         // Red/optics came exactly once from the authoritative HP-decrease notification.
-        if(!(kind=="nexusDamage"&&confirmedDamage)&&opacity>0)flash?.Flash(kind=="hexBlock"?Color.yellow:Color.white,opacity,CursorDashTuning.Number(prefix+"duration",.18f));
+        if(!(kind=="nexusDamage"&&(confirmedDamage||protectedContact))&&opacity>0)flash?.Flash(kind=="hexBlock"?Color.yellow:Color.white,opacity,CursorDashTuning.Number(prefix+"duration",.18f));
         ClipTag clip=kind=="hexBlock"?ClipTag.arrowDefence:kind=="nexusDamage"?ClipTag.coreDamaged:ClipTag.nodeExplosion;
         GameManager.instance.soundManager.PlaySFX(clip,CursorDashTuning.Number(prefix+"volume",.8f),CursorDashTuning.Number(prefix+"pitch",1));
         if(skipParticles)return;

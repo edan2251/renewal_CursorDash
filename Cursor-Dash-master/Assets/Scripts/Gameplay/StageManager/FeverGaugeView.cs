@@ -35,7 +35,7 @@ public sealed class FeverGaugeView : MonoBehaviour
     }
     private void LateUpdate()
     {
-        if(root==null||fever.Model==null)return;var m=fever.Model;bool visible=!stage.IsDeath&&m.Current!=FeverState.Phase.Stopped;
+        if(root==null||fever.Model==null)return;var m=fever.Model;bool visible=!stage.IsDeath&&!fever.NoticeBlocking&&m.Current!=FeverState.Phase.Stopped;
         root.SetActive(visible);if(!visible)return;
         Radius=stage.NexusRadius*1.86f;root.transform.SetPositionAndRotation(stage.NexusPosition,Quaternion.identity);root.transform.localScale=Vector3.one*Radius;
         bool beganRewind=false;
@@ -53,11 +53,13 @@ public sealed class FeverGaugeView : MonoBehaviour
         if(m.Current==FeverState.Phase.Normal&&m.Gauge>previousGauge+.0001)chargePulse=1;
         previousGauge=(float)m.Gauge;chargePulse=Mathf.Max(0,chargePulse-Time.deltaTime/ .14f);
         float head=displayCharge,tail=0,arrow=displayCharge>.001f?1:0;
+        if(fever.TutorialResetProgress>=0){head*=1-(float)CursorDashGuideFlow.Smooth(fever.TutorialResetProgress/.40f);arrow=0;}
         if(m.Current==FeverState.Phase.Closing){head=Mathf.Lerp(closingStart,1,Mathf.SmoothStep(0,1,(float)m.Progress));arrow=1;}
         if(m.Current==FeverState.Phase.Entering){head=1;arrow=0;}
         if(m.Current==FeverState.Phase.Fever){head=1;tail=1-(float)m.Gauge;arrow=m.Gauge>0?1:0;}
         if(m.Current==FeverState.Phase.Exiting){head=tail=arrow=0;}
         HeadTurn=m.Current==FeverState.Phase.Fever?tail:head;
+        material.SetColor("_Color",Color.Lerp(new Color(fever.TutorialInk.r,fever.TutorialInk.g,fever.TutorialInk.b,originalTint.a),originalTint,fever.TutorialPower));
         material.SetFloat("_Head",Mathf.Clamp01(head));material.SetFloat("_Tail",tail);material.SetFloat("_Drain",m.Current==FeverState.Phase.Fever?1:0);material.SetFloat("_Arrow",arrow);
         material.SetFloat("_Start",7f/12);material.SetFloat("_Thickness",Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeThickness,.14,.08),.08f,.21f));
         material.SetFloat("_GapDegrees",GapDegrees);
@@ -65,8 +67,9 @@ public sealed class FeverGaugeView : MonoBehaviour
         material.SetVector("_NexusWorld",new Vector4(stage.NexusPosition.x,stage.NexusPosition.y,stage.NexusRadius,0));
         for(int i=0;i<5;i++){
             float scale=1,spin=0;Vector3 offset=Vector3.zero;float p=(float)m.Progress;
-            if(m.Current==FeverState.Phase.Entering){float t=Mathf.Clamp01((p-i*.018f)/.50f);scale=(float)FeverFlowMath.OuterScale(i,false,p);spin=-(450+i*11)*(1-Mathf.Pow(1-t,3));offset=Quaternion.Euler(0,0,spin-i*72)*Vector3.up*(.11f*Mathf.Sin(t*Mathf.PI)*scale);}
-            else if(m.Current==FeverState.Phase.Fever){float t=Mathf.Clamp01((float)m.Elapsed/.20f);scale=Mathf.SmoothStep(0,1,t);spin=120*(1-scale);}
+            if(fever.TutorialResetProgress>=0){scale=1;spin=0;}
+            else if(m.Current==FeverState.Phase.Entering){float t=Mathf.Clamp01((p-i*.018f)/.50f);scale=(float)FeverFlowMath.OuterScale(i,false,p);spin=-(450+i*11)*(1-Mathf.Pow(1-t,3));offset=Quaternion.Euler(0,0,spin-i*72)*Vector3.up*(.11f*Mathf.Sin(t*Mathf.PI)*scale);}
+            else if(m.Current==FeverState.Phase.Fever){float t=Mathf.Min(Mathf.Clamp01((float)m.Elapsed/.20f),fever.NoticePresentation);scale=Mathf.SmoothStep(0,1,t);spin=120*(1-scale);}
             else if(m.Current==FeverState.Phase.Exiting){scale=(float)FeverFlowMath.OuterScale(i,true,p);spin=180*(1-scale);}
             else if(m.Current==FeverState.Phase.Normal||m.Current==FeverState.Phase.Closing){
                 float angle=(7f/12+(i+.5f)/5)*Mathf.PI*2;Vector3 radial=new Vector3(Mathf.Sin(angle),Mathf.Cos(angle),0);

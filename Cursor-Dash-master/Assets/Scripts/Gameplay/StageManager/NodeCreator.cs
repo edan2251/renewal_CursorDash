@@ -22,7 +22,9 @@ public class NodeCreator : MonoBehaviour
     }
     private readonly List<Departure> departures=new List<Departure>();
     public int DepartingArtworkCount=>departures.Count;
+    public Node PracticeTemplate(int kind){var items=kind==0?normalNodes:kind==1?arrowNodes:null;return items!=null&&items.Length>0?items[0]:null;}
     public int ActiveCount {get{int count=0;if(allNodes!=null)foreach(var n in allNodes)if(n.gameObject.activeSelf)count++;return count;}}
+    public IReadOnlyList<Node> TutorialPool=>allNodes;
     private void Awake()
     {
         normalNodes = nodesObject.GetComponentsInChildren<NormalNode>(true);
@@ -60,15 +62,17 @@ public class NodeCreator : MonoBehaviour
             Vector2 candidate = (Vector2)generatePositions[position].position + jitter * spawnJitter;
             node.transform.position = PlayerCharacterController.ClampPosition(candidate, minimum, maximum);
         }
-        node.Execute();
+        node.SetDemonstration(null);node.Execute();
     }
-    public Node SpawnPreviewAt(int index,Vector2 position)
+    public Node SpawnPreviewAt(int index,Vector2 position)=>SpawnTutorialAt(index,position,null);
+    public Node SpawnDemonstrationAt(int index,Vector2 position,CursorDashGhostDemonstration demonstration)=>SpawnTutorialAt(index,position,demonstration);
+    private Node SpawnTutorialAt(int index,Vector2 position,CursorDashGhostDemonstration demonstration)
     {
         if(StageManager.instance?.Space!=null&&StageManager.instance.Space.AtmosphereActive)return null;
         if(StageManager.instance==null||StageManager.instance.IsDeath||StageManager.instance.NormalThreatsSuppressed||(!CursorDashSession.IsPractice&&!CursorDashTuning.DevEnabled)||ActiveCount>=activeLimit)return null;
         Node node=GetAvailable(index==0?normalNodes:index==1?arrowNodes:null);
         if(node==null)return null;
-        node.transform.position=PlayerCharacterController.ClampPosition(position,minimum,maximum);node.Execute();return node;
+        node.SetDemonstration(demonstration);node.transform.position=PlayerCharacterController.ClampPosition(position,minimum,maximum);node.Execute();return node.gameObject.activeSelf?node:null;
     }
     private static Node GetAvailable(Node[] nodes)
     {
@@ -115,7 +119,7 @@ public class NodeCreator : MonoBehaviour
     }
     private void Update()
     {
-        var stage=StageManager.instance;if(stage==null||!stage.IsPlaying||Time.deltaTime<=0)return;
+        var stage=StageManager.instance;if(stage==null||(!stage.IsPlaying&&!(stage.Fever?.NoticeActive==true&&!stage.IsUserPaused))||Time.deltaTime<=0)return;
         for(int i=departures.Count-1;i>=0;i--){var item=departures[i];item.age+=Time.deltaTime;
             if(item.age>=item.seconds){Release(item);departures.RemoveAt(i);continue;}
             item.root.transform.localScale=item.scale*(float)NodeRhythmMath.Departure(item.age,item.seconds);

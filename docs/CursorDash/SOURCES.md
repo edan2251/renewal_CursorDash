@@ -1,5 +1,29 @@
 # 근거와 참고 자료
 
+## D-064 — 최신 텍스트·팝업 결정과 실제 실행 (2026-10-28)
+
+근거는최신튜토리얼·첫피버요청, 경량손그림승인·최종고스트.70/Nexus동일회색/흰색첫확산부터안내지시, 이번Unity검수승인과 종료전‘흰색최초확산부터안내’추가지시다. 새영상관람을주장하지않는다. 코드에서실제Controller/풀/접촉/반사,등장콜라이더기하와대기경로,기존Notice/회로Front·Stage시간,마지막성공직후Reset·Nexus축소를추적했다. 고스트스타일은새아트없이기존셰이더/개별블록의고정미세윤곽이며원본크기·판정불변이다.
+
+이번검사근거는 `Logs/tutorial-poweron-fever-order-20261028`의시작해시/복구사본·참조컴파일·생산순수/모의검사·정상TestRunner최종JSON/XML/전후prefs·dirty/실GameView PNG다. [인계](TUTORIAL_POWERON_FEVER_ORDER_20261028.md). 내부조작의실물리검사와실제손/모바일·성능·시각승인을분리한다.
+
+## D-063 — 최신 텍스트·현재 코드·집중 실행 (2026-10-28)
+
+현재사용자1~5항·패널2초/슬로모션3초곡선회복회신·이번Unity검수승인이근거다. 새참고영상은제공되지않았고과거010703관람실패를새관람으로보고하지않는다. 코드에서 일반ScoreHit국소분기, 고스트목표대기입력0, 실습절대시각다중난수공급, 보호HP의옛false피격경로, 실습뒤공유점수, ReplayNotice의Main/Guided무응답과진입뒤안내를확인했다.
+
+같은실제소유권/풀/판정·Stage시간소유자·기존회로·점수/본체출현곡선·피격효과를재사용했다. 이번근거는 Logs/tutorial-pace-notice-20261028의 전후해시·참조/생산순수/모의검사·정상TestRunner JSON/XML/전후Editor상태·새GameView PNG다. [인계](TUTORIAL_PACE_FEVER_NOTICE_20261028.md). 정적검사/내부조작과손·실모바일·성능은구분한다.
+
+## D-062 — 자동 플레이 실제 근거 (2026-10-28)
+
+현재 근거는 사용자010703영상 첨부 CP0~CP6 텍스트와 이번 Unity 검수조작 허용 회신이다. `C:/Users/molph/Downloads/녹음 2026-10-28 010703.mp4` 17,557,160바이트 존재만 확인했다. 기존 WinRT 추출기 실행정책차단으로 디코딩·관람하지못해 영상에서0/2의 원인을 확정하지 않는다.
+
+코드에서 실제 ArrowNode.Block→Resolving→.06초반환→Impact와 실습의 조기Reset 충돌을 확인하고 실제 Native 반사/집계로 교정경로를 검사했다. 실제 Controller/AfterImage/Node풀/소속별Reflection·프로필/스타일을 사용했다. GameView 새PNG·정상TestRunner JSON/XML·네이티브전후state·참조/생산순수/모의검사·전후해시는 `Logs/autonomous-guide-20261028`에 있으며 [현재인계](AUTONOMOUS_GUIDE_20261028.md)를 따른다. 과거D061시범과현고스트를구분하며 새PNG는연속영상·실손/모바일/성능측정이아니다.
+
+## D-061 고스트 가이드 근거 (2026-10-28)
+
+현재 요구는 사용자 첨부 `C:/Users/molph/.codex/attachments/b5257b27-0dbf-46a0-ae94-8b86fb761982/붙여넣은 텍스트.txt`와 “실제 Play는 사용자가 담당/필요 시 컴퓨터 사용 질문” 회신이다. 첨부의 CP7 자동 Play보다 이 최신 회신을 우선한다. `C:/Users/molph/Downloads/녹음 2026-10-27 223203.mp4`는 22,441,332바이트의 파일 존재만 확인했다. 디코딩/관람을 하지 못했으므로 33.33~34.13초의 시각 사실을 판정하지 않는다.
+
+기존 Practice/Stage/Fever/NodeCreator·실제 Rotator 설정/HexTimeline·생산 선분 반사 기하·원형 접촉 기하, 기존 공개 UI/Storage/JS bridge/프로필·공식 테스트를 읽고 재사용했다. 고스트는 해당 값/기하를 사용하는 시각 모사이며 실제 Unity Physics 테스트 결과가 아니다. 수정 후 증거는 `Cursor-Dash-master/Logs/ghost-tutorial-20261028`의 컴파일·순수 실행·모의 DOM/메모리 저장·회로 전후 계산·시작 해시/복구 사본이다. 새 Unity 화면/연속 영상은 없다. [인계](GHOST_GUIDE_20261028.md).
+
 ## D-060 릴리스 근거 (2026-10-27)
 
 사용자 현재 배포 요청·실제 로컬 Git diff와41파일선별/비밀패턴검사, 소스 `2c8ad699fc0138513f8112f2ec0703194438c575`·웹 `de9ec5fae6394f2dc64c36166206667b69f4ec53`. Unity기존Editor 빌드결과 JSON/완료로그·실제상태, 입력해시1489개, source/page manifest, 로컬/공개 HTTP·실제IAB PNG/JSON/보고서/console은 `Cursor-Dash-master/Logs/release-feedback-20261027`에 보존하며 공개산출물에서제외한다. [Pages 성공](https://github.com/edan2251/renewal_CursorDash/actions/runs/40516160868) / [릴리스](RELEASE_FEEDBACK_20261027.md). 영상은 새로분석하지않았고 게임화면증거는이번PNG·브라우저조작에한정한다.

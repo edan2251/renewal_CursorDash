@@ -33,6 +33,8 @@ public class PlayerCharacterAfterImage : MonoBehaviour
     public int Capacity=>segments==null?0:segments.Length;
 
     public float Lifetime => lifetime;
+    public CursorDashGhostDemonstration Demonstration {get;private set;}
+    public void ConfigureDemonstration(CursorDashGhostDemonstration owner,GameObject collisionPool){Demonstration=owner;trailCollisions=collisionPool;}
     public int ActiveSegmentCount
     {
         get
@@ -47,7 +49,7 @@ public class PlayerCharacterAfterImage : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        if(Demonstration==null)instance = this;
         visual = GetComponent<TrailRenderer>();
         sourceLifetime=lifetime;sourceSample=sampleInterval;sourceWidth=segmentWidth;sourceDistance=minimumDistance;
         ApplyTuning();

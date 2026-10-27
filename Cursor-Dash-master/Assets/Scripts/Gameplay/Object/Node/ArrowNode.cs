@@ -89,6 +89,8 @@ public class ArrowNode : Node
     public Vector2 LastBlockPoint=>blockPoint;
     public float ReturnProgress {get;private set;}
     public float ReturnSeconds=>returnTime;
+    public bool ReflectedReturnPending=>Phase==NodePhase.Resolving&&!impacted&&BlocksThisExecution>0;
+    public float TutorialFootprint {get{float r=0;foreach(var path in HexagonalNodeOutlineA.Paths)foreach(var p in path)r=Mathf.Max(r,p.magnitude);var n=node!=null?node.transform:transform.Find("Node");var outside=n.Find("Outside 1");float child=initialNodeScale.x==0?n.localScale.x:initialNodeScale.x,ring=initialOutsideOneScale.x==0?outside.localScale.x:initialOutsideOneScale.x;return (r+.02f)*Mathf.Abs(child*ring*transform.lossyScale.x);}}
     public bool TriangleVisible=>flat!=null&&flat.Visible;
     public int ImpactsThisExecution {get;private set;}
     public int BlocksThisExecution {get;private set;}
@@ -184,13 +186,14 @@ public class ArrowNode : Node
             }
             tip=Vector2.Lerp(origin,target,Mathf.Clamp01(elapsed/attack));DrawBeam(tip,false);
             EnergyRemaining=Mathf.Pow(1-Mathf.Clamp01(elapsed/attack),energyCurve);
-            Vector2 contact;var trail=PlayerCharacterAfterImage.instance;
+            Vector2 contact;var trail=Demonstration==null?PlayerCharacterAfterImage.instance:Demonstration.Trail;
             if(trail!=null&&trail.TryBlockBeam(origin,tip,beamDefenseRadius,out contact)){Block(contact);return;}
             if(elapsed<attack)return;
             // Commit BEFORE DamageNexus: lethal damage synchronously resets all pooled nodes.
             beamArrived=true;afterglowElapsed=0;NexusReachedAt=Time.time;
-            ImpactsThisExecution++;NormalNode.DefenseStreak=0;
-            stage.DamageNexusFromLaser(damage,target,(target-origin).normalized,beamColor);
+            ImpactsThisExecution++;
+            if(Demonstration!=null){Demonstration.Missed(this);return;}
+            NormalNode.DefenseStreak=0;stage.DamageNexusFromLaser(damage,target,(target-origin).normalized,beamColor);
             if(Phase==NodePhase.Fired&&activeAfterglow<=0)ResetObject();
         }
         else if(Phase==NodePhase.Resolving)
@@ -267,6 +270,7 @@ public class ArrowNode : Node
         FiredAt=Time.time;beamArrived=false;fireElapsed=0;recoiling=true;
         AdvanceFiringRecoil(Mathf.Min(Time.deltaTime,.006f));
         target=stage.NexusPosition+(origin-stage.NexusPosition).normalized*stage.NexusRadius;
+        stage.Practice?.TraceBeam(this,Demonstration==null?"practice fire":"ghost fire",origin);
         lineRenderer.widthMultiplier=width/Mathf.Max(.0001f,initialStartWidth);
         lineRenderer.startColor=lineRenderer.endColor=beamColor;lineRenderer.enabled=true;
         DrawBeam(origin,false);
@@ -277,14 +281,17 @@ public class ArrowNode : Node
         Phase=NodePhase.Resolving;elapsed=0;blockPoint=tip=contact;BlocksThisExecution++;BlockedAt=Time.time;
         DrawBeam(contact,true);
         lineRenderer.startColor=lineRenderer.endColor=returnColor;
-        NormalNode.DefenseStreak++;StageManager.instance.RegisterHexBlocked(contact);
+        if(Demonstration!=null)Demonstration.Reflected(this,contact);
+        else {StageManager.instance.Practice?.TraceBeam(this,"player trail reflected",contact);NormalNode.DefenseStreak++;StageManager.instance.RegisterHexBlocked(contact);}
     }
     private void Impact()
     {
         if(impacted||Phase!=NodePhase.Resolving)return;
         impacted=true;ImpactsThisExecution++;elapsed=0;lineRenderer.enabled=false;
         Vector3[] silhouette=TriangleWorldPoints;
-        StageManager.instance.RegisterHexKill(this,BeamOutlet,silhouette,bodyColor,(origin-blockPoint).normalized);
+        StageManager.instance.Practice?.TraceBeam(this,"returned impact",BeamOutlet);
+        if(Demonstration!=null)Demonstration.Killed(this,1,BeamOutlet,(origin-blockPoint).normalized,silhouette);
+        else StageManager.instance.RegisterHexKill(this,BeamOutlet,silhouette,bodyColor,(origin-blockPoint).normalized);
         flat.Visible=false;
         triangleRenderer.enabled=false;node.SetActive(false);
     }

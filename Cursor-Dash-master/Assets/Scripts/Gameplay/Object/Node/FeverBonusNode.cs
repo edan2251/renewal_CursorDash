@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class FeverBonusNode : Node
 {
     private FeverBonusField owner;private MeshRenderer view;private MaterialPropertyBlock properties;
-    private Vector2 origin;private float age,life,radius,seed;private bool removed;
+    private Vector2 origin;private float age,appearanceAge,life,radius,seed;private bool removed;
     public float WorldRadius=>Mathf.Abs(transform.lossyScale.x);
     public MeshRenderer RecallSource=>view;
     public bool Collectible=>!removed&&Phase!=NodePhase.Inactive&&gameObject.activeInHierarchy&&circleCollider!=null&&circleCollider.enabled;
@@ -21,24 +21,25 @@ public sealed class FeverBonusNode : Node
     }
     public void Spawn(Vector2 position,float size,float duration,float variation)
     {
-        origin=position;radius=size;life=duration;seed=variation;age=0;removed=false;
+        origin=position;radius=size;life=duration;seed=variation;age=appearanceAge=0;removed=false;
         transform.position=position;BeginExecution();
         spriteRenderer.color=Color.clear;circleCollider.radius=1;circleCollider.enabled=true;
         properties.SetFloat("_Invert",variation>.5f?1:0);ApplyAppearance();
     }
     public void Advance(float delta)
     {
-        if(removed||Phase==NodePhase.Inactive)return;age+=delta;
+        if(removed||Phase==NodePhase.Inactive)return;age+=delta;appearanceAge+=delta;
         if(age>=life){ResetObject();return;}
         ApplyAppearance();
     }
+    public void AdvancePreview(float delta){if(removed||Phase==NodePhase.Inactive)return;appearanceAge+=Mathf.Max(0,delta);ApplyAppearance();}
     private void ApplyAppearance()
     {
         var profile=owner?.Visuals;
         // Own lifetime still expires normally. Round-end copies take over at gauge zero, not .55 s early.
         float remaining=life-age;
         float appear=profile==null?.12f:profile.feverNodeAppearSeconds,retire=profile==null?.55f:profile.feverNodeRetireSeconds;
-        transform.localScale=Vector3.one*(radius*(float)NodeRhythmMath.BonusScale(age,appear,remaining,retire));
+        transform.localScale=Vector3.one*(radius*(float)NodeRhythmMath.BonusScale(appearanceAge,appear,remaining,retire));
         transform.position=origin; // Renderer and real CircleCollider2D shrink together until the existing expiry.
         properties.SetFloat("_Opacity",Mathf.Clamp01(remaining/.14f));view.SetPropertyBlock(properties);
     }

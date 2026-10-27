@@ -108,13 +108,13 @@ namespace CursorDashTests
                 Assert.Greater(visible,3,"Final Game View includes BOTH cameras and overlay HUD; camera-only pixels cannot prove final visibility.");Assert.AreEqual(stable,uiCamera.transform.position);
                 var layer=Get(Get(Get(stage,"Feedback"),"Distortion"),"CursorLayer");Assert.IsTrue((bool)Get(layer,"Bound"));Assert.Greater((int)Get(layer,"RenderedFrames"),0);
                 Assert.That((Camera.main.cullingMask&(1<<renderer.gameObject.layer)),Is.Zero,"Cursor is not also drawn under the nexus.");
-                Call(ui,"Open",false);yield return new WaitForEndOfFrame();settings=ScreenCapture.CaptureScreenshotAsTexture();
+                Call(ui,"Open",true);yield return new WaitForEndOfFrame();settings=ScreenCapture.CaptureScreenshotAsTexture(); // Public settings are hidden; the preserved developer modal must still cover the cursor.
                 Vector3 uv=Camera.main.WorldToViewportPoint(center);int cx=Mathf.RoundToInt(uv.x*settings.width),cy=Mathf.RoundToInt(uv.y*settings.height);
                 var withSettings=settings.GetPixels32();int covered=0,magenta=0;
                 for(int y=Mathf.Max(0,cy-10);y<Mathf.Min(settings.height,cy+10);y++)for(int x=Mathf.Max(0,cx-10);x<Mathf.Min(settings.width,cx+10);x++){
                     int k=y*settings.width+x;if(second[k].r>220&&second[k].b>220&&second[k].g<40){magenta++;if(withSettings[k].g>40||withSettings[k].r<220||withSettings[k].b<220)covered++;}
                 }
-                Assert.Greater(magenta,3);Assert.Greater(covered,magenta*.8f,"Settings must visibly cover the cursor in the final framebuffer.");
+                Assert.Greater(magenta,3);Assert.Greater(covered,magenta*.8f,"The developer modal must visibly cover the cursor in the final framebuffer.");
                 string dir=Path.Combine(GraphicsEvidenceRoot,"D025Cursor");Directory.CreateDirectory(dir);
                 File.WriteAllBytes(Path.Combine(dir,"cursor-over-nexus-final-gameview.png"),after.EncodeToPNG());File.WriteAllBytes(Path.Combine(dir,"settings-over-cursor-final-gameview.png"),settings.EncodeToPNG());
             }finally{

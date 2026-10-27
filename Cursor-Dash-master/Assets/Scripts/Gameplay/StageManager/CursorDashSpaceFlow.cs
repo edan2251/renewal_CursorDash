@@ -61,7 +61,7 @@ public sealed class CursorDashSpaceFlow : MonoBehaviour
     }
     public void Home()
     {
-        timeline=null;age=ackAge=0;acknowledged=false;releaseToAcknowledge=true;quick=ringStarted=false;releaseToStart=true;newRecord=false;CursorDashSession.EnterGameOnLoad=false;CursorDashSession.CurrentMode=CursorDashSession.Mode.Normal;
+        timeline=null;age=ackAge=0;acknowledged=false;releaseToAcknowledge=true;quick=ringStarted=false;releaseToStart=true;newRecord=false;CursorDashSession.EnterGameOnLoad=false;CursorDashSession.CurrentMode=CursorDashSession.Mode.Normal;CursorDashSession.ReplayTutorial=false;
         stage.PrepareSpace();stage.SetSpaceState(StageManager.RoundState.Main);stage.Fever.Circuits?.ResetSpace();
         bestNumber=CursorDashPointsRecord.Read(GameManager.instance.MapInformation.mapName);bestValue=bestNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
         canvasRoot.SetActive(true);

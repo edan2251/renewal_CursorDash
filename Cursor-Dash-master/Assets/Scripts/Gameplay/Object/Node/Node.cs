@@ -19,7 +19,15 @@ public class Node : MonoBehaviour
     protected bool isInteraction { get => _isInteraction; set => _isInteraction = value; }
     public NodePhase Phase { get; protected set; }
     public ulong ExecutionId {get;private set;}
+    public CursorDashGhostDemonstration Demonstration {get;private set;}
+    public void SetDemonstration(CursorDashGhostDemonstration owner)
+    {
+        Demonstration=owner;
+        var style=GetComponent<CursorDashGuideStyle>();
+        if(owner==null)style?.Restore();
+    }
     public float EntranceSeconds=>activeEntrance;
+    public float RestColliderRadius=>originalColliderRadius;
     protected float EntranceProgress=>Phase==NodePhase.Preparing?Mathf.Clamp01((Time.time-entranceStarted)/Mathf.Max(.001f,activeEntrance)):1;
     protected float EntranceBody=>(float)NodeEntranceMath.Body(EntranceProgress);
     protected float EntranceRing=>(float)NodeEntranceMath.Ring(EntranceProgress);
@@ -58,6 +66,7 @@ public class Node : MonoBehaviour
     public virtual void ShowEffect(Vector2 position) { }
     public virtual void ResetObject()
     {
+        SetDemonstration(null);
         StopAllCoroutines();
         Phase = NodePhase.Inactive;
         if(_circleCollider!=null)_circleCollider.radius=originalColliderRadius;

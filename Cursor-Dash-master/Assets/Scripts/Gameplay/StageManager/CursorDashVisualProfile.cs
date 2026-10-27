@@ -4,6 +4,35 @@ using UnityEngine;
 [CreateAssetMenu(menuName="CursorDash/Visual prototype profile")]
 public sealed class CursorDashVisualProfile : ScriptableObject
 {
+    [Header("Ghost tutorial — practice only; original combat values are unchanged")]
+    [HideInInspector] public float tutorialRespawnSeconds=.65f; // D-061 compatibility; independent supply clocks replace paired respawn.
+    [HideInInspector] public float tutorialDemoGap=.75f; // D-061 visual-loop compatibility only.
+    [Range(1f,3.2f)] public float tutorialResetSeconds=2.2f;
+    [HideInInspector] public float tutorialGhostScale=.88f; // Real pooled nodes now keep their unscaled geometry.
+    [Range(.4f,5f)] public float tutorialGhostSupplySeconds=3.1f;
+    [Range(1,4)] public int tutorialGhostLimit=2;
+    [Tooltip("실습 노드가 처치/실패로 사라진 뒤 다음 노드까지의 여유 시간")]
+    [Range(.3f,4f)] public float tutorialPracticeSupplySeconds=1.2f;
+    [HideInInspector] public int tutorialPracticeLimit=1; // Serialized compatibility; practice is now strictly one at a time.
+    [Range(.15f,.85f)] public float tutorialGhostInput=.70f;
+    [Range(4f,14f)] public float tutorialGhostCruiseSeconds=8f;
+    [Range(3f,14f)] public float tutorialGhostSteering=7f;
+    [Range(.1f,.8f)] public float tutorialNodeGap=.28f;
+    public Color tutorialInk=new Color(.55f,.58f,.62f,1);
+    [Range(0,.5f)] public float tutorialSketch=.30f;
+    [Range(.3f,1.5f)] public float tutorialNexusClearance=.85f;
+    [Range(.1f,1f)] public float tutorialFinishSettle=.35f;
+    [Range(.15f,1f)] public float tutorialGhostFade=.4f;
+    [Header("First fever notice — unscaled presentation, gameplay timer/supply held")]
+    [HideInInspector] public float feverNoticeFadeIn=0; // Compatibility only: notice follows actual fever-world construction.
+    [Range(1f,5f)] public float feverNoticeHold=2f;
+    [Range(.3f,3f)] public float feverNoticeFadeOut=2f;
+    [HideInInspector] public float feverNoticeRecovery=0; // Text-only notice now follows the completed white-world build.
+    [HideInInspector] public float feverNoticeTimeScale=0; // Full stop during the opaque reading phase.
+    [Header("Normal kill circuit response only — fever and damage remain separate")]
+    [HideInInspector] public float circuitOrdinaryHitRange=.11f; // D-061 compatibility, full radial response is authoritative again.
+    [HideInInspector] public float circuitOrdinaryHitSeconds=.19f;
+    [HideInInspector] public float circuitOrdinaryHitGain=.58f;
     [Header("Shared main / gameplay space — captured when Start is accepted")]
     public Sprite mainLogo;
     [Range(.65f,3)] public float spaceStartSeconds=1.35f;
@@ -132,6 +161,7 @@ public sealed class CursorDashVisualProfile : ScriptableObject
     [Range(0,.04f)] public float circuitDeathStagger=.018f;
     public void ResetCircuitDefaults()
     {
+        circuitOrdinaryHitRange=.11f;circuitOrdinaryHitSeconds=.19f;circuitOrdinaryHitGain=.58f;
         dynamicCircuitsEnabled=circuitHitsEnabled=true;circuitDensity=12;circuitMainWidth=.043055556f;circuitLineWidth=.025925926f;circuitBranchWidth=.009259259f;circuitContactRadius=.02962963f;circuitContactStroke=.006481481f;circuitTipEmphasis=.14f;circuitNormalContrast=.075f;circuitFeverContrast=.065f;
         circuitTwoTierWidthsEnabled=true;circuitPrimaryWidth=.018518519f;circuitSecondaryWidth=.013888889f;circuitAmbientEnabled=true;
         circuitNormalTint=new Color(.40f,.47f,.52f,1);circuitFeverTint=new Color(.18f,.19f,.20f,1);circuitAmbientSpeed=.28f;circuitAmbientInterval=2.2f;circuitAmbientStrength=.12f;circuitAmbientTail=.28f;circuitAmbientHead=.032f;circuitAmbientLimit=2;circuitRecallPower=2.6f;circuitRecallStagger=.12f;

@@ -128,7 +128,7 @@ public sealed class FeverWorldTransition : MonoBehaviour
             material.SetFloat("_CoreRadius",Mathf.Max(.001f,Mathf.Abs(edge.x-centerAspect.x)*centerAspect.z));material.SetFloat("_CoreVisible",stage.IsDeath?0:stage.NexusPresentation==null?1:stage.NexusPresentation.FinaleAlpha*stage.NexusPresentation.EntryBodyAlpha);
             material.SetFloat("_VisualBodyScale",(float)FeverFlowMath.BodyScale(fever.Model.Current,fever.Model.Progress,fever.Visuals==null?.115:fever.Visuals.feverGatherCompression)*fever.MagneticBody*(stage.NexusPresentation==null?1:stage.NexusPresentation.FinaleScale*stage.NexusPresentation.EntryBodyScale));
             material.SetFloat("_Level",stage.Energy.DisplayedLevel);material.SetFloat("_Press",stage.Energy.SurfacePress);
-            material.SetColor("_CoreTint",CursorDashTuning.ColorValue("nexus.color",new Color(.04f,.7f,.9f)));
+            material.SetColor("_CoreTint",Color.Lerp(fever.TutorialInk,CursorDashTuning.ColorValue("nexus.color",new Color(.04f,.7f,.9f)),fever.TutorialPower));
             bool fx=CursorDashTuning.Toggle("fx.enabled",true);material.SetFloat("_Light",fx&&PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0);material.SetFloat("_Warp",fx?CursorDashTuning.Number("user.distortion",1):0);
             material.SetFloat("_FlowClock",fever.Clock);material.SetFloat("_Clock",Time.unscaledTime);material.SetVector("_Aspect",new Vector4(centerAspect.z,centerAspect.w,0,0));SetDotted();SetCircuit();
             material.SetVectorArray("_Hits",hits);material.SetVectorArray("_Shapes",shapes);material.SetVectorArray("_Responses",responses);

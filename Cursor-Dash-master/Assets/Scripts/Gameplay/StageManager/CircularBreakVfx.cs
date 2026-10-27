@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed class CircularBreakVfx : MonoBehaviour
 {
     private static uint burstSerial;
+    public bool GuidePool {get;set;}
     public bool UsesOriginalSheet=>false;
     private Mesh mesh;private Material material;
     private Vector3[] basis,points,centers,velocities;private int[] owners;private Color[] colors;
@@ -50,10 +51,11 @@ public sealed class CircularBreakVfx : MonoBehaviour
         basis=verts.ToArray();points=(Vector3[])basis.Clone();owners=ids.ToArray();colors=new Color[points.Length];tint=color;
         contactFlash=PlayerPrefs.GetString("OnFlash","true")=="true"?CursorDashTuning.Number("user.flash",1):0;
         started=Time.unscaledTime;duration=Mathf.Clamp(life,.18f,.55f);
-        mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.uv=new Vector2[points.Length];mesh.SetUVs(1,edgeData);
-        Shader shader=Resources.Load<Shader>("CursorDash/ImpactFlat");material=shader!=null&&shader.isSupported?new Material(shader):new Material(source);
-        material.hideFlags=HideFlags.DontSave;material.mainTexture=Texture2D.whiteTexture;material.color=Color.white;
-        gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;var view=gameObject.AddComponent<MeshRenderer>();view.sharedMaterial=material;view.sortingOrder=30;Draw(0);
+        if(mesh==null){mesh=new Mesh{hideFlags=HideFlags.DontSave};mesh.MarkDynamic();}else mesh.Clear();
+        mesh.vertices=points;mesh.triangles=indices.ToArray();mesh.uv=new Vector2[points.Length];mesh.SetUVs(1,edgeData);
+        if(material==null){Shader shader=Resources.Load<Shader>("CursorDash/ImpactFlat");material=shader!=null&&shader.isSupported?new Material(shader):new Material(source);material.hideFlags=HideFlags.DontSave;material.mainTexture=Texture2D.whiteTexture;material.color=Color.white;}
+        var filter=GetComponent<MeshFilter>();if(filter==null)filter=gameObject.AddComponent<MeshFilter>();filter.sharedMesh=mesh;
+        var view=GetComponent<MeshRenderer>();if(view==null)view=gameObject.AddComponent<MeshRenderer>();view.sharedMaterial=material;view.sortingOrder=30;Draw(0);
     }
     private static void AddEdges(List<Vector3> vertices,int start,int count,List<Vector4> data)
     {
@@ -64,7 +66,7 @@ public sealed class CircularBreakVfx : MonoBehaviour
             data.Add(distances);
         }
     }
-    private void Update(){if(mesh==null)return;float age=Time.unscaledTime-started;if(age>=duration){Destroy(gameObject);return;}Draw(age);}
+    private void Update(){if(mesh==null)return;if(GuidePool&&StageManager.instance!=null&&!StageManager.instance.IsPlaying){started+=Time.unscaledDeltaTime;return;}float age=Time.unscaledTime-started;if(age>=duration){if(GuidePool)gameObject.SetActive(false);else Destroy(gameObject);return;}Draw(age);}
     private void Draw(float seconds)
     {
         for(int k=0;k<points.Length;k++){

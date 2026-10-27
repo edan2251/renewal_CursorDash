@@ -24,6 +24,8 @@ public class PauseHandler : MonoBehaviour
     public static bool IsPaused => StageManager.instance != null && StageManager.instance.State == StageManager.RoundState.Paused;
     private void Awake()
     {
+        // Keep Resume/Retry/Home. Settings data and callbacks remain available for a later panel.
+        foreach(string child in new[]{"BGM","SFX","Vibration"}){var item=transform.Find(child);if(item!=null)item.gameObject.SetActive(false);}
         SoundManager sound = GameManager.instance.soundManager;
         isBgmOn = sound.BGMVolume > 0f;
         isSfxOn = sound.SFXVolume > 0f;
