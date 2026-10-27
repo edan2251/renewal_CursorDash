@@ -1,5 +1,16 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-060 릴리스 실제 검사 (2026-10-27)
+
+- **PASS 빌드:** Unity6000.3.23f1 WebGL 오류0·경고8/259.308초·원본 입력1489개 해시 동일. 실제자동Play 없음.
+- **PASS 참조/순수:** runtime112/test14/Editor2 오류0·기존134경고, 생산.NET4672999 + 집중106885. 공식NUnit 실행과 구분한다.
+- **PASS 웹 파일:** 로컬24/공개25 HTTP200·실제 배포Git SHA256 일치·application/wasm. Pages `40516160868` success/head `de9ec5fae6394f2dc64c36166206667b69f4ec53`.
+- **PASS 실제IAB smoke:** 메인/클릭시작/넥서스·실커서/마우스drag와궤적/훈련/Dev/JSON·보고서의새ID/.15/.20/.60/turn1800·warn/error0/DevOFF/메인복귀. 실제 손 터치/장시간 시각 검사와 구분한다.
+- **PASS 보존:** 시작4573파일(배포작업폴더 교체 별도) 삭제0, 종료씬clean/PlayOFF/timeScale1/imported6·prefs동일. 현재필요41파일 선별, 사용자미추적 보존·공개제외.
+- **NOT_RUN:** 이번NativePlay/공식NUnit, 전체전투·피버 전체시각/정상기록 앱재실행/모바일·터치·다른엔진·성능·클립보드·파일저장. 과거native70은과거증거다.
+
+[릴리스·변경목록·증거·수동순서](RELEASE_FEEDBACK_20261027.md). 최초루프백 HTTP 연결 실패는 해결 후PASS와구분해기록한다. 경고8은 미사용직렬화6/gradient DX11·GLES3 각1로 남긴다.
+
 ## D-059 — 2026-10-27 전체회로/점수RGB·호흡/치명피격
 
 - **PASS 참조컴파일:** runtime112/test14/Editor2 오류0·기존134경고/test·Editor0. Native/Shader 결과와 구분한다.

@@ -1,5 +1,17 @@
 # CursorDash 현재 상태와 다음 한 작업
 
+## 최신 — D-060 현재 누적본 빌드·선별 Git·공개 배포 완료 (2026-10-27)
+
+**DEPLOYED / WEB_RUNTIME_SMOKE_PASS / 사용자 공개 PC·모바일 검수 대기.** D-055~059 현재 로컬본을 게임 동작 추가 변경 없이 선별했다. 소스 main `2c8ad699fc0138513f8112f2ec0703194438c575`(41파일), 산출물 gh-pages `de9ec5fae6394f2dc64c36166206667b69f4ec53`, buildId **cursordash-20261027-feedback-4694b4ff0c22**. [공개 게임](https://edan2251.github.io/renewal_CursorDash/) / [Pages 작업 성공](https://github.com/edan2251/renewal_CursorDash/actions/runs/40516160868) / [릴리스·현재 상태·미검증](RELEASE_FEEDBACK_20261027.md).
+
+**PASS:** Unity6000.3.23f1 기존 Editor의 No Play WebGL 빌드 오류0·경고8·259.308초(86,214,605바이트), 입력1489파일 전후동일. 참조112/test14/Editor2 오류0·기존134경고/순수4672999+집중106885. 로컬24·공개25파일 HTTP200/배포Git SHA256·WASM MIME일치, 실제IAB 메인/시작입력·넥서스/커서 등장·실마우스이동/궤적·훈련/Dev/JSON/보고서의새ID와 .15/.20/.60·turn1800 확인, warn/error0·DevOFF/메인복귀. 전체전투/피버 연출 시각승인이나 모바일 검증을 뜻하지 않는다.
+
+**보존:** Cyberpunk clean·PlayOFF/compileOFF/timeScale1·imported dirty6/확인prefs동일. 기존4573파일(배포 checkout 교체 제외) 삭제0·미추적/Recovery/영상/백업·로컬 진단 보존·커밋/공개배포 제외. 기존 빌드 helper에 이번 ID용 메뉴만 추가, 등록 씬/설정 그대로. 이전 Build4파일만 백업 후교체/.nojekyll·폰트라이선스 유지, force/이력재작성·새연결/설치 없음. 자기 루프백 서버 정상 종료·Unity/다른 프로젝트 종료 없음.
+
+**NOT_RUN:** 이번 Native Play/공식 NUnit 실행, 전체 전투·피버·최고점 저장 재실행/클립보드·파일저장 재검증, 실제 모바일/터치·다른 브라우저·장시간 성능. 과거 native70 PASS를 이번 재실행으로 집계하지 않는다. 경고8(기존 미사용 직렬화6·NexusGameboard gradient DX11/GLES3 각1)은 별도 후속. 1280×720 웹상단 도구바/Pause 일부겹침 기존 관찰도 유지한다.
+
+**다음 한 작업:** 사용자 공개 PC/모바일에서 회로 처치/피격우선·피버 점수RGB·HP0공용피격/기존파괴·이번점수 확인/BEST저장·Pause/Home 반복 검수. 육각타이밍 재검토 제외, 일반겹침·새Flash그림/별도사이버재구축·설정창개편 보류. 이번 한정 빌드/Git/게시 승인은 완료 후 연장하지 않는다. 사후 문서 커밋은 위 실제 빌드 소스와 구분하며 문서만으로 재빌드하지 않는다.
+
 ## 최신 — D-059 전체 회로 득점 전파·피버 점수RGB·이번점수 호흡·치명피격 통일 (2026-10-27)
 
 **IMPLEMENTED / REFERENCE_COMPILE_PASS / PURE_LOGIC_PASS / NATIVE_VISUAL_NOT_RUN / 사용자검수대기.** 원형/육각·피버보너스 처치는 실제타격점의 공간전면이 독립회로까지 지나가도록 기존8슬롯/동시4 풀을 확장했다(속도2.6/폭.32·강조.44). 기존 방어의 국소연결·기본회로/평상시흐름·숫자획가림·피버가시길이/퇴장 유지. 기존 Max밝기/색혼합만으로는 우선권이 확실하지 않아 **같은 Tint 안에서 피격 붉은전면이 가시구간의 처치/quiet강조를 억제**하게 했다. 별도관리자/매타격메시·재질 생성 없음.

@@ -1,5 +1,9 @@
 # 근거와 참고 자료
 
+## D-060 릴리스 근거 (2026-10-27)
+
+사용자 현재 배포 요청·실제 로컬 Git diff와41파일선별/비밀패턴검사, 소스 `2c8ad699fc0138513f8112f2ec0703194438c575`·웹 `de9ec5fae6394f2dc64c36166206667b69f4ec53`. Unity기존Editor 빌드결과 JSON/완료로그·실제상태, 입력해시1489개, source/page manifest, 로컬/공개 HTTP·실제IAB PNG/JSON/보고서/console은 `Cursor-Dash-master/Logs/release-feedback-20261027`에 보존하며 공개산출물에서제외한다. [Pages 성공](https://github.com/edan2251/renewal_CursorDash/actions/runs/40516160868) / [릴리스](RELEASE_FEEDBACK_20261027.md). 영상은 새로분석하지않았고 게임화면증거는이번PNG·브라우저조작에한정한다.
+
 ## D-059 근거와 확인 범위 (2026-10-27)
 
 최신 사용자 텍스트가 현재 요구다. 소스에서 처치회로는 nearest/그래프연결묶음 한정, 피격/처치겹침은Max밝기·색혼합, 치명타는EmitFinalCommitted→DamageSignal(false)→옛red.26/.24초/RGB.0055/waveOFF·별도왜곡임을 확인했다. 일반피격공용경로와ScoreMask/TMP정점/Returning클릭대기·시계를 재사용했다. StageManager/ScoreManager/FeverState/최종파괴·저장 소스는 보존했다.

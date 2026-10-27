@@ -1,5 +1,11 @@
 # CursorDash 기존 환경과 후속 보존·검증 조사
 
+## D-060 실제 WebGL 빌드·기존 Pages (2026-10-27)
+
+Unity6000.3.23f1 기존 Cyberpunk/WebGL Editor를 사용해 전용 새 폴더에 BuildPipeline 실행, 자동 Play/씬·에셋 저장 없음. 오류0/경고8/259.308초·입력1489파일 동일, 종료Cyberpunkclean/imported6·prefs동일. 기존 등록 Cyberpunk→legacy01/템플릿·비압축/단일스레드 설정 유지. 이전 고정 ID 메뉴를 대체하는 이번 릴리스용 No Play 메뉴를 기존 helper에 추가했다.
+
+source `2c8ad699fc0138513f8112f2ec0703194438c575` / gh-pages `de9ec5fae6394f2dc64c36166206667b69f4ec53` / `cursordash-20261027-feedback-4694b4ff0c22`. 로컬24·공개25파일 해시/MIME·실제IAB 실행 확인. 첫 제한된 루프백 연결 실패는 전용127.0.0.1 서버의 정상 승인 경로로 해결했고 기존 실패 로그도 보존했다. 서버는 검사 후 정상 종료. 설치/전역·새연결/다른프로젝트 종료 없음. [전체 결과·8경고·미검증](RELEASE_FEEDBACK_20261027.md).
+
 ## D-059 로컬 수정·격리검사 (2026-10-27)
 
 기존 .NET/Unity 참조만 사용해 runtime112/test14/Editor2 격리컴파일 오류0·기존134경고, 실제생산순수.NET4672999+106885/정적보존을 확인했다. 이는 대상Unity Native/Shader/GPU·Play 성공이 아니다. 실시간미저장조회·Unity창/Play/저장폐기/재임포트·앱재실행/다른프로세스종료·설치/전역·새연결/빌드/Git게시는없다.
