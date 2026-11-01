@@ -4,16 +4,20 @@ using System;
 public sealed class CursorDashStartTimeline
 {
     public readonly double Seconds,RetreatEnd,RebuildEnd,NexusAt,CursorAt,RingLead,BodyOvershoot,CursorAcceleration;
+    public readonly double ScoreOpacityEnd;
     public double Age {get;private set;}
     public double Progress=>Clamp(Age/Seconds);
     public bool Complete=>Age>=Seconds;
     public CursorDashStartTimeline(double seconds=1.35,double retreat=.28,double rebuild=.82,double nexus=.42,double cursor=.64)
         :this(seconds,retreat,rebuild,nexus,cursor,.10,.045,.18){}
     public CursorDashStartTimeline(double seconds,double retreat,double rebuild,double nexus,double cursor,double ringLead,double overshoot,double acceleration)
+        :this(seconds,retreat,rebuild,nexus,cursor,ringLead,overshoot,acceleration,.55){}
+    public CursorDashStartTimeline(double seconds,double retreat,double rebuild,double nexus,double cursor,double ringLead,double overshoot,double acceleration,double scoreOpacityEnd)
     {
         Seconds=Safe(seconds,1.35,.65,3);RetreatEnd=Safe(retreat,.28,.12,.4);
         RebuildEnd=Safe(rebuild,.82,RetreatEnd+.15,.95);NexusAt=Safe(nexus,.42,.25,.65);CursorAt=Safe(cursor,.64,NexusAt+.1,.82);
         RingLead=Safe(ringLead,.10,.03,.18);BodyOvershoot=Safe(overshoot,.045,0,.08);CursorAcceleration=Safe(acceleration,.18,.08,.4);
+        ScoreOpacityEnd=Safe(scoreOpacityEnd,.55,.2,1);
     }
     public void Advance(double dt){if(!double.IsNaN(dt)&&!double.IsInfinity(dt)&&dt>0)Age=Math.Min(Seconds,Age+dt);}
     public static double Clamp(double x)=>Math.Max(0,Math.Min(1,x));
@@ -34,7 +38,9 @@ public sealed class CursorDashStartTimeline
     public double Cursor=>Launch((Progress-CursorAt)/Math.Min(.28,1-CursorAt),CursorAcceleration);
     public static double Cubic(double x){x=Clamp(x);return x<.5?4*x*x*x:1-Math.Pow(-2*x+2,3)/2;}
     public double ScoreTravel=>Cubic(Progress); // One fixed duration through gameplay handoff; no early stop/restyle gap.
-    public double ScoreCountProgress=>1-Math.Pow(1-Clamp(Progress/.35),2);
+    public double ScoreCountProgress=>ScoreTravel;
+    public double ScoreTintProgress=>ScoreTravel;
+    public double ScoreOpacityProgress=>Smooth(Progress/ScoreOpacityEnd);
 }
 
 /// <summary>Exact integer display interpolation. Retargets a running roll without restarting its clock.</summary>
@@ -63,10 +69,8 @@ public static class CursorDashScoreCountdown
         if(best.Sign<=0)return System.Numerics.BigInteger.Zero;
         if(double.IsNaN(progress))progress=0;
         double p=CursorDashStartTimeline.Clamp(progress);if(p>=1)return System.Numerics.BigInteger.Zero;
-        // Reduce significant digits too, so a huge best does not stay twenty digits until the final frame.
-        double places=p*(best.ToString(System.Globalization.CultureInfo.InvariantCulture).Length+1);
-        int power=(int)Math.Floor(places);long fraction=1000000-(long)Math.Floor((places-power)*900000);
-        return best*fraction/(System.Numerics.BigInteger.Pow(10,power)*1000000);
+        // A positive best reaches zero at the shared endpoint, never well before tint/pose finish.
+        return best-best*(long)Math.Floor(p*1000000)/1000000;
     }
 }
 

@@ -12,7 +12,7 @@ public sealed class FeverGaugeView : MonoBehaviour
     private uint seenReset;private FeverState.Phase lastPhase=FeverState.Phase.Stopped;
     private readonly NexusGaugeRewind rewind=new NexusGaugeRewind();
     public bool Rewinding=>rewind.Active;
-    public float GapDegrees=>fever==null?4:Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeGapDegrees,4,1),1,8);
+    public float GapDegrees=>stage!=null&&stage.NexusView!=null?stage.NexusView.GaugeGapDegrees:fever==null?4:Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeGapDegrees,4,1),1,8);
     public float HeadTurn {get;private set;}
     public float Radius {get;private set;}
     public Vector2 Center=>root==null?Vector2.zero:(Vector2)root.transform.position;
@@ -37,7 +37,7 @@ public sealed class FeverGaugeView : MonoBehaviour
     {
         if(root==null||fever.Model==null)return;var m=fever.Model;bool visible=!stage.IsDeath&&!fever.NoticeBlocking&&m.Current!=FeverState.Phase.Stopped;
         root.SetActive(visible);if(!visible)return;
-        Radius=stage.NexusRadius*1.86f;root.transform.SetPositionAndRotation(stage.NexusPosition,Quaternion.identity);root.transform.localScale=Vector3.one*Radius;
+        Radius=stage.NexusRadius*(stage.NexusView==null?1.86f:stage.NexusView.GaugeRadiusRatio);root.transform.SetPositionAndRotation(stage.NexusPosition,Quaternion.identity);root.transform.localScale=Vector3.one*Radius;
         bool beganRewind=false;
         if(seenReset!=m.ResetVersion){
             seenReset=m.ResetVersion;velocity=0;
@@ -61,7 +61,7 @@ public sealed class FeverGaugeView : MonoBehaviour
         HeadTurn=m.Current==FeverState.Phase.Fever?tail:head;
         material.SetColor("_Color",Color.Lerp(new Color(fever.TutorialInk.r,fever.TutorialInk.g,fever.TutorialInk.b,originalTint.a),originalTint,fever.TutorialPower));
         material.SetFloat("_Head",Mathf.Clamp01(head));material.SetFloat("_Tail",tail);material.SetFloat("_Drain",m.Current==FeverState.Phase.Fever?1:0);material.SetFloat("_Arrow",arrow);
-        material.SetFloat("_Start",7f/12);material.SetFloat("_Thickness",Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeThickness,.14,.08),.08f,.21f));
+        material.SetFloat("_Start",7f/12);material.SetFloat("_Thickness",stage.NexusView!=null?stage.NexusView.GaugeThickness:Mathf.Clamp((float)FeverSettings.Safe(fever.Settings.gaugeThickness,.14,.08),.08f,.21f));
         material.SetFloat("_GapDegrees",GapDegrees);
         material.SetFloat("_ChargePulse",m.Current==FeverState.Phase.Normal?chargePulse:0);
         material.SetVector("_NexusWorld",new Vector4(stage.NexusPosition.x,stage.NexusPosition.y,stage.NexusRadius,0));

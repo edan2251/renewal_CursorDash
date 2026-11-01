@@ -6,8 +6,8 @@ using UnityEngine;
 public sealed class CircularNodeArtwork : MonoBehaviour
 {
     public const float BodyRadius = .518279f;
-    public static readonly Color FillColor = new Color32(203, 73, 255, 255);
-    private static readonly Color BorderColor = new Color32(232, 124, 255, 255);
+    public static Color FillColor => CursorDashNodeAppearance.Default == null ? new Color32(203, 73, 255, 255) : CursorDashNodeAppearance.Default.circularFill;
+    private static Color BorderColor => CursorDashNodeAppearance.Default == null ? new Color32(232, 124, 255, 255) : CursorDashNodeAppearance.Default.circularBorder;
     private readonly List<Mesh> meshes = new List<Mesh>();
     private Material material;
     private MeshRenderer fill, border, ring;
@@ -42,9 +42,13 @@ public sealed class CircularNodeArtwork : MonoBehaviour
         return art;
     }
 
-    public void Draw(float charge, float absorption, float angle, bool charging, Color? demonstrationTint=null)
+    public void Draw(float charge,float absorption,float angle,bool charging,Color? demonstrationTint=null)
+        =>DrawArtwork(charge,absorption,angle,charging,demonstrationTint,true);
+    public void DrawSample(float charge,float absorption,float angle,bool charging,Color? demonstrationTint=null)
+        =>DrawArtwork(charge,absorption,angle,charging,demonstrationTint,false);
+    private void DrawArtwork(float charge,float absorption,float angle,bool charging,Color? demonstrationTint,bool useOverrides)
     {
-        float requestedStroke = Mathf.Clamp(CursorDashTuning.Number("visual.outline", .035f), .01f, .12f);
+        float requestedStroke = Mathf.Clamp(CursorDashNodeAppearance.Outline(useOverrides), .01f, .12f);
         if (Mathf.Abs(stroke - requestedStroke) > .00001f)
         {
             stroke = requestedStroke;
@@ -101,9 +105,10 @@ public sealed class CircularNodeArtwork : MonoBehaviour
     private void OnDisable() { Visible = false; }
     private void OnDestroy()
     {
-        foreach (var mesh in meshes) if (mesh != null) Destroy(mesh);
-        if (material != null) Destroy(material);
+        foreach (var mesh in meshes) if (mesh != null) Release(mesh);
+        if (material != null) Release(material);
     }
+    private static void Release(UnityEngine.Object value) { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
 
     // Filled contours plus a one-screen-pixel AA fringe. No soft source-texture halo or internal fan edges.
     private sealed class Shape

@@ -34,6 +34,8 @@ public sealed class NodeFlatGraphic : MonoBehaviour
             Vector2.Lerp(b,c,t)*scale,Vector2.Lerp(c,b,t)*scale,Vector2.Lerp(c,a,t)*scale};
     }
     public void Draw(bool hex,float radius,float ratio,float charge,float energy,bool piston,float ring,float angle,Color color,bool body=true)
+        =>DrawArtwork(hex,radius,ratio,charge,energy,piston,ring,angle,color,body,true);
+    private void DrawArtwork(bool hex,float radius,float ratio,float charge,float energy,bool piston,float ring,float angle,Color color,bool body,bool useOverrides)
     {
         if(material==null)return;
         // Fit the artwork, not a fixed +/-2 quad: the existing hex.radius slider allows radius 3.
@@ -50,19 +52,27 @@ public sealed class NodeFlatGraphic : MonoBehaviour
         material.SetFloat("_FillScale",1);material.SetFloat("_ChargePulse",0);
         material.SetFloat("_Piston",piston?1:0);material.SetFloat("_Body",body?1:0);
         material.SetFloat("_Ring",ring);material.SetFloat("_Angle",angle*Mathf.Deg2Rad);
-        material.SetFloat("_Stroke",CursorDashTuning.Number("visual.outline",.035f));
-        CoreRadius=Mathf.Max(0,CursorDashTuning.Number("visual.core",0));material.SetFloat("_Core",CoreRadius);
-        material.SetFloat("_Glow",CursorDashTuning.Number("visual.glow",0));
+        var appearance=CursorDashNodeAppearance.Default;
+        material.SetFloat("_Stroke",CursorDashNodeAppearance.Outline(useOverrides));
+        float core=appearance==null?0:appearance.core,glow=appearance==null?0:appearance.glow;
+        CoreRadius=Mathf.Max(0,useOverrides?CursorDashTuning.FeedbackNumber("visual.core",core):core);material.SetFloat("_Core",CoreRadius);
+        material.SetFloat("_Glow",useOverrides?CursorDashTuning.FeedbackNumber("visual.glow",glow):glow);
         material.SetColor("_Color",color);Visible=true;
     }
     public void DrawHexagonA(float radius,float ratio,float charge,float energy,bool piston,Color color,float morph)
+        =>DrawHexagonArtwork(radius,ratio,charge,energy,piston,color,morph,true);
+    public void DrawHexagonSample(float radius,float ratio,float charge,float energy,bool piston,Color color,float morph)
+        =>DrawHexagonArtwork(radius,ratio,charge,energy,piston,color,morph,false);
+    private void DrawHexagonArtwork(float radius,float ratio,float charge,float energy,bool piston,Color color,float morph,bool useOverrides)
     {
         // The separately owned original rings follow their own Rotators, not this aiming body's rotation.
-        Draw(true,radius,ratio,charge,energy,piston,0,0,color);
-        float t=Mathf.Clamp01(morph),stroke=CursorDashTuning.Number("visual.outline",.035f);
-        material.SetFloat("_Stroke",Mathf.Lerp(HexagonalNodeRings.BodyStroke,.035f,t)*stroke/.035f);
-        material.SetFloat("_FillScale",Mathf.Lerp(HexagonalNodeRings.FillRatio,1,t));
+        DrawArtwork(true,radius,ratio,charge,energy,piston,0,0,color,true,useOverrides);
+        var appearance=CursorDashNodeAppearance.Default;
+        float t=Mathf.Clamp01(morph),stroke=CursorDashNodeAppearance.Outline(useOverrides);
+        material.SetFloat("_Stroke",Mathf.Lerp(appearance==null?HexagonalNodeRings.BodyStroke:appearance.hexBodyStroke,.035f,t)*stroke/.035f);
+        material.SetFloat("_FillScale",Mathf.Lerp(appearance==null?HexagonalNodeRings.FillRatio:appearance.hexFillRatio,1,t));
     }
     public void SetChargePulse(float pulse){if(material!=null)material.SetFloat("_ChargePulse",Mathf.Clamp(pulse,0,1.35f));}
-    private void OnDestroy(){if(mesh!=null)Destroy(mesh);if(material!=null)Destroy(material);}
+    private void OnDestroy(){if(mesh!=null)Release(mesh);if(material!=null)Release(material);}
+    private static void Release(Object value){if(Application.isPlaying)Destroy(value);else DestroyImmediate(value);}
 }

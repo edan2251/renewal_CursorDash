@@ -1,5 +1,96 @@
 # CursorDash 현재 상태와 다음 한 작업
 
+## 최신 — D-076 현재 로컬본 WebGL·기존 Pages 릴리스 진행 (2026-11-02)
+
+사용자 ‘현재 상태로 빌드 커밋 푸시 배포’로 D-067~075의 완료 로컬본 게시를 승인했다. 기능 추가 없이 기존 main/gh-pages와 공개주소를 유지한다. 시작 HEAD/origin main9121b78·gh-pages6909ed2/index빈, 외부 사본 `D:/CursorDash_Backups/release-editor-20261102`에1720파일 manifest/base D075 Final+delta2를 보존했다. 이번 비Play Editor25/25·컴파일 오류0 PASS. WebGL `cursordash-20261102-editor-069d35f8b4b9` 오류0/경고8·233.063초 PASS, 로컬23파일HTTP/해시·WASM MIME와 실제브라우저 메인/설정드래그/시작·커서잔상/Pause·계속/Home·warn/error0 PASS. 소스선별커밋/기존Pages게시·공개확인은 다음 단계다. [릴리스 기록](RELEASE_EDITOR_20261102.md). 이전 Play승인을 재사용하지 않음, 다른 프로젝트/서버·사용자 dirty 자산 보존. 새 Flash그림·별도재구축/노드겹침은 계속 보류. 현재 다음 작업은 선별소스push와 기존Pages게시/공개검수다.
+
+## 최신 — D-075 Hierarchy 가독성·미사용 씬 오브젝트 정리 (2026-11-02)
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDITOR25_PASS / AUTHORIZED_NATIVE6_PASS / USER_REVIEW_PENDING.** Cyberpunk에 Manager / Camera & Input / Background / Gameplay / Pool & Spawn / UI 빈 루트 구분선6개를 추가하고 기존 부모·이름·좌표/렌더순서를 유지한 채 나열했다. 외부참조0·코드경로미사용의 옛 DeathUI/Pause UI/EnemyArrows/Hold Achivement/빈 GameObject/교체된 빈 Cyberpunk_Background 인스턴스38개 제거. 실제풀·생성위치·Stage의호환UI/최종파괴·PNG비교참조 유지, 원본Prefab/이미지/스크립트/다른씬 파일삭제0. [정확한 목록·검수·복구](HIERARCHY_CLEANUP_20261102.md).
+
+사용자dirty직접저장후외부 `D:/CursorDash_Backups/hierarchy-cleanup-20261102`(1717manifest/SceneDelta1/baseD074Final)보존. 생존362개 부모/변환/active/컴포넌트·참조불변, 저장YAML 생존문서는SceneRoots순서만변경. 초기혼합27PASS는Editor25+Native로고2이며승인대기중Play포함실수를발견·보고/종료·보호값복원확인. 이후사용자이번Play허용회신뒤집중Native6/6PASS. 사전실행을승인후실행으로기록하지않음. 최종PlayOFF/timeScale1/clean/표시OFF/missing0·fixture6문자열3float동일·루트접힘/Transform정렬그대로. main9121b78/index빈·미커밋/빌드Git게시없음·다른프로젝트/서버불변. 다음은사용자Hierarchy/기존화면편집·Play회귀검수, 추가자동개발없음.
+
+## 최신 — D-074 상태 버튼 기반 실제 Scene 편집 / 사용자 검수 대기 (2026-11-02)
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDITOR_GPU27_PASS / NATIVE_PLAY9_DISTINCT_PASS / USER_REVIEW_PENDING.** Tools→CursorDash→화면 편집을 메인·메인옵션·인게임·Pause·게임종료점수대기(+튜토리얼/첫피버) 버튼 중심으로 정리했다. 실제 Scene View/TMP/Image/Placement를 함께 표시하고 편집/Undo/Save, 저장·Play 전 표시만 복원한다. 실제 배경 quad/material/profile를 BoardView에 저장·런타임 복사 재사용, NexusBody 실제 기본shader 연결·기하 유지, SceneView 회로 localUV 보정/runtime기본0, 임시 게임상태/새매니저 없음. [단일 진행·검증·전체 변경](EDITOR_REFACTOR_STATUS.md) / [바로 편집하는 방법](EDITOR_AUTHORING_GUIDE.md).
+
+정적배경 PNG와 옛 배경회로 Image 표시슬롯만 제외, **Remake Flash는 실제 성공타격에 사용하므로 유지**, Original Flash는 명확한 비교/복구전용 참조로 유지했다. 다른 Scene/Maps/_Recovery·노드/Nexus기하 참조 보존/삭제0. 광범위한 최초 migration 자동승인거부 뒤 Native로 비활성표시·동적사용을 증명하고 범위를 두 슬롯으로 한정했다. Native9는8PASS+낡은검사경로/시점 정정후1PASS의고유합계, Editor/GPU27도별도run; 전체게임/손·모바일·WebGL성능 통과로 확대하지 않는다.
+
+시작사본 `D:/CursorDash_Backups/scene-screen-authoring-20261102`(1701manifest·사용자직접저장SceneDelta/base D073Final), 현재 main9121b78/index빈·기존미커밋보존. 최종PlayOFF/timeScale1/Cyberpunkclean/표시·임시root0/missing0, fixture6문자열/3float동일. 소스·문서미커밋/빌드·Git게시없음·다른Project_Brawl/서버변경없음. **다음 한 작업:** 사용자가 상태버튼으로 실제화면 편집→저장→Play 반영을 검수한다. 추가자동개발/게시권한없음.
+
+
+
+## 최신 — D-073 화면 편집 사용성 보완·사용자 검수 대기 (2026-11-02)
+
+사용자: 게임/전투/전환·설정·저장·WebGL정상USER_VERIFIED, 실제Editor편집은FAIL. 현재로컬수정: Settings/Menu root0·disabled Canvas/Scene0 Override22정리, 실제원본을편집중만flatCanvas로표시/저장·Play전Overlay복원, Inspector설정/Pause·안내/점수표시와원본선택, runtime/preview동일ApplyFrame/PlaceField·배경시간/흐름미리보기. Placement·글꼴·이미지·문구보존, 기존연출·규칙/완료D~G보존. nativecompile0/확장Edit89PASS·최종Editor11PASS/실제FileSave4PASS·NativePlay4PASS(서로다른run), 실제원본SceneView캡처3+NativeMain/설정/Pause확인. 최초검사준비오류와shade알파부작용은원인확인후정정/이력보존. [진행·증거·파일·복구](EDITOR_REFACTOR_STATUS.md)/[정확한편집순서](EDITOR_AUTHORING_GUIDE.md).
+
+착수dirty는사용자저장회신뒤clean기준, 외부Backups/editor-usability-20261102(1697manifest/Delta2/DGFinalbase)보존. 사용자기록초기화없음/보호fixture복원·Editor전후prefs일치. 폰트cache2만glyph추가(이전문자·Material/서체유지). main9121b78/index빈/삭제0·최종PlayOFF/timeScale1/Cyberpunkclean/표시세션·검수사본정리. 이번모바일/터치·WebGL재실행/성능·앱재실행저장/연속영상NOT_RUN. commit/push/빌드/배포·다른Project_Brawl/서버변경없음. 다음은사용자PrefabMode설정/Pause/안내·편집/저장/Play검수. 다른자동구현없음.
+
+
+## 최신 — D-072 D~G 편집 구조 구현·로컬 검수 완료, 사용자 시각 검수 대기 (2026-11-01)
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDIT_85_PASS / INTEGRATION_18_DISTINCT_PASS / LOCAL_WEBGL_BUILD_PASS / PARTIAL_VALIDATED.** C 사용자검수PASS를 기반으로 기존 화면 창7상태·실제View/Prefab원본 선택·정적 회로/숫자획가림·노드Mesh/Nexus/커서/팔레트/회로좌표·튜토리얼안내 편집 구조를 확장했다. 게임 규칙·완료A~C/로고·사용자미커밋 보존, 불필요한Manager/대규모이동/JSON·기록정책 변경 없음. [단일 진행·전체파일/검사/복구](EDITOR_REFACTOR_STATUS.md) / [직접 편집 위치](EDITOR_AUTHORING_GUIDE.md) / [698자산분류](EDITOR_ASSET_AUDIT.md).
+
+main9121b78/index빈·시작추적21수정/미추적 보존. 외부 DG시작사본1664파일(base BC milestone)과 E/Final증분, 삭제0. Native 통합18고유항목은 여러 실행의 최종PASS이며 단일18PASS run은 아님. 최종Edit85/85·Native컴파일Console0·private GPU전후기본InGame 픽셀차0·실NativePause/첫안내PNG확인. 모든NativePlay뒤 저장값Editor12/standalone0/Persistent3동일, 빌드뒤추가조회는 자동승인차단으로BLOCKED. WebGL오류0/기존경고8/670.613초/23산출파일hash·로더참조확인, **로컬전용** `Builds/LocalDevPreview/editor-refactor-DG-20261101-local`; browser실행/배포없음.
+
+최종Cyberpunkclean/PlayOFF/compileOFF/timeScale1/missing0·6View명시연결. 기존dirty6와 자체BoldViewAtlas메모리cache1은 저장폐기하지 않음(강제재임포트자동승인차단). 두View폰트의빌드자동cache변경은시작사본해시로복구/원본디스크불변. 마지막GameView픽셀캡처는환경BLOCKED, 손플레이·모바일/터치·브라우저WebGL/성능·앱재실행저장·연속영상NOT_RUN. 전체시각보존PASS로확대하지않는다. Git커밋/브랜치/push/배포·다른프로젝트/서버변경없음. **다음 한 작업:** 사용자가Cyberpunk에서7상태편집→Play시기준유지→전투/피버/튜토리얼→Pause/Retry/Home·렌더순서를검수한다. 추가자동개발없음.
+
+아래 D-071의 C대기/Play불가·D~G미착수는 이력이며 D-072가 대체한다.
+
+## 최신 — D-071 편집 구조 전환 B/C 대표 구현·사용자 Play 관문 대기 (2026-11-01)
+
+**PARTIAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDITMODE_10_PASS / REPRESENTATIVE_EDIT_VISUAL_PASS / PLAY_NOT_RUN.** [단일 진행 기록](EDITOR_REFACTOR_STATUS.md) / [사용자 편집·Play 검수 안내](EDITOR_AUTHORING_GUIDE.md).
+
+최신 첨부 Full_Refactor_Instructions로 로고-only/읽기전용 제한을 해당 승인 범위에서 대체했으나 실제 Play는 사용자 담당이다. main9121b78·기존19추적수정/미추적/완료된로고 보존. 외부 증분 시작점 `D:/CursorDash_Backups/editor-refactor-20261101-2050`(base D070사본 +Delta15, 현재1632파일)과 저장데이터 보존. 메인문구/설정(Pause 공통외형)/공용점수1개를 실제Prefab/View로 연결하고 작은 Tools→CursorDash→화면 편집 창은 Main/MainSettings 조합만 지원한다. 기준Placement/TMP/pose와 자식연출/fit 분리·기존설정 저장/슬라이더/입력12메서드 원문동일·Tuning/JSON/기록정책 불변. 새글꼴자산은 기존공식TTF/같은SDF규격, 사적렌더복사본 사용. 기존로고소스·외형/노드·피버·카메라·배경/회로/점수규칙 등 시작해시동일(점수 표시 연결만수정).
+
+nativecompile/Console0·집중Edit10PASS(새7+로고3)/실제Scene원본임시편집·UndoRedo·저장재열기·선택유지→기본복원/세로·가로합성GPU캡처확인. 새Prefab nullMonoScript 실패를 독립cs+GUID연결로 수정하고 asset/scene 재열기 sliders9/handle1/missing0로 재검증; 실패이력보존/skip없음. Play/실입력/전체게임/모바일/WebGL/성능 NOT_RUN. 미리보기 회로·획가림·후처리·애니메이션 미지원명시. **C의 실제 실행 비교는 통과로 간주하지 않는다.** D/E/F/G 미착수·에셋격리0/빌드0/Git게시0·다른프로젝트/서버변경없음. 다음한작업은사용자Main→설정→시작→득점→Pause/Retry/Home 및 편집값Play유지 검수다. 이후 통과한기반에서 연속구현을 재개한다.
+
+## 최신 — D-070 메인 로고만 Scene/Prefab View 이전 (2026-11-01)
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / FOCUSED_NATIVE_5_PASS / 제한된 시각 비교 PASS / 사용자 검수 대기.** [보존·변경·검사·편집/복구 방법](MAIN_LOGO_VIEW_20261101.md).
+
+저장소 밖 `D:/CursorDash_Backups/main-logo-view-20261101-1710`에 Assets(미추적/.meta 포함)·Packages·ProjectSettings·관련 문서/tools·CursorDash 저장 데이터를 보존했다(1,625파일/152,033,705바이트). main9121b78·기존 추적17수정/미추적 보존. 기존 게임 파일 변경은 Cyberpunk/StageManager 참조/SpaceFlow 로고 연결3개뿐, 새 MainLogo prefab/View/검사와 문서 추가. 기존 VisualPrototype·꼬리·고스트·점수/피버/입력은 작업 직전 사본과 동일하다.
+
+정식 기준은 `MainLogo/PlacementRoot` RectTransform·자식 Logo Image다. AnimationRoot만 기존150단위 오른쪽 이동/0.297초 fade·화면폭86% 대응을 받는다. 기본840×236.61972/앵커Y.79/White/원본Logo/Overlay25/Layer0 보존. Play 없는 Scene/Game View 표시·선택, 위치/크기/다른Sprite 임시 편집→Play/Home 반복/종료 유지→기본 복원 확인. 최종 정상TestRunner5PASS·XML/JSON 확인(외부 job 추적 domain reload 정지는 결과와 구분). 실제1080×1920 전후 프레임·곡선 비교/Console 오류·경고0. 손 입력·다른 화면비/모바일/WebGL/성능·전체 전투는 NOT_RUN.
+
+종료 PlayOFF/timeScale1/Cyberpunkclean/PlacementRoot 선택·CursorDash registry12/standalone0 사본과 동일·기존파일 삭제0. imported TMP dirty와 runtime Font Texture는 저장/폐기하지 않았고 디스크 변경 없음. Scene만 승인 범위에서 저장/SaveAssets 없음. Project_Brawl 요청/서버 설정·재시작·빌드·커밋/push/배포 없음. **다음 한 작업: 사용자 Cyberpunk 로고 편집 검수.** 다른 UI/전체 리팩터링으로 이어가지 않는다.
+
+## 참조 기록 — 핵심 팔레트 추출 (2026-10-31)
+
+사용자 요청으로 Unity를 실행하지 않고 저장된 LivingBackground 셰이더·VisualPrototype·Cyberpunk 씬·실제 노드/설정UI/피버 코드에서15개 기본색을 추렸다. [색상표](artifacts/cursordash-palette-20261031.png) / [HEX·원본 경로·해시](artifacts/cursordash-palette-20261031.json). PASS: 저장 소스 확인/색상표 RGB 대조. NOT_RUN: 실제 실행 화면색·개별 저장 프리셋/후처리·기기 검증. 배경색은 혼합 전 기준색이며 실제 픽셀 추출이 아니다. 게임 파일/규칙 변경·Unity 조작/실행·Play·빌드·Git게시 없음. main9121b78/기존 미커밋을 유지하고 참조표·이 기록만 추가했다. 다음 개발 작업은 기존 D-069 사용자 검수 대기를 유지한다.
+
+## 최신 — D-069 정지 후 남은 꼬리의 실제 방어 연결 (2026-10-29)
+
+**LOCAL_IMPLEMENTED / STATIC_PASS / REFERENCE_COMPILE_PASS / NATIVE_PLAY_NOT_RUN / 사용자 Unity 검수 대기.** [수정 근거·검사·검수 절차](RETAINED_TAIL_DEFENSE_20261029.md).
+
+사용자는 정지 후 남는 꼬리도 육각 레이저를 막아야 한다고 명확히 했다. 기존 Arrow는 시간 제한 샘플만 조회해 표시 꼬리를 무시하던 상태였다. 기존 `TryBlockBeam`을 실제 표시 리본의 머리→꼬리 경로와 연결했으며, 현재 머리/시계를 조회 때 갱신해 Update 순서 차이도 줄였다. 실제 플레이어20%(.78world)/고스트50%(1.95world)의 남은 경로도 방어·기존 반사가 가능하다. 화면에서 잘린 옛 경로는 막지 않으며 Clear/비활성화 시 함께 제거된다. D-067/068의 ‘남은 꼬리는 표시 전용/시간 만료 후 방어 불가’만 이 결정으로 대체한다.
+
+참조118/test17/Editor2 오류0·기존133경고, 관리형 실제 꼬리 소스에서 장기정지 방어/옛 경로 제거/이동·머리 연결·초기화/고스트 고정 길이/제어된 수비 경로24 PASS. 이는 실제 Unity/물리·GPU 검수가 아니다. 공식 회귀 단언은 새 규칙에 맞게 보강하고 컴파일만 했다. 사용자 직접 검수 선택을 유지하여 Unity 조작/실행·Play/빌드·커밋/push/배포 없음. main9121b78/빈index·기존1649파일/미추적7966 보존, 백업 `Backups/retained-tail-defense-20261029`.
+
+**다음 한 작업:** 사용자 Cyberpunk에서 육각 레이저 길을 가로지른 뒤 정지해 기존.678초 이상 지나도 남은 꼬리로 반사되는지, 이동하면 옛 위치는 방어하지 않는지, Pause/Retry/Home 정리가 정상인지 확인한다. 이동값·고스트.375/표시50%·육각타이밍/공격·반사 콜백·나머지 D-067/068 변경은 그대로다. 미커밋 상태로 대기한다.
+
+아래 D-067/068의 표시전용 방어 제약은 과거 이력이며 현재 규칙으로 적용하지 않는다.
+
+## 최신 — D-068 잔상 표시 복구·고스트 25% 감속/50% 고정 꼬리 (2026-10-29)
+
+**LOCAL_FIX_IMPLEMENTED / STATIC_PASS / REFERENCE_COMPILE_PASS / NATIVE_DISPLAY_NOT_RUN / 사용자 Unity 검수 대기.** [원인·한계·검수·수치](TRAIL_DISPLAY_GHOST_SPEED_20261029.md).
+
+사용자 D-067 잔상 미표시 FAIL 보고. 지난 수동 TrailRenderer 정점 재구성 경로를 기존 AfterImage 안의 거리 기반 LineRenderer 자식 하나로 교체/재질·색·폭·정렬 재사용·Fever 꼬리 마스크 연결, 실제 방어 풀/수명은 유지한다. 고스트 입력.50→.375(25%감속), 표시 꼬리는 속도와 분리해 처음부터50%(기본1.95world) 고정/시드 무판정·표시기록 별도. 실제 플레이어 Controller/Tuning은 HEAD와 동일해 이동값은 바꾸지 않았다. 기존 원형90%·실반사/소유권·D-067 문구/점수 전환·게임규칙 보존.
+
+참조118/test17/Editor2 오류0·기존133경고, 관리형 꼬리길이/초기화·표시와 방어분리/일정.375 입력·제어된 수비 교차24 PASS. 실제 Unity/GPU/물리 표시 검수는 사용자가 직접 담당 선택으로 NOT_RUN이다. 컴퓨터조작/Unity실행·Play·빌드/Git게시 없음. main9121b78/index·기존1648파일/미추적7952경로/이전미커밋 보존, 사본 Backups/trail-display-repair-20261029.
+
+**다음 한 작업:** 사용자 Cyberpunk에서 실제 흰 꼬리/정지20%→고스트 최초·이동중50%/25%감속→실수비→피버 검은꼬리/정상복원→Pause/Retry/Home 검수. 수정은 미커밋 상태로 유지한다. D-067 계산PASS를 실제 잔상표시 해결 확인으로 사용하지 않는다.
+
+## 최신 — D-067 튜토리얼 행동·정지 꼬리·점수 동시 전환 (2026-10-29)
+
+**IMPLEMENTED / STATIC_PASS / REFERENCE_COMPILE_PASS / NATIVE_PLAY_NOT_RUN / 사용자 검수 대기.** [원인·설정·검수 인계](TUTORIAL_CLARITY_20261029.md).
+
+문구는 원형노드 파괴/육각노드로부터 수비, 기존 실제 성공 집계 유지. 기존 이동 샘플/TR로 정지 뒤 최대 길이의20%(.78world) 표시·방어수명 불변. 점수 숫자/색/크기·위치는 같은 시작/전체1.35초, 투명도만55%(.7425초)에 완료하며 양수표시는 끝에0. 고스트 입력.70→.50 일정 순항·길이 기준 곡선/별도 접촉·수비 대시 제거, 실제 Nexus반경+.60world 앞 수비/고스트 준비.65초(실제 공격 불변). 원형90% 게이트·실습/첫피버·설정UI/공급·점수·보류 범위 유지.
+
+main9121b78/시작 tracked·index변경0/기존1647파일·미추적7933경로 보존, 사본 Backups/tutorial-clarity-20261029. 참조118/test17/Editor2 오류0·기존133경고/순수 점수·꼬리/일정입력·제어된 수비 경로24 PASS는 Unity 물리/화면 검증과 구분한다. 실제Unity 실행·조작/공식TestRunner·Play·GPU·모바일/WebGL·성능 NOT_RUN. 이번 빌드·커밋·push·배포 없으며 공개본D-066 그대로다.
+
+**다음 한 작업:** 사용자 Cyberpunk에서 메인점수→이동/정지꼬리→튜토리얼 문구·순항/넥서스 앞 반사→Pause/Retry/Home·본게임/첫피버를 직접 검수한다. 미커밋 상태로 대기한다.
+
 ## 최신 — D-066 설정·일시정지 최신본 릴리스 완료 (2026-10-28)
 
 **RELEASE_COMPLETE / USER_VERIFIED UI / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** [최신 릴리스·검수·보존·인계](RELEASE_SETTINGS_20261028.md).

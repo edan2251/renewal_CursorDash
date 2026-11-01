@@ -11,16 +11,149 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e5e83f6279e4a2b8d560c5b014b5c12, type: 3}
   m_Name: VisualPrototype
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
+  backgroundNavy: {r: 0.01, g: 0.021, b: 0.07, a: 1}
+  backgroundTeal: {r: 0.012, g: 0.21, b: 0.26, a: 1}
+  backgroundViolet: {r: 0.2, g: 0.035, b: 0.28, a: 1}
+  circuitLayout: {fileID: 11400000, guid: 3a0edee13f38de54bbd47d9bddb630f7, type: 2}
+  tutorialRespawnSeconds: 0.65
+  tutorialDemoGap: 0.75
+  tutorialResetSeconds: 2.2
+  tutorialGhostScale: 0.88
+  tutorialGhostSupplySeconds: 3.1
+  tutorialGhostLimit: 2
+  tutorialPracticeSupplySeconds: 1.2
+  tutorialPracticeLimit: 1
+  tutorialGhostInput: 0.375
+  tutorialGhostTailFraction: 0.5
+  tutorialDefenseNexusGap: 0.6
+  tutorialGhostCruiseSeconds: 8
+  tutorialGhostSteering: 7
+  tutorialNodeGap: 0.28
+  tutorialInk: {r: 0.55, g: 0.58, b: 0.62, a: 1}
+  tutorialSketch: 0.3
+  tutorialNexusClearance: 0.85
+  tutorialFinishSettle: 0.35
+  tutorialGhostFade: 0.4
+  feverNoticeFadeIn: 0
+  feverNoticeHold: 2
+  feverNoticeFadeOut: 2
+  feverNoticeRecovery: 0
+  feverNoticeTimeScale: 0
+  circuitOrdinaryHitRange: 0.11
+  circuitOrdinaryHitSeconds: 0.19
+  circuitOrdinaryHitGain: 0.58
+  mainLogo: {fileID: 21300000, guid: f8abf33bd82f6b742a3716e6bce57786, type: 3}
+  spaceStartSeconds: 1.35
+  spaceScoreOpacityEnd: 0.55
+  spaceRetreatEnd: 0.28
+  spaceRebuildEnd: 0.82
+  spaceNexusAt: 0.42
+  spaceCursorAt: 0.64
+  spaceCursorDistance: 0.95
+  spaceBestScale: 1.5
+  spaceBestOpacity: 0.52
+  spaceRingLead: 0.1
+  spaceBodyOvershoot: 0.045
+  spaceCursorAcceleration: 0.18
+  spaceRingBoost: 780
+  spaceRingDecay: 0.3
+  spaceMainScoreScale: 0.68
+  spaceMainScoreOpacity: 0.85
+  spaceMainScoreLift: 0.28
+  cursorRestTailFraction: 0.2
+  spaceLogoWidth: 840
+  spaceLogoY: 0.79
+  spaceReturnMove: 0.7
+  spaceReturnHold: 0.8
+  spaceReturnReveal: 0.45
+  spaceFinalScoreBreath: 0.025
+  spaceFinalScoreBreathSeconds: 2.4
+  nexusBreath: 0.04
+  nexusBreathLight: 0.15
+  nexusChargeExpand: 0.24
+  nexusHitCompress: 0.32
+  nexusMagnetSeconds: 0.48
+  nexusArcDrift: 0.028
+  nexusChargeGap: 0.08
+  nexusArcMotion: 0.8
+  nexusArcStagger: 0.12
+  nexusGaugeRewindSeconds: 0.38
+  nexusDamageSeconds: 0.48
+  nexusDamageFlashSeconds: 0.1
+  nexusDamageFlash: 0
+  nexusDamageTint: {r: 1, g: 0.04, b: 0.08, a: 1}
+  nexusDamageChromatic: 0.018
+  nexusDamageSpatialLight: 1.15
+  nexusDamageWaveEnabled: 1
+  nexusDamageWaveStrength: 0.03
+  nexusDamageWaveWidth: 0.24
+  nexusDamageWaveSpeed: 4.2
+  nexusDamageWaveRange: 1.25
+  nexusDamageCompression: 1.1
+  nexusDamageReleasePower: 0.85
   backgroundSpeed: 0.22
   backgroundMix: 0.84
-  backgroundBend: 0.30
-  feverBreakStrength: 2.5
+  backgroundBend: 0.3
   backgroundHitSpeed: 2.6
   backgroundHitRecovery: 0.38
   backgroundHitColor: 0.65
   backgroundHitShift: 0.075
   circuitRestContrast: 0.62
+  dynamicCircuitsEnabled: 1
+  circuitHitsEnabled: 1
+  circuitDensity: 12
+  circuitTwoTierWidthsEnabled: 1
+  circuitPrimaryWidth: 0.018518519
+  circuitSecondaryWidth: 0.013888889
+  circuitMainWidth: 0.043055557
+  circuitLineWidth: 0.025925927
+  circuitBranchWidth: 0.009259259
+  circuitContactRadius: 0.02962963
+  circuitContactStroke: 0.006481481
+  circuitTipEmphasis: 0.14
+  circuitNormalTint: {r: 0.4, g: 0.47, b: 0.52, a: 1}
+  circuitFeverTint: {r: 0.18, g: 0.19, b: 0.2, a: 1}
+  circuitNormalContrast: 0.075
+  circuitFeverContrast: 0.065
+  circuitAmbientEnabled: 1
+  circuitAmbientSpeed: 0.28
+  circuitAmbientInterval: 2.2
+  circuitAmbientStrength: 0.12
+  circuitAmbientTail: 0.28
+  circuitAmbientHead: 0.032
+  circuitAmbientLimit: 2
+  circuitHitRange: 0.18
+  circuitTransferSpeed: 1.65
+  circuitHitDecay: 0.4
+  circuitHitSeconds: 0.34
+  circuitMaxEmphasis: 0.44
+  circuitScoreWaveSpeed: 2.6
+  circuitScoreWaveWidth: 0.32
+  circuitReactionLimit: 4
+  circuitNexusEmphasis: 0.44
+  circuitNexusSpeed: 2.6
+  circuitNexusWidth: 0.26
+  circuitNexusSeconds: 0.8
+  circuitBuildSpeed: 1.8
+  circuitRestoreSpeed: 2.1
+  circuitPathStagger: 0.018
+  circuitEntryPush: 0.075
+  circuitRecallBend: 0.65
+  circuitRecallPower: 2.6
+  circuitRecallStagger: 0.12
+  circuitFeverRetreatEnabled: 1
+  circuitRetreatStart: 0.18
+  circuitRetreatSpread: 0.3
+  circuitRetreatPower: 1.35
+  circuitRetreatReadHold: 0.06
+  circuitScoreMaskEnabled: 1
+  circuitScoreMaskStrength: 1
+  circuitScoreMaskPadding: 0.65
+  circuitScoreMaskSoftness: 0.75
+  circuitDeathSpeed: 1.6
+  circuitDeathStagger: 0.018
+  feverBreakStrength: 2.5
   feverSpawnInterval: 0.12
   feverConcurrentLimit: 14
   feverNodeGap: 0.22
@@ -40,15 +173,15 @@ MonoBehaviour:
   feverChromaticAmbient: 0.0018
   feverScoreChromatic: 3
   feverShakeScale: 0.45
-  feverExitAppear: 0.20
+  feverExitAppear: 0.2
   feverExitAbsorb: 0.51
   feverExitSettle: 0.24
   feverExitSpin: 1260
-  feverExitSpinDecay: 0.10
+  feverExitSpinDecay: 0.1
   feverExitSqueeze: 0.12
   feverExitBend: 0.28
   feverExitPower: 3.2
-  feverExitTwist: 0.90
+  feverExitTwist: 0.9
   feverExitChromatic: 0.006
   feverExitShake: 0.0035
   feverExitLens: 0.012
@@ -59,9 +192,9 @@ MonoBehaviour:
   feverExitRecoilHold: 0.06
   backgroundScoreEnabled: 1
   backgroundScoreX: 0.5
-  backgroundScoreY: .5
+  backgroundScoreY: 0.5
   backgroundScoreSize: 0.42
-  backgroundScoreWidth: 0.80
+  backgroundScoreWidth: 0.8
   backgroundScoreTint: {r: 0.36, g: 0.76, b: 0.84, a: 1}
   backgroundScoreOpacity: 0.105
   backgroundScoreOpacityBoost: 0.14
@@ -69,129 +202,4 @@ MonoBehaviour:
   backgroundScoreReaction: 0.22
   backgroundScoreScaleCap: 1.22
   backgroundScoreResponse: 0.32
-  dynamicCircuitsEnabled: 1
-  circuitHitsEnabled: 1
-  circuitDensity: 12
-  circuitMainWidth: 0.043055556
-  circuitTwoTierWidthsEnabled: 1
-  circuitPrimaryWidth: 0.018518519
-  circuitSecondaryWidth: 0.013888889
-  circuitLineWidth: 0.025925926
-  circuitBranchWidth: 0.009259259
-  circuitContactRadius: 0.02962963
-  circuitContactStroke: 0.006481481
-  circuitTipEmphasis: 0.14
-  circuitNormalTint: {r: 0.40, g: 0.47, b: 0.52, a: 1}
-  circuitFeverTint: {r: 0.18, g: 0.19, b: 0.20, a: 1}
-  circuitNormalContrast: 0.075
-  circuitFeverContrast: 0.065
-  circuitAmbientEnabled: 1
-  circuitAmbientSpeed: .28
-  circuitAmbientInterval: 2.2
-  circuitAmbientStrength: .12
-  circuitAmbientTail: .28
-  circuitAmbientHead: .032
-  circuitAmbientLimit: 2
-  circuitHitRange: 0.18
-  circuitTransferSpeed: 1.65
-  circuitHitDecay: 0.40
-  circuitHitSeconds: 0.34
-  circuitMaxEmphasis: 0.44
-  circuitScoreWaveSpeed: 2.6
-  circuitScoreWaveWidth: 0.32
-  circuitReactionLimit: 4
-  circuitNexusEmphasis: 0.44
-  circuitNexusSpeed: 2.6
-  circuitNexusWidth: 0.26
-  circuitNexusSeconds: 0.80
-  circuitBuildSpeed: 1.8
-  circuitRestoreSpeed: 2.1
-  circuitPathStagger: 0.018
-  circuitEntryPush: 0.075
-  circuitRecallBend: 0.65
-  circuitRecallPower: 2.6
-  circuitRecallStagger: 0.12
-  circuitFeverRetreatEnabled: 1
-  circuitRetreatStart: 0.18
-  circuitRetreatSpread: 0.30
-  circuitRetreatPower: 1.35
-  circuitRetreatReadHold: 0.06
-  circuitScoreMaskEnabled: 1
-  circuitScoreMaskStrength: 1
-  circuitScoreMaskPadding: 0.65
-  circuitScoreMaskSoftness: 0.75
-  circuitDeathSpeed: 1.6
-  circuitDeathStagger: 0.018
-  mainLogo: {fileID: 21300000, guid: f8abf33bd82f6b742a3716e6bce57786, type: 3}
-  spaceStartSeconds: 1.35
-  spaceRetreatEnd: 0.28
-  spaceRebuildEnd: 0.82
-  spaceNexusAt: 0.42
-  spaceCursorAt: 0.64
-  spaceCursorDistance: 0.95
-  spaceBestScale: 1.5
-  spaceBestOpacity: 0.52
-  spaceRingLead: 0.10
-  spaceBodyOvershoot: 0.045
-  spaceCursorAcceleration: 0.18
-  spaceRingBoost: 780
-  spaceRingDecay: 0.30
-  spaceMainScoreScale: .68
-  spaceMainScoreOpacity: 0.85
-  spaceMainScoreLift: 0.28
-  spaceLogoWidth: 840
-  spaceLogoY: 0.79
-  nexusGaugeRewindSeconds: 0.38
-  nexusDamageSeconds: .48
-  nexusDamageFlash: 0
-  nexusDamageChromatic: .018
-  nexusDamageSpatialLight: 1.15
-  nexusDamageWaveEnabled: 1
-  nexusDamageWaveStrength: .03
-  nexusDamageWaveWidth: .24
-  nexusDamageWaveSpeed: 4.2
-  nexusDamageWaveRange: 1.25
-  nexusDamageCompression: 1.10
-  nexusDamageReleasePower: .85
-  nexusDamageTint: {r: 1, g: 0.04, b: 0.08, a: 1}
-  spaceReturnMove: .70
-  spaceReturnHold: .80
-  spaceReturnReveal: .45
-  spaceFinalScoreBreath: 0.025
-  spaceFinalScoreBreathSeconds: 2.4
-  nexusBreath: .04
-  nexusBreathLight: .15
-  nexusChargeExpand: .24
-  nexusHitCompress: .32
-  nexusMagnetSeconds: .48
-  nexusArcDrift: .028
-  nexusChargeGap: .08
-  nexusArcMotion: 0.8
-  nexusArcStagger: 0.12
-  nexusDamageFlashSeconds: .10
-  backgroundScoreRollSeconds: .24
-  tutorialRespawnSeconds: 0.65
-  tutorialDemoGap: 0.75
-  tutorialResetSeconds: 2.2
-  tutorialGhostScale: 0.88
-  tutorialGhostSupplySeconds: 3.1
-  tutorialGhostLimit: 2
-  tutorialPracticeSupplySeconds: 1.2
-  tutorialPracticeLimit: 1
-  tutorialGhostInput: 0.70
-  tutorialGhostCruiseSeconds: 8
-  tutorialGhostSteering: 7
-  tutorialNodeGap: 0.28
-  tutorialInk: {r: 0.55, g: 0.58, b: 0.62, a: 1}
-  tutorialSketch: 0.30
-  tutorialNexusClearance: 0.85
-  tutorialFinishSettle: 0.35
-  tutorialGhostFade: 0.4
-  feverNoticeFadeIn: 0
-  feverNoticeHold: 2
-  feverNoticeFadeOut: 2
-  feverNoticeRecovery: 0
-  feverNoticeTimeScale: 0
-  circuitOrdinaryHitRange: 0.11
-  circuitOrdinaryHitSeconds: 0.19
-  circuitOrdinaryHitGain: 0.58
+  backgroundScoreRollSeconds: 0.24

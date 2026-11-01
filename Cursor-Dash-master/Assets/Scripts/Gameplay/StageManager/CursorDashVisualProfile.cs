@@ -4,6 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName="CursorDash/Visual prototype profile")]
 public sealed class CursorDashVisualProfile : ScriptableObject
 {
+    [Header("Authored background palette / circuit path source (presentation only)")]
+    public Color backgroundNavy=new Color(.010f,.021f,.070f);
+    public Color backgroundTeal=new Color(.012f,.210f,.260f);
+    public Color backgroundViolet=new Color(.200f,.035f,.280f);
+    public CursorDashCircuitLayout circuitLayout;
     [Header("Ghost tutorial — practice only; original combat values are unchanged")]
     [HideInInspector] public float tutorialRespawnSeconds=.65f; // D-061 compatibility; independent supply clocks replace paired respawn.
     [HideInInspector] public float tutorialDemoGap=.75f; // D-061 visual-loop compatibility only.
@@ -14,7 +19,12 @@ public sealed class CursorDashVisualProfile : ScriptableObject
     [Tooltip("실습 노드가 처치/실패로 사라진 뒤 다음 노드까지의 여유 시간")]
     [Range(.3f,4f)] public float tutorialPracticeSupplySeconds=1.2f;
     [HideInInspector] public int tutorialPracticeLimit=1; // Serialized compatibility; practice is now strictly one at a time.
-    [Range(.15f,.85f)] public float tutorialGhostInput=.70f;
+    [Tooltip("고스트의 일정 순항 입력. .50에서25%감속한 .375이며 표시 꼬리 길이와 독립입니다.")]
+    [Range(.15f,.85f)] public float tutorialGhostInput=.375f;
+    [Tooltip("고스트 표시 꼬리의 고정 길이 비율. 이동속도·실제 방어수명과 독립입니다.")]
+    [Range(.1f,1)] public float tutorialGhostTailFraction=.50f;
+    [Tooltip("넥서스 본체 바깥에서 레이저를 막을 지점의 추가 거리(월드).")]
+    [Range(.3f,1.2f)] public float tutorialDefenseNexusGap=.60f;
     [Range(4f,14f)] public float tutorialGhostCruiseSeconds=8f;
     [Range(3f,14f)] public float tutorialGhostSteering=7f;
     [Range(.1f,.8f)] public float tutorialNodeGap=.28f;
@@ -36,6 +46,8 @@ public sealed class CursorDashVisualProfile : ScriptableObject
     [Header("Shared main / gameplay space — captured when Start is accepted")]
     public Sprite mainLogo;
     [Range(.65f,3)] public float spaceStartSeconds=1.35f;
+    [Tooltip("시작 점수의 투명도 전환이 끝나는 전체 전환 내 비율. 숫자·색·크기는 같은 시점에 시작해 전체 길이로 완료합니다.")]
+    [Range(.2f,1)] public float spaceScoreOpacityEnd=.55f;
     [Range(.12f,.4f)] public float spaceRetreatEnd=.28f;
     [Range(.55f,.95f)] public float spaceRebuildEnd=.82f;
     [Range(.25f,.65f)] public float spaceNexusAt=.42f;
@@ -51,6 +63,8 @@ public sealed class CursorDashVisualProfile : ScriptableObject
     [Range(.5f,.95f)] public float spaceMainScoreScale=.68f;
     [Range(.4f,1)] public float spaceMainScoreOpacity=.85f;
     [Range(0,.6f)] public float spaceMainScoreLift=.28f;
+    [Header("Cursor display only — defense lifetime stays in the existing trail settings")]
+    [Range(0,.4f)] public float cursorRestTailFraction=.20f;
     [Range(780,940)] public float spaceLogoWidth=840;
     [Range(.75f,.84f)] public float spaceLogoY=.79f;
     [Range(.3f,1.2f)] public float spaceReturnMove=.70f;

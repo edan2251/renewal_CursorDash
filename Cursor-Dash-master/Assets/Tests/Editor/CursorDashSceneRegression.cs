@@ -365,7 +365,8 @@ namespace CursorDashTests
             Vector3 originalRingScale = ring.localScale;
             float originalLineWidth = beam.widthMultiplier;
             Assert.That((float)Get(trail, "Lifetime"), Is.EqualTo(0.6782609f).Within(0.00001f));
-            Assert.That(trail.GetComponent<TrailRenderer>().time, Is.EqualTo(0.6782609f).Within(0.00001f));
+            Assert.IsFalse(trail.GetComponent<TrailRenderer>().emitting,"Display geometry is explicitly bounded; persistent tail samples must not generate defensive colliders.");
+            Assert.That((float)Get(trail,"RestVisualLength"),Is.EqualTo(.78f).Within(.00001f));
             Assert.That((float)Get(player, "MoveSpeed"), Is.EqualTo(5.75f).Within(0.00001f));
             Assert.That(trail.GetComponent<TrailRenderer>().startWidth, Is.EqualTo(0.0675f).Within(0.00001f));
             Assert.That(5.75f * (float)Get(trail, "Lifetime"), Is.EqualTo(3.9f).Within(0.00001f));
@@ -398,7 +399,11 @@ namespace CursorDashTests
             Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
             Assert.IsTrue(body.enabled, "The circular node remains destructible during warning.");
             Assert.IsFalse(beam.enabled);
-            Assert.Less(normal.transform.localScale.x, originalScale.x);
+            // Warning can be observed on its entry frame, before its first morph Update.
+            yield return WaitGameplay(.02f);
+            float visualMorph=(float)Get(normal,"morph");Assert.Greater(visualMorph,0);
+            Assert.Less(Vector3.Distance(originalScale*Mathf.Lerp(1,.92f,visualMorph),normal.transform.localScale),.00001f);
+            Assert.Less(normal.transform.localScale.x,originalScale.x);
             Assert.Less(ring.localScale.x, originalRingScale.x);
             Assert.Greater(Mathf.Abs(ring.localEulerAngles.z), 0f);
             ScreenCapture.CaptureScreenshot("Captures/node-warning-short-runtime.png");
@@ -444,7 +449,12 @@ namespace CursorDashTests
             Call(normal, "Execute");
             yield return WaitGameplay(0.15f);
             Assert.AreEqual("Warning", Get(normal, "Phase").ToString());
-            yield return WaitGameplay(0.32f);
+            float fireBy=Time.time+.6f,fireRealtimeBy=Time.realtimeSinceStartup+5;
+            while(Get(normal,"Phase").ToString()=="Warning"){
+                Assert.Less(Time.time,fireBy,"The existing .3s morph plus .05s recoil must complete within the bounded frame allowance.");
+                Assert.Less(Time.realtimeSinceStartup,fireRealtimeBy,"Gameplay must not stall during the warning.");
+                yield return null;
+            }
             Assert.AreEqual("Fired", Get(normal, "Phase").ToString());
             Assert.IsFalse(body.enabled);
             // C-01 draft intentionally replaces the former beam with the moving body.

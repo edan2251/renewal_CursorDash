@@ -21,7 +21,8 @@ public sealed class CircuitPathGraph
     public readonly string[] Names;
     public readonly double[] Depths,RootLengths;
     public readonly double MaxDepth;
-    public CircuitPathGraph(double aspectX,double aspectY,int density=12)
+    public CircuitPathGraph(double aspectX,double aspectY,int density=12):this(aspectX,aspectY,density,null){}
+    public CircuitPathGraph(double aspectX,double aspectY,int density,Point[] authoredPoints)
     {
         aspectX=Math.Max(1,aspectX);aspectY=Math.Max(1,aspectY);density=Math.Max(4,Math.Min(12,density));
         var p=new List<Point>();var e=new List<Edge>();var roots=new List<int>();var depths=new List<double>();var contacts=new List<int>();var names=new List<string>();var sides=new List<int>();double maximum=0;int current=-1;
@@ -88,6 +89,16 @@ public sealed class CircuitPathGraph
         if(density>=12){
             int a=Root("Lower inner right / long parallel feeder",2,616,1952);
             Trail(a,12,Px(616,1744),Px(660,1700),Px(660,1496),Px(616,1452),Px(616,1328));
+        }
+        if(authoredPoints!=null){
+            if(authoredPoints.Length<p.Count)throw new ArgumentException("Circuit path point count does not match the original topology.");
+            for(int i=0;i<p.Count;i++)p[i]=authoredPoints[i];
+            for(int i=0;i<depths.Count;i++)depths[i]=0;maximum=0;
+            for(int i=0;i<e.Count;i++){
+                var edge=e[i];edge.Length=(p[edge.B]-p[edge.A]).Length;
+                if(double.IsNaN(edge.Length)||double.IsInfinity(edge.Length)||edge.Length<.000001)throw new ArgumentException("Circuit path contains a degenerate edge.");
+                edge.Depth=depths[edge.A];depths[edge.B]=edge.Depth+edge.Length;e[i]=edge;maximum=Math.Max(maximum,depths[edge.B]);
+            }
         }
         Points=p.ToArray();Edges=e.ToArray();Roots=roots.ToArray();Depths=depths.ToArray();Contacts=contacts.ToArray();Names=names.ToArray();RootSides=sides.ToArray();MaxDepth=maximum;
         Degree=new int[Points.Length];RootLengths=new double[Roots.Length];foreach(var edge in Edges){Degree[edge.A]++;Degree[edge.B]++;RootLengths[edge.Root]=Math.Max(RootLengths[edge.Root],Depths[edge.B]);}

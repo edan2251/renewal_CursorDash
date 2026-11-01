@@ -80,7 +80,7 @@ public sealed class CursorDashFever : MonoBehaviour
         hud=new FeverScoreHud(this,fontSource,legacyScore);projection=new FeverBackgroundScore(this,stage,fontSource);
         Circuits=gameObject.AddComponent<CursorDashCircuits>();Circuits.Initialize(stage,this);
         var guideParent=fontSource!=null&&fontSource.canvas!=null?fontSource.canvas.transform:GameObject.Find("RemakeHUD")?.transform;
-        GuideView=new CursorDashGuideView(guideParent); // Reuses existing HUD; never creates a camera, canvas or raycaster.
+        GuideView=new CursorDashGuideView(guideParent,stage.GuidanceView); // Reuses existing HUD; never creates a camera, canvas or raycaster.
     }
     public void Advance(float delta,bool paused)
     {

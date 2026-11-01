@@ -47,8 +47,10 @@ namespace CursorDashTests
         {
             Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
             var stage=Find("StageManager");var fever=(Component)Get(stage,"Fever");var model=Get(fever,"Model");
-            var dotted=GameObject.Find("UI/HpCentral").transform;Vector3 original=dotted.localScale;
-            Call(fever,"Review","fill");Call(fever,"Review","step");yield return WaitGameplay(.2f);
+            var dotted=((Component)Get(Get(stage,"NexusView"),"Dotted")).transform;Vector3 original=dotted.localScale;
+            float deadline=Time.realtimeSinceStartup+3;while(!(bool)Get(stage,"IsPlaying")){Assert.Less(Time.realtimeSinceStartup,deadline,"Wait for the approved shared-scene start transition.");yield return null;}
+            Call(fever,"Review","fill");Call(fever,"Review","step");Assert.AreEqual("Entering",Get(model,"Current").ToString());
+            deadline=Time.realtimeSinceStartup+3;while((double)Get(model,"Progress")<.40){Assert.AreEqual("Entering",Get(model,"Current").ToString());Assert.Less(Time.realtimeSinceStartup,deadline,"Dotted ring absorption must follow the outer ring.");yield return null;}
             Assert.Less(dotted.localScale.magnitude,original.magnitude);Call(stage,"SetPaused",true);yield return null;
             Vector3 paused=dotted.localScale;double elapsed=(double)Get(model,"Elapsed");yield return WaitRealtime(.12f);
             Assert.AreEqual(paused,dotted.localScale);Assert.AreEqual(elapsed,Get(model,"Elapsed"));

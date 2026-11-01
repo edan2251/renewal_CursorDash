@@ -21,7 +21,8 @@ public sealed class FeverElementMask
             if(renderer is SpriteRenderer sprite&&(sprite.sprite==null||sprite.name=="CursorVisual"))return;
             // Built-in additive trail materials can write zero alpha. Use the same native ribbon/vertex fade,
             // with alpha-preserving mask output; never replace its normal material or defense geometry.
-            if(renderer is TrailRenderer&&trail!=null){buffer.DrawRenderer(renderer,trail);return;}
+            bool cursorRibbon=renderer is LineRenderer&&renderer.GetComponentInParent<PlayerCharacterAfterImage>()?.DisplayRenderer==renderer;
+            if((renderer is TrailRenderer||cursorRibbon)&&trail!=null){buffer.DrawRenderer(renderer,trail);return;}
             var materials=renderer.sharedMaterials;
             for(int i=0;i<materials.Length;i++)if(materials[i]!=null)buffer.DrawRenderer(renderer,materials[i],i);
         }

@@ -44,8 +44,9 @@ public sealed class NexusGameboardPresentation : MonoBehaviour
 
     public void Initialize(Image energy,Image frame,float fraction,LocalImpactDistortion driver)
     {
+        var owner=GetComponent<StageManager>();
         var center=energy==null||energy.transform.parent==null?null:energy.transform.parent.Find("HpCentral");
-        Image central=center==null?null:center.GetComponent<Image>();
+        Image central=owner!=null&&owner.NexusView!=null?owner.NexusView.Dotted:center==null?null:center.GetComponent<Image>();
         Shader shader=Resources.Load<Shader>("CursorDash/NexusGameboard");
         if(energy==null||frame==null||central==null||driver==null||shader==null||!shader.isSupported){BindingStatus="필수3이미지/카메라/셰이더 누락 또는 미지원";Debug.LogWarning("CursorDash nexus: "+BindingStatus);return;}
         Image[] candidates={energy,frame,central};

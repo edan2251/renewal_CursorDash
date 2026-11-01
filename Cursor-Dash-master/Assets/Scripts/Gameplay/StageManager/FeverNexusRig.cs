@@ -19,7 +19,8 @@ public sealed class FeverNexusRig
     public void Bind(NexusGameboardPresentation view)
     {
         if(bound||view?.SourceImages==null)return;
-        foreach(Image image in view.SourceImages)if(image.name=="HpCentral"){
+        var source=view.GetComponent<StageManager>()?.NexusView;
+        foreach(Image image in view.SourceImages)if(source!=null?image==source.Dotted:image.name=="HpCentral"){
             presentation=view;dottedImage=image;initialAlpha=image.color.a;
             dotted=image.transform;scale=dotted.localScale;rotation=dotted.localRotation;angle=dotted.localEulerAngles.z;
             rotator=image.GetComponent<Rotator>();if(rotator!=null){enabledBefore=rotator.enabled;direction=rotator.DirectionSign;rotator.enabled=false;}bound=true;break;

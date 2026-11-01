@@ -19,9 +19,10 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     private Rigidbody2D body;
     private Vector2 minimum;
     private Vector2 maximum;
-    private SpriteRenderer cursorVisual;
+    [SerializeField] private SpriteRenderer cursorVisual;
     private Color initialVisualColor;
     private float sourceVisualScale;private Vector2 sourceColliderSize;
+    private Vector3 sourceVisualPose;
 
     public Vector2 MoveVector
     {
@@ -40,9 +41,10 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     {
         body = GetComponent<Rigidbody2D>();
         // The visible cursor lives on a child so resizing it does not shrink the body collider.
-        SpriteRenderer visual = transform.Find("CursorVisual").GetComponent<SpriteRenderer>();
+        SpriteRenderer visual = cursorVisual!=null?cursorVisual:transform.Find("CursorVisual").GetComponent<SpriteRenderer>();
         cursorVisual=visual;
         sourceVisualScale=visual.transform.localScale.x;
+        sourceVisualPose=visual.transform.localScale;
         var box=GetComponent<BoxCollider2D>();
         if(box!=null)sourceColliderSize=box.size;ApplyRoundTuning();
         if (useCharacterSettings)
@@ -151,7 +153,11 @@ public class PlayerCharacterController : Singleton<PlayerCharacterController>
     }
     public void ApplyRoundTuning()
     {
-        if(cursorVisual!=null)cursorVisual.transform.localScale=Vector3.one*CursorDashTuning.Number("player.visualScale",sourceVisualScale);
+        if(cursorVisual!=null){
+            float visualScale=CursorDashTuning.FeedbackNumber("player.visualScale",sourceVisualScale);
+            // Authored aspect/scale is the default. Explicit developer scale keeps its existing uniform override semantics.
+            cursorVisual.transform.localScale=CursorDashTuning.DevEnabled?Vector3.one*visualScale:sourceVisualPose;
+        }
         var box=GetComponent<BoxCollider2D>();if(box!=null)box.size=new Vector2(CursorDashTuning.Number("player.colliderX",sourceColliderSize.x),CursorDashTuning.Number("player.colliderY",sourceColliderSize.y));
     }
 

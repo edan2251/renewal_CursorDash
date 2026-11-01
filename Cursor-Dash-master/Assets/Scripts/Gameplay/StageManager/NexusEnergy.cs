@@ -15,7 +15,9 @@ public class NexusEnergy : MonoBehaviour
         image=source;if(image==null)return;
         var shader=Resources.Load<Shader>("CursorDash/NexusEnergy");
         if(shader==null||!shader.isSupported)return;
-        original=image.material;material=new Material(shader){hideFlags=HideFlags.DontSave};
+        original=image.material;
+        material=original!=null&&original.shader==shader?new Material(original):new Material(shader);
+        material.hideFlags=HideFlags.DontSave;
         material.SetFloat("_SolidFraction",fraction);
         image.material=material;image.type=Image.Type.Simple;image.fillAmount=1;
         displayed=target=1;
@@ -39,11 +41,12 @@ public class NexusEnergy : MonoBehaviour
     private void ApplyMaterial()
     {
         float fade=1-Mathf.Clamp01((Time.unscaledTime-impactStarted)/ImpactSeconds);
-        SurfacePress=Mathf.Clamp(CursorDashTuning.Number("nexus.waveAmplitude",.015f),0,.025f)*fade*fade;
+        SurfacePress=Mathf.Clamp(CursorDashTuning.FeedbackNumber("nexus.waveAmplitude",.015f),0,.025f)*fade*fade;
         if(material==null)return;
         material.SetFloat("_Level",displayed);
         material.SetFloat("_ImpactPress",SurfacePress);
-        material.SetColor("_Color",CursorDashTuning.ColorValue("nexus.color",new Color(.04f,.7f,.9f)));
+        var view=StageManager.instance==null?null:StageManager.instance.NexusView;
+        material.SetColor("_Color",CursorDashTuning.FeedbackColorValue("nexus.color",view==null?new Color(.04f,.7f,.9f):view.EnergyTint));
     }
     private void OnDisable(){impactStarted=float.NegativeInfinity;SurfacePress=0;if(material!=null)material.SetFloat("_ImpactPress",0);}
     private void OnDestroy(){if(image!=null)image.material=original;if(material!=null)Destroy(material);}

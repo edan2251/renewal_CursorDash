@@ -103,14 +103,14 @@ public sealed class FeverWorldTransition : MonoBehaviour
     }
     private void SetCircuit()
     {
-        material.SetFloat("_CircuitVisible",0);var source=GetComponent<LocalImpactDistortion>()?.OriginalBackground?.SourceImage;
+        material.SetFloat("_CircuitVisible",0);var legacy=GetComponent<LocalImpactDistortion>()?.OriginalBackground;var source=legacy?.SourceImage;
         if(stage.Fever.Circuits!=null&&stage.Fever.Circuits.Active)return;
-        if(source==null||source.sprite==null)return;
+        if(source==null||legacy.SourceSprite==null)return;
         source.rectTransform.GetWorldCorners(corners);var canvas=source.canvas;var camera=canvas.renderMode==RenderMode.ScreenSpaceOverlay?null:canvas.worldCamera;
         Vector2 a=RectTransformUtility.WorldToScreenPoint(camera,corners[0]),b=RectTransformUtility.WorldToScreenPoint(camera,corners[2]);
         var r=board.pixelRect;if(b.x<=a.x||b.y<=a.y||r.width<=0||r.height<=0)return;
         material.SetVector("_CircuitImage",new Vector4((a.x-r.x)/r.width,(a.y-r.y)/r.height,(b.x-a.x)/r.width,(b.y-a.y)/r.height));
-        var sprite=source.sprite;var uv=sprite.textureRect;var tex=sprite.texture;material.SetTexture("_CircuitTex",tex);
+        var sprite=legacy.SourceSprite;var uv=sprite.textureRect;var tex=sprite.texture;material.SetTexture("_CircuitTex",tex);
         material.SetVector("_CircuitSprite",new Vector4(uv.x/tex.width,uv.y/tex.height,uv.width/tex.width,uv.height/tex.height));material.SetFloat("_CircuitVisible",1);
     }
     public void Composite(RenderTexture source,RenderTexture destination,Vector4[] hits,Vector4[] shapes,Vector4[] responses,float cap,bool success)

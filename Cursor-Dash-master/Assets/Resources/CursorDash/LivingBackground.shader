@@ -1,11 +1,14 @@
 Shader "CursorDash/LivingBackground"
 {
+ Properties {_Navy("Navy",Color)=(.010,.021,.070,1) _Teal("Teal",Color)=(.012,.210,.260,1) _Violet("Violet",Color)=(.200,.035,.280,1)
+  [HideInInspector]_Clock("Sample clock",Float)=0 [HideInInspector]_FlowSpeed("Flow speed",Float)=.22 [HideInInspector]_Mix("Palette mix",Float)=.84 [HideInInspector]_Bend("Boundary bend",Float)=.30
+  [HideInInspector]_HitColor("Hit",Float)=0 [HideInInspector]_HitDrift("Hit drift",Vector)=(0,0,0,0)}
  SubShader {Tags {"Queue"="Background" "RenderType"="Opaque"} Cull Off ZWrite Off ZTest Always
   Pass { CGPROGRAM
    #pragma vertex vert
    #pragma fragment frag
    #include "UnityCG.cginc"
-   struct V{float4 vertex:POSITION;};struct F{float4 vertex:SV_POSITION;float2 p:TEXCOORD0;};float _Clock,_FlowSpeed,_Mix,_Bend,_HitColor;float4 _HitDrift;
+   struct V{float4 vertex:POSITION;};struct F{float4 vertex:SV_POSITION;float2 p:TEXCOORD0;};float _Clock,_FlowSpeed,_Mix,_Bend,_HitColor;float4 _HitDrift,_Navy,_Teal,_Violet;
    F vert(V i){F o;o.vertex=UnityObjectToClipPos(i.vertex);o.p=i.vertex.xy;return o;}
    fixed4 frag(F i):SV_Target{
     float t=_Clock*_FlowSpeed;float2 p=i.p+_HitDrift.xy;
@@ -15,7 +18,7 @@ Shader "CursorDash/LivingBackground"
     float b=cos(q.y*1.12-q.x*.76-t*.52)+.30*sin(q.x*2.0+q.y*1.15+t*.31);
     // A bounded palette redistribution, not a full-screen flash or unrelated hue jump.
     a+=hit*.65*sin(q.y*1.3+t*.31+.8);b-=hit*.55*cos(q.x*1.1-t*.23);
-    float3 navy=float3(.010,.021,.070),teal=float3(.012,.210,.260),violet=float3(.200,.035,.280);
+    float3 navy=_Navy.rgb,teal=_Teal.rgb,violet=_Violet.rgb;
     float3 c=lerp(navy,teal,smoothstep(-.55,.95,a)*_Mix);c=lerp(c,violet,smoothstep(-.45,.95,b)*_Mix*.88);
     c*=.82+.18*saturate(1-dot(p*.45,p*.45));return fixed4(c,1);
    }

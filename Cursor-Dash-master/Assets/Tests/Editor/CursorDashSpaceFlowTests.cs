@@ -161,11 +161,20 @@ namespace CursorDashTests
                 Assert.Greater(changed,2f,"actual GPU sampling must move pixels");Assert.Less(guard,.001f,"glyph mask protects text without disabling the whole scene");
             }finally{RenderTexture.active=prior;RenderTexture.ReleaseTemporary(output);UnityEngine.Object.DestroyImmediate(material);UnityEngine.Object.DestroyImmediate(source);UnityEngine.Object.DestroyImmediate(capture);}
         }
-        [Test] public void StartScoreTravelNeverOvershootsAndCountdownFinishesBeforeTravel()
+        [Test] public void StartScoreChannelsBeginTogetherAndOpacitySettlesBeforeSharedEndpoint()
         {
-            var clock=Timeline();double prior=0;
-            for(int n=0;n<200;n++){Call(clock,"Advance",1.35/200);double travel=Get(clock,"ScoreTravel");Assert.That(travel,Is.InRange(prior,1d));prior=travel;}
-            clock=Timeline();Call(clock,"Advance",1.35*.35);Assert.AreEqual(1d,Get(clock,"ScoreCountProgress"));Assert.Less(Get(clock,"ScoreTravel"),1d);
+            var clock=Timeline();double prior=0;var countdown=Runtime("CursorDashScoreCountdown").GetMethod("At");
+            foreach(var best in new[]{System.Numerics.BigInteger.Zero,System.Numerics.BigInteger.One,System.Numerics.BigInteger.Parse("123456789012345678901234567890")}){
+                clock=Timeline();prior=0;var previous=best;
+                for(int n=1;n<=200;n++){
+                    Call(clock,"Advance",1.35/200);double travel=Get(clock,"ScoreTravel"),opacity=Get(clock,"ScoreOpacityProgress"),count=Get(clock,"ScoreCountProgress");
+                    Assert.That(travel,Is.InRange(prior,1d));prior=travel;Assert.AreEqual(travel,count);Assert.AreEqual(travel,Get(clock,"ScoreTintProgress"));
+                    Assert.Greater(opacity,0);Assert.GreaterOrEqual(opacity,travel);if(n>=111)Assert.AreEqual(1d,opacity);
+                    var shown=(System.Numerics.BigInteger)countdown.Invoke(null,new object[]{best,count});Assert.IsTrue(shown>=0&&shown<=previous);previous=shown;
+                    if(n<199&&best>0)Assert.IsTrue(shown>0,"No zero-then-restyle gap, including a one-point best.");
+                }
+                Call(clock,"Advance",1d);Assert.AreEqual(System.Numerics.BigInteger.Zero,countdown.Invoke(null,new object[]{best,Get(clock,"ScoreCountProgress")}));
+            }
         }
         [Test] public void NexusRedLightIsLocalAndDoesNotTintProtectedGlyphs()
         {
@@ -261,7 +270,7 @@ namespace CursorDashTests
             string dir=Path.GetFullPath("Logs/nexus-hit-save-20261027/NativeCaptures");Directory.CreateDirectory(dir);
             foreach(string digits in new[]{"0","8","12345678901234567890"}){
                 Call(stage,"ReturnHome");Set(space,"bestValue",digits);Set(space,"bestNumber",System.Numerics.BigInteger.Parse(digits));Call(projection,"Draw");
-                Assert.IsTrue((bool)Call(space,"Begin",false,Vector2.up));Call(space,"Advance",1.3499f);Call(projection,"Draw");
+                Assert.IsTrue((bool)Call(space,"Begin",false,Vector2.up));Call(space,"Advance",1.35f);Call(projection,"Draw");
                 Bounds before=renderer.bounds;var tmp=renderer.GetComponent(TypeFor("TMPro.TMP_Text"));Color tint=(Color)Get(tmp,"color");Assert.AreEqual("0",Get(fever,"BackgroundScoreText"));
                 ScreenCapture.CaptureScreenshot(Path.Combine(dir,"handoff-before-"+digits.Length+".png"));yield return null;
                 Call(space,"Advance",.41f);Call(projection,"Draw");Assert.AreEqual("Playing",Get(stage,"State").ToString());

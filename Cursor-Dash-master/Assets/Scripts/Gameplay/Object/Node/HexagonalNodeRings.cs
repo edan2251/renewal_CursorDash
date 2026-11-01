@@ -51,7 +51,8 @@ public sealed class HexagonalNodeRings : MonoBehaviour
         for (int i = 0; i < views.Length; i++)
         {
             // One original yellow, one readable deeper yellow; geometry and rotation stay identical.
-            Color tint = i == 0||demonstration ? color : new Color(color.r * .82f, color.g * .82f, color.b * .82f, color.a);
+            float dim=CursorDashNodeAppearance.Default==null?.82f:CursorDashNodeAppearance.Default.secondHexRingBrightness;
+            Color tint = i == 0||demonstration ? color : new Color(color.r * dim, color.g * dim, color.b * dim, color.a);
             properties.SetColor("_Color", tint);
             Transform target = views[i].transform, source = sources[i];
             target.localPosition = source.localPosition; target.localRotation = source.localRotation; target.localScale = source.localScale;
@@ -93,7 +94,8 @@ public sealed class HexagonalNodeRings : MonoBehaviour
     private void OnDisable() { Visible = false; }
     private void OnDestroy()
     {
-        foreach (var mesh in meshes) if (mesh != null) Destroy(mesh);
-        if (material != null) Destroy(material);
+        foreach (var mesh in meshes) if (mesh != null) Release(mesh);
+        if (material != null) Release(material);
     }
+    private static void Release(Object value){if(Application.isPlaying)Destroy(value);else DestroyImmediate(value);}
 }

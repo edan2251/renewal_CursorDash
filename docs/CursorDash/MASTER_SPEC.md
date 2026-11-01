@@ -1,5 +1,49 @@
 # CursorDash — 개발 기준 v0.1
 
+## D-076 현재 버전 게시 기준 (2026-11-02)
+
+사용자 최신 승인으로 D-067~075의 현재 로컬본을 기존 main 소스 / gh-pages 빌드·기존 공개주소에 게시한다. 이번 릴리스는 게임사양·외형·밸런스 추가 변경이 아니며 기존 미커밋 소스·View·설정·Hierarchy·문서를 선별 보존한다. 빌드 식별/검사·Git·실제 공개검수를 구분해 [릴리스 기록](RELEASE_EDITOR_20261102.md)에 남기며, 완료 뒤 이 승인으로 추가개발/빌드/Git/배포를 계속하지 않는다. 기존 육각타이밍 제외·일반겹침/새Flash그림/별도재구축 보류는 유지한다.
+
+## D-075 Hierarchy 분류 기준 (2026-11-02)
+
+현재 Cyberpunk는 루트의 빈 구분선6개로 Manager / Camera & Input / Background / Gameplay / Pool & Spawn / UI를 나눈다. 구분선은 부모 컨테이너가 아니며 실제 오브젝트의 부모·기준Transform·이름·렌더순서를 바꾸지 않는다. 실제 풀·생성위치와 호환 UI/표시 소스는 비활성이어도 유지한다. 충분한 참조·코드 검증을 거친 미사용 씬 인스턴스38개만 제거하고 원본자산/다른씬은 보존한다. 게임사양·연출·기록/저장·승인D074편집구조 불변. [목록과 근거](HIERARCHY_CLEANUP_20261102.md).
+
+## D-074 현재 화면 편집 기준 (2026-11-02)
+
+기본 편집 진입은 Tools→CursorDash→화면 편집의 상태 버튼이다. 실제 Cyberpunk View/Canvas/TMP/Image를 함께 표시하고 기본 배치·폰트·이미지 편집을 보존한다. 임시 Canvas 변환/연출 자식/샘플값만 저장·Play 전에 정리한다. BoardView에 실제 배경 quad·material과 VisualPrototype 명시참조를 저장, runtime은 같은재질 복사본/기존 ApplyFrame으로 움직인다. NexusBody의 저장 재질도 실제 시작shader와 동일하게 연결하며 원본기하·판정 유지. SceneView 회로만 localUV를 사용하고 runtime screenUV0 기본은 불변. 실제 성공 Flash/비교 fallback·다른씬의 과거 자산은 사용 중/불확실을 구분해 보존한다. 점수·전투·피버·튜토리얼·기존후처리/연출사양 변경 없음. [정확한 편집 방법](EDITOR_AUTHORING_GUIDE.md), [실제 검수 범위](EDITOR_REFACTOR_STATUS.md).
+
+
+## D-073 현재 Editor 표시 기준 (2026-11-02)
+
+Settings/Menu Prefab은 유효한 reference frame/CanvasON이 디자인 기본이다. runtime초기숨김과sheet/Pause연출은 기존controller가 시작 전에 적용한다. PrefabMode/원본선택표시는실제원본의runtime소유필드만잠시변경하고, 저장/Play전에Overlay로복원한다. 실제Placement/TMP/Image 편집은보존한다. 안내의문구출처(체크리스트View템플릿/피버TMP)·점수Main/Combat endpoints는기존체계다. 배경runtime/preview는같은ApplyFrame/PlaceField와팔레트/흐름자산을사용하며Editor독립clock표시만추가, 후처리·동적전투는별도Play검수다. 게임규칙·시간·저장·사운드·카메라pipeline불변. [현재검수·사용법](EDITOR_REFACTOR_STATUS.md).
+
+
+## D-072 현재 편집 구조 개선 범위
+
+C 메인·설정·시작·점수·Pause/Retry/Home은 사용자 검수 PASS. 최신 지시로 D 화면편집→E 주요표시 기준→F 책임/설정 출처→G 보수적 에셋분류/로컬검증을 구현한다. 기존 게임 사양·완료 A~C 보존, native Play/테스트 및 로컬 WebGL은 이번 한정 승인, Git게시 없음. [진행 기록](EDITOR_REFACTOR_STATUS.md).
+
+현재 구현은7상태정적편집/원본선택, NexusPlacement+명시View, 실제Mesh NodeAppearance, 커서Renderer/기본Scale, 기존팔레트uniform·CircuitLayout, GuidancePrefab다. 런타임연출·규칙과정식외형의출처를분리하고기존GameManager/Stage/NodePhase/FeverState/풀·JSON/프리셋·기록정책을유지한다. 미리보기는실게임상태를돌리지않는다. 동적후처리/실제물리와모바일최종화면은Play검수이며정적창의통과로대체하지않는다. D~G구현·가능한회귀/로컬WebGL완료, 최종시각/기기/추가저장재조회는부분미검증. 확정미사용0이므로격리0.
+
+## D-071 편집 가능한 구조 전환의 현재 범위 (2026-11-01)
+
+사용자통합문서 A~G가 최신실행기준이며 D-070 로고-only는 출발점이다. 실제 게임 로직/외형/타이밍/저장정책을 보존하면서 Scene/Prefab의 Placement·스타일·상태pose와 runtime연출을 분리한다. C대표화면 실제검증 후 다른영역으로 확장하며 실제Play는 사용자담당이다. 현재Main/MainSettings 실제View+공용숫자하나/작은편집창까지만구현, CPlay미통과/D~G미착수다. 새View는정식기준, 기존프로필관련표시는미연결호환경로로만남긴다. 사용자설정/개발자Override/Tuning/웹JSON/점수/기록정책은그대로다. [진행·검수관문](EDITOR_REFACTOR_STATUS.md)/[편집안내](EDITOR_AUTHORING_GUIDE.md). Git게시/배포는승인범위밖이다.
+
+## D-070 메인 로고 편집 기준 (2026-11-01)
+
+최신 사용자 승인 0/1단계만 적용한다. Cyberpunk 메인 로고는 Scene의 MainLogo Prefab/작은 View로 관리한다. PlacementRoot RectTransform과 Logo Image가 정식 기준, AnimationRoot는 상대 이동/폭 제한/페이드만 담당한다. 기존 프로필 로고 필드는 삭제하지 않고 View 미연결 fallback으로 유지한다. 현재 외형/Canvas·정렬/시작·복귀 시간과 나머지 게임을 보존한다. 다른 UI/노드/설정/폴더/미사용 정리는 미승인. [실제 검수·사용법](MAIN_LOGO_VIEW_20261101.md). 이번 로컬 수정·관련Play만 승인되었으며 빌드/Git게시 권한은 없다. 완료 후 사용자 검수를 기다린다.
+
+## D-069 최신 잔존 꼬리 방어 결정 (2026-10-29)
+
+출처: 사용자 ‘정지시에 남아있는 꼬리도 육각노드의 공격을 막을 수 있게’ 요청. 실제 플레이어 정지20%와 고스트50%의 남은 꼬리도 육각 레이저 방어·기존 반사에 사용한다. 방어는 현재 표시하는 실제 경로로 검사하며, 사라진 옛 경로는 방어하지 않는다. Clear/비활성화는 표시와 방어를 함께 지운다. 기존 충돌 폭·레이저의 최초 접촉/반사·소유권 규칙, 이동값·고스트.375·육각 타이밍은 유지한다. D-067/068의 ‘표시 꼬리만 유지하고 실제 방어는 수명 만료’ 결정은 이 범위에서 대체한다. [검수 대기·구현](RETAINED_TAIL_DEFENSE_20261029.md). Unity Play는 사용자가 담당하고 빌드/Git게시 권한은 없다.
+
+## D-068 최신 표시·고스트 결정 (2026-10-29)
+
+사용자 최신 결정으로 고스트 입력은.50→.375(현재보다25%감속), 표시 꼬리는 별도 `tutorialGhostTailFraction=.50`으로 처음부터 고정 유지한다. 기존 AfterImage 내부에서 표시 전용 이력/자식 LineRenderer를 사용하며 실제 방어수명/콜라이더·플레이어 이동규칙은 유지한다. D-067의 ‘속도로 약50%꼬리 확보’ 및 수동 TrailRenderer 표시 방식은 이 범위에서 대체한다. 실제 플레이어 정지 표시20%와 D-067 문구·점수 동시 전환은 유지. [구현·수치·실제표시 미검증](TRAIL_DISPLAY_GHOST_SPEED_20261029.md). 사용자 Unity 검수 전 빌드·커밋·push·배포 없음.
+
+## D-067 최신 로컬 결정 (2026-10-29)
+
+사용자 최신 네 항목으로 튜토리얼 문구를 원형 파괴/육각 수비로 구분하되 집계는 그대로 유지한다. 이동한 경로에서 정지 시20% 표시 꼬리를 남기며 물리 방어 수명은 유지한다. 고스트는 최대 꼬리 약50%에 대응하는 일정 입력.50을 접근·접촉·수비에 공통 사용하고 실제 Nexus 본체 앞에서 막는다. D-064의.70은 이 순항 목표로 대체한다. 시작 점수의 D-056/066 ‘35% 카운트 완료’는 숫자·색·크기/위치 동시 전환/투명도55% 선완료로 대체한다. 최고점·실점수/기록·보상·입력/공격 규칙은 바꾸지 않는다. [상세 설정·미검증](TUTORIAL_CLARITY_20261029.md). 로컬만 구현/사용자 Play 검수 대기.
+
 ## D-066 릴리스 완료·현재 기준 (2026-10-28)
 
 현재UI는USER_VERIFIED,소스0ad2e99/배포6909ed2·buildId cursordash-20261028-settings-bb06638d1e46로기존Pages게시완료. 기본게임은변경하지않으며설정은동일Tuning/Storage·메인7/Pause2공유/음량·완화1회적용·입력해제가드·Shade뒤/손잡이12×12·트랙4/터치48를유지한다. [공개·검수·다음범위](RELEASE_SETTINGS_20261028.md). 이번릴리스권한완료/추가개발·게시자동진행없음. 아래진행기록은이력으로유지한다.

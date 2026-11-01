@@ -13,7 +13,7 @@ public sealed class CursorDashCircuits : MonoBehaviour
     private CircuitPathGraph graph;private CircuitPulseField reactions,ordinaryReactions;private CircuitAmbientFlow ambient;private CircuitFeverRetreat retreat;
     private Material normalMaterial,feverMaterial,compositeMaterial,scoreMaskMaterial;private RenderTexture normalMask,scoreMask;
     private Mesh normalMesh,feverMesh,displayMesh;private GameObject artwork;private MeshRenderer view;private CommandBuffer buffer;
-    private readonly Geometry normal=new Geometry(),mono=new Geometry();
+    private readonly CircuitStrokeBuffer normal=new CircuitStrokeBuffer(),mono=new CircuitStrokeBuffer();
     private float clock,deathAge,worldUnit,layoutAspect=-1,layoutSize,flashGain,ambientGain,distortionGain;private Vector2 restCenter;
     private float[] feverStarts,restoreStarts;private double[] normalFronts,feverFronts,deathFronts;private bool restoring,dying,lastEnabled,deathFever;
     private FeverState.Phase previousPhase=FeverState.Phase.Normal;
@@ -62,7 +62,17 @@ public sealed class CursorDashCircuits : MonoBehaviour
     {
         var previousGraph=graph;var previousRetreat=retreat;var oldStarts=feverStarts;var oldRestore=restoreStarts;var oldNormal=normalFronts;var oldFever=feverFronts;var oldDeath=deathFronts;
         layoutAspect=board.aspect;layoutSize=board.orthographicSize;worldUnit=2*layoutSize*Mathf.Min(1,layoutAspect);
-        graph=new CircuitPathGraph(Math.Max(1,layoutAspect),Math.Max(1,1/layoutAspect),V==null?12:V.circuitDensity);reactions=new CircuitPulseField(graph);ordinaryReactions=new CircuitPulseField(graph);ambient=new CircuitAmbientFlow(graph);retreat=new CircuitFeverRetreat(graph);retreat.Capture(retreatCycle,retreatStart,retreatSpread,retreatPower,retreatHold);if(previousRetreat!=null)retreat.CopyCycle(previousRetreat);
+        double aspectX=Math.Max(1,layoutAspect),aspectY=Math.Max(1,1/layoutAspect);
+        int density=V==null?12:V.circuitDensity;
+        graph=V!=null&&V.circuitLayout!=null
+            ?V.circuitLayout.CreateGraph(aspectX,aspectY,density)
+            :new CircuitPathGraph(aspectX,aspectY,density);
+        reactions=new CircuitPulseField(graph);
+        ordinaryReactions=new CircuitPulseField(graph);
+        ambient=new CircuitAmbientFlow(graph);
+        retreat=new CircuitFeverRetreat(graph);
+        retreat.Capture(retreatCycle,retreatStart,retreatSpread,retreatPower,retreatHold);
+        if(previousRetreat!=null)retreat.CopyCycle(previousRetreat);
         feverStarts=new float[graph.Roots.Length];restoreStarts=new float[graph.Roots.Length];
         normalFronts=new double[graph.Roots.Length];feverFronts=new double[graph.Roots.Length];deathFronts=new double[graph.Roots.Length];
         for(int i=0;i<feverStarts.Length;i++){
@@ -222,12 +232,12 @@ public sealed class CursorDashCircuits : MonoBehaviour
         double tip=front<graph.RootLengths[edge.Root]||dying?Math.Max(0,1-Math.Abs(front-edge.Depth-edge.Length*t)/.035):0;
         return tip;
     }
-    private void Glyph(Geometry data,Vector3 point,float radius,Color tint,int kind,Vector3 axis=default)
+    private void Glyph(CircuitStrokeBuffer data,Vector3 point,float radius,Color tint,int kind,Vector3 axis=default)
     {
         if(radius<.000001f)return;if(axis.sqrMagnitude<.001f)axis=Vector3.right;axis=axis.normalized*radius;
         Vector3 side=new Vector3(-axis.y,axis.x,0);data.Quad(point-axis-side,point-axis+side,point+axis+side,point+axis-side,tint,kind,board);
     }
-    private void DrawLayer(Geometry data,bool feverLayer)
+    private void DrawLayer(CircuitStrokeBuffer data,bool feverLayer)
     {
         data.Clear();
         if(dying&&feverLayer)return;
@@ -370,17 +380,5 @@ public sealed class CursorDashCircuits : MonoBehaviour
         if(legacy!=null)legacy.DynamicCircuits=false;buffer?.Release();ReleaseMask();ReleaseScoreMask();
         if(artwork!=null)Destroy(artwork);if(normalMesh!=null)Destroy(normalMesh);if(feverMesh!=null)Destroy(feverMesh);if(displayMesh!=null)Destroy(displayMesh);if(normalMaterial!=null)Destroy(normalMaterial);if(feverMaterial!=null)Destroy(feverMaterial);if(compositeMaterial!=null)Destroy(compositeMaterial);if(scoreMaskMaterial!=null)Destroy(scoreMaskMaterial);
     }
-    private sealed class Geometry
-    {
-        private readonly List<Vector3> vertices=new List<Vector3>(6000),uv=new List<Vector3>(6000);
-        private readonly List<Vector2> screen=new List<Vector2>(6000);private readonly List<Color> colors=new List<Color>(6000);private readonly List<int> triangles=new List<int>(9000);
-        public void Clear(){vertices.Clear();uv.Clear();screen.Clear();colors.Clear();triangles.Clear();}
-        public void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d,Color tint,int kind,Camera camera,Color? endTint=null)
-        {
-            int n=vertices.Count;Add(a,-1,-1,tint);Add(b,-1,1,tint);Add(c,1,1,endTint??tint);Add(d,1,-1,endTint??tint);
-            void Add(Vector3 p,float x,float y,Color color){vertices.Add(p);uv.Add(new Vector3(x,y,kind));screen.Add(camera.WorldToViewportPoint(p));colors.Add(color);}
-            triangles.Add(n);triangles.Add(n+1);triangles.Add(n+2);triangles.Add(n);triangles.Add(n+2);triangles.Add(n+3);
-        }
-        public void Upload(Mesh mesh){mesh.Clear();mesh.SetVertices(vertices);mesh.SetColors(colors);mesh.SetUVs(0,uv);mesh.SetUVs(1,screen);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();}
-    }
+
 }

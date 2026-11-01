@@ -10,6 +10,7 @@ public class NodeCreator : MonoBehaviour
     private Node[] normalNodes;
     private Node[] arrowNodes;
     private Node[] allNodes;
+    public GameObject AuthoredPool => nodesObject;
     private Vector2 minimum;
     private Vector2 maximum;
     private int activeLimit;

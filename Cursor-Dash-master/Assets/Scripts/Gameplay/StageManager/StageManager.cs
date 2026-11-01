@@ -18,6 +18,24 @@ public class StageManager : MonoBehaviour
     [SerializeField] private DeathUIController deathUIController;
     [SerializeField] private PauseHandler pauseHandler;
     [SerializeField] private ParticleSystem coreDeathAnimation;
+    [SerializeField] private CursorDashMainLogoView mainLogoView;
+    public CursorDashMainLogoView MainLogoView => mainLogoView;
+    [SerializeField] private CursorDashMainMenuView mainMenuView;
+    [SerializeField] private CursorDashSettingsView settingsView;
+    public CursorDashMainMenuView MainMenuView => mainMenuView;
+    public CursorDashSettingsView SettingsView => settingsView;
+    [SerializeField] private CursorDashProjectedScoreView projectedScoreView;
+    public CursorDashProjectedScoreView ProjectedScoreView => projectedScoreView;
+    // Authoring tools read the same images that define the settled gameplay boundary.
+    public Image NexusBodySource => hpBarImage;
+    public Image NexusFrameSource => hpBarFrame;
+    public float NexusSolidFraction => normalNexusSolidFraction;
+    [SerializeField] private CursorDashNexusView nexusView;
+    [SerializeField] private CursorDashGuidanceView guidanceView;
+    public CursorDashNexusView NexusView => nexusView;
+    public CursorDashGuidanceView GuidanceView => guidanceView;
+    [SerializeField] private CursorDashBoardView boardView;
+    public CursorDashBoardView BoardView => boardView;
 
     private NodeCreator nodeCreator;
     private CameraFlash cameraFlash;

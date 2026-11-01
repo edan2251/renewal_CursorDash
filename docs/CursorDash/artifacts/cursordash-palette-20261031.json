@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-31",
+  "basis": "Latest saved local shader/constants/scene/profile; Unity not launched. RGB channels rounded to 8-bit without additional gamma conversion. Background samples are palette anchors, not guaranteed final pixels. Transparency/mixing/post effects change the on-screen result. Runtime saved preset overrides were not read.",
+  "colors": [
+    {
+      "group": "배경",
+      "label": "딥 네이비",
+      "hex": "#030512",
+      "source": "LivingBackground.shader: navy=(.010,.021,.070)"
+    },
+    {
+      "group": "배경",
+      "label": "딥 틸",
+      "hex": "#033642",
+      "source": "LivingBackground.shader: teal=(.012,.210,.260)"
+    },
+    {
+      "group": "배경",
+      "label": "딥 바이올렛",
+      "hex": "#330947",
+      "source": "LivingBackground.shader: violet=(.200,.035,.280)"
+    },
+    {
+      "group": "주요 요소",
+      "label": "피버 게이지 · 민트",
+      "hex": "#14F0DB",
+      "source": "Cyberpunk.unity: HpFrame m_Color=(.08,.94,.86)"
+    },
+    {
+      "group": "주요 요소",
+      "label": "넥서스 · 사이언",
+      "hex": "#0AB2E6",
+      "source": "CursorDashTuning.cs: nexus.color"
+    },
+    {
+      "group": "주요 요소",
+      "label": "원형 기본 · 퍼플",
+      "hex": "#CB49FF",
+      "source": "CircularNodeArtwork.cs: FillColor=Color32(203,73,255,255)"
+    },
+    {
+      "group": "주요 요소",
+      "label": "육각 · 골드 옐로",
+      "hex": "#FFD466",
+      "source": "CursorDashTuning.cs: hex.color"
+    },
+    {
+      "group": "주요 요소",
+      "label": "커서 · 흰색",
+      "hex": "#FFFFFF",
+      "source": "CursorDashTuning.cs: user.cursorColor / user.trailColor"
+    },
+    {
+      "group": "주요 요소",
+      "label": "피격 · 레드",
+      "hex": "#FF0A14",
+      "source": "VisualPrototype.asset: nexusDamageTint=(1,.04,.08)"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "원형 변형 · 퍼플",
+      "hex": "#AD1FFF",
+      "source": "CursorDashTuning.cs: circle.color"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "설정 UI · 민트",
+      "hex": "#3DE0CF",
+      "source": "CursorDashSettingsUI.cs: Accent=(.24,.88,.81)"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "배경 점수 · 청록",
+      "hex": "#5CC2D6",
+      "source": "VisualPrototype.asset: backgroundScoreTint=(.36,.76,.84), base alpha=.105"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "튜토리얼 · 회색",
+      "hex": "#8C949E",
+      "source": "VisualPrototype.asset: tutorialInk=(.55,.58,.62)"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "일반 회로 · 회청색",
+      "hex": "#667885",
+      "source": "VisualPrototype.asset: circuitNormalTint=(.40,.47,.52), contrast=.075"
+    },
+    {
+      "group": "보조 · 특수",
+      "label": "피버 · 잉크 블랙",
+      "hex": "#020304",
+      "source": "FeverWorld.shader: main element ink=(.008,.010,.014); fever background #FFFFFF"
+    }
+  ],
+  "sources": {
+    "Cursor-Dash-master\\Assets\\Resources\\CursorDash\\LivingBackground.shader": "6be4e62716de90e4cb25559bc50d18f7fde8b41955ddb2b8516756a534142634",
+    "Cursor-Dash-master\\Assets\\Resources\\CursorDash\\VisualPrototype.asset": "74ca0923d46bd2c55aaf0a4973ae242c3ff9f58b86f37ff9ddc398ecdfb3325e",
+    "Cursor-Dash-master\\Assets\\Scripts\\Gameplay\\Object\\Node\\CircularNodeArtwork.cs": "3eed92000ddd58b9ceb7dc3b79581eb0f1123afa870c0600e754ce4d2dbe367c",
+    "Cursor-Dash-master\\Assets\\Scripts\\Gameplay\\Object\\Node\\HexagonalNodeRings.cs": "2e7add45f6f5a20043d8ce2a4a48ece73dcb26b476dd8831e80eab52926e6b70",
+    "Cursor-Dash-master\\Assets\\Scripts\\Gameplay\\StageManager\\CursorDashTuning.cs": "3eca1bdf06dd981090221a3499b9aa8f36b652083f0e17f283c5180dabe984d5",
+    "Cursor-Dash-master\\Assets\\Scripts\\Gameplay\\StageManager\\CursorDashSettingsUI.cs": "698282b1c20534845a1b717b70b68216fc1fc9e65ca5d2cae80e1e0f7b7fb59c",
+    "Cursor-Dash-master\\Assets\\Resources\\CursorDash\\FeverWorld.shader": "cbea62027067b933af5b48c7cac8413ae66a95e67d2e2eaa988ddc5517ca0d09",
+    "Cursor-Dash-master\\Assets\\Scenes\\Cyberpunk.unity": "7dd2ceadfe654ceec41b0a5521403c8d0df1be0d87cda5c4f17e9811269f0536"
+  }
+}

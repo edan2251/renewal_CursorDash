@@ -18,6 +18,7 @@ namespace CursorDashTests
             TypeFor("CursorDashSession").GetField("ReplayTutorial",BindingFlags.Public|BindingFlags.Static).SetValue(null,true);
             Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"tutorial\"}");float deadline=Time.realtimeSinceStartup+5;Component practice;
             while((practice=Find("CursorDashPractice"))==null){Assert.Less(Time.realtimeSinceStartup,deadline);yield return null;}
+            StringAssert.Contains("원형노드 파괴 0/2",(string)Get(practice,"GuideInstruction"));StringAssert.Contains("육각노드로부터 수비 0/2",(string)Get(practice,"GuideInstruction"));
             var stage=Find("StageManager");var fever=Get(stage,"Fever");float hp=(float)Get(Get(stage,"scoreManager"),"Hp");
             ((Behaviour)Find("VirtualJoyStick")).enabled=false;Call(Find("PlayerCharacterController"),"MoveStop");Call(Find("PlayerCharacterAfterImage"),"ClearTrail");
             // This case intentionally lets attacks reach the nexus. Keep the stationary fixture body
@@ -109,6 +110,11 @@ namespace CursorDashTests
             var player=Find("PlayerCharacterController");var realTrail=Find("PlayerCharacterAfterImage");var stage=Find("StageManager");
             ((Behaviour)Find("VirtualJoyStick")).enabled=false;Call(player,"MoveStop");Call(realTrail,"ClearTrail");
             var ghost=Get(practice,"Ghost");var copy=(Component)Get(ghost,"actor");
+            var ghostTrail=(Component)Get(ghost,"Trail");var ghostRibbon=(LineRenderer)Get(ghostTrail,"DisplayRenderer");
+            Assert.That((float)Get(ghost,"CruiseInput"),Is.EqualTo(.375f).Within(.0001f));
+            Assert.That((float)Get(ghostTrail,"DisplayedTrailLength"),Is.EqualTo(1.95f).Within(.001f),"A display-only seed supplies the fixed half-length tail from the first frame.");
+            Assert.IsTrue(ghostRibbon.enabled);Assert.IsFalse(ghostTrail.GetComponent<TrailRenderer>().enabled);
+            Assert.Greater((int)Get(ghostTrail,"VisualCapacity"),(int)Get(ghostTrail,"Capacity"),"Long visual history does not require more defense colliders.");
             string evidence=Path.GetFullPath("Logs/tutorial-poweron-fever-order-20261028/NativeFrames");Directory.CreateDirectory(evidence);int reflected=0,broken=0;
             Assert.AreSame(player,Find("PlayerCharacterController"));Assert.AreSame(realTrail,Find("PlayerCharacterAfterImage"));
             Assert.AreSame(ghost,Get(copy,"Demonstration"));Assert.AreNotSame(realTrail,Get(ghost,"Trail"));
@@ -116,11 +122,17 @@ namespace CursorDashTests
             var lowMotion=new System.Collections.Generic.List<string>();int motionFrames=0,stoppedFrames=0;deadline=Time.realtimeSinceStartup+40;
             while((int)Get(ghost,"CircleKills")<2||(int)Get(ghost,"HexKills")<2){
                 Assert.Less(Time.realtimeSinceStartup,deadline,"The real bot must continue after misses/pool reuse without user progress.");
-                motionFrames++;if(((Vector2)Get(copy,"MoveVector")).sqrMagnitude<.001f){stoppedFrames++;
+                motionFrames++;float analog=((Vector2)Get(copy,"MoveVector")).magnitude;
+                Assert.That((float)Get(ghostTrail,"DisplayedTrailLength"),Is.EqualTo(1.95f).Within(.005f),"Fixed visual length is independent of the slower physical trail.");
+                if(analog>.01f)Assert.That(analog,Is.EqualTo((float)Get(ghost,"CruiseInput")).Within(.0001f),"Approach, contact and defense share one speed; no timed dash.");
+                if(((Vector2)Get(copy,"MoveVector")).sqrMagnitude<.001f){stoppedFrames++;
                     var t=Get(ghost,"target") as Component;if(lowMotion.Count<220)lowMotion.Add($"{Time.time:F2} {(t==null?"idle":t.GetType().Name+":"+Get(t,"Phase"))} route={(float)Get(ghost,"clock")-(float)Get(ghost,"routeAt"):F2}/{Get(ghost,"routeSeconds")} endDistance={Vector2.Distance(copy.transform.position,(Vector2)Get(ghost,"routeEnd")):F3}");
                 }
                 int r=(int)Get(ghost,"Reflections"),k=(int)Get(ghost,"CircleKills")+(int)Get(ghost,"HexKills");
-                if(r>reflected){reflected=r;ScreenCapture.CaptureScreenshot(Path.Combine(evidence,"ghost-reflected-"+r+".png"));}
+                if(r>reflected){
+                    reflected=r;Assert.LessOrEqual((float)Get(ghost,"LastDefenseDistance"),(float)Get(stage,"NexusRadius")+.60f+.75f,"Actual laser/trail contact occurs in front of the nexus.");
+                    ScreenCapture.CaptureScreenshot(Path.Combine(evidence,"ghost-reflected-"+r+".png"));
+                }
                 if(k>broken){if((int)Get(ghost,"CircleKills")>0)Assert.That((float)Get(ghost,"LastCircleContactCharge"),Is.InRange(.88f,1f),"Circle contact is an actual late-charge collision.");broken=k;ScreenCapture.CaptureScreenshot(Path.Combine(evidence,"ghost-kill-"+k+".png"));}
                 yield return null;
             }
@@ -137,6 +149,33 @@ namespace CursorDashTests
                 var style=node.GetComponent(TypeFor("CursorDashGuideStyle")) as Behaviour;if(style!=null)Assert.IsFalse(style.enabled);
                 foreach(var renderer in node.GetComponentsInChildren<Renderer>(true))if(renderer.sharedMaterial!=null)Assert.AreNotEqual("CursorDash/GuideInk",renderer.sharedMaterial.shader.name,"A pooled actor must not leak guide materials into normal play.");
             }
+        }
+        [UnityTest] public IEnumerator RetainedRestTailBlocksOnlyItsDisplayedPathAfterTimedSamplesExpire()
+        {
+            Call(Find("CursorDashRuntimeUI"),"BrowserCommand","{\"cmd\":\"training\"}");yield return WaitForScene("Cyberpunk");yield return null;DisablePatterns();
+            var stage=Find("StageManager");var player=Find("PlayerCharacterController");var trail=Find("PlayerCharacterAfterImage");
+            ((Behaviour)Find("VirtualJoyStick")).enabled=false;Call(player,"MoveStop");Call(trail,"ClearTrail");
+            var body=player.GetComponent<Rigidbody2D>();body.position=new Vector2(1,-2);player.transform.position=body.position;Physics2D.SyncTransforms();
+            Call(trail,"ClearTrail"); // Establish the teleported head before injecting the expired historical path.
+            float duration=(float)Get(trail,"Lifetime");Call(trail,"RecordMovement",new Vector2(-2,-2),new Vector2(1,-2),Time.time-duration-.1f);yield return null;
+            Assert.AreEqual(0,Get(trail,"ActiveSegmentCount"));Assert.That((float)Get(trail,"DisplayedTrailLength"),Is.EqualTo(.78f).Within(.001f));
+            var view=(LineRenderer)Get(trail,"DisplayRenderer");Assert.IsTrue(view.enabled);Assert.IsFalse(trail.GetComponent<TrailRenderer>().enabled);
+            Assert.GreaterOrEqual(view.positionCount,2);Assert.Less(Vector2.Distance(view.GetPosition(0),player.transform.position),.0001f);
+            var geometry=new Mesh();try{view.BakeMesh(geometry,Camera.main,true);Assert.Greater(geometry.vertexCount,3,"Native display must generate a ribbon, not just retain point metadata.");}finally{Object.Destroy(geometry);}
+            object[] beam={new Vector2(.6f,-1),new Vector2(.6f,-3),.02f,Vector2.zero};Assert.IsTrue((bool)Call(trail,"TryBlockBeam",beam),"The visible retained tail must still defend after its timed samples expire.");
+            Assert.That(((Vector2)beam[3]).y,Is.EqualTo(-2).Within(.001f));
+            object[] outside={new Vector2(-1,-1),new Vector2(-1,-3),.02f,Vector2.zero};Assert.IsFalse((bool)Call(trail,"TryBlockBeam",outside),"An old path clipped out of the visible tail must not defend.");
+            Assert.IsNotNull(trail,"Head trail was lost before Pause.");
+            Call(stage,"SetPaused",true);float before=(float)Get(trail,"DisplayedTrailLength");yield return new WaitForSecondsRealtime(.12f);
+            Assert.IsNotNull(trail,"Trail lost during Pause: play="+UnityEditor.EditorApplication.isPlaying+" scene="+UnityEngine.SceneManagement.SceneManager.GetActiveScene().path+" stage="+(stage==null?"destroyed":Get(stage,"State").ToString()));
+            Assert.AreEqual(before,Get(trail,"DisplayedTrailLength"));Call(stage,"SetPaused",false);
+            body.position=new Vector2(1,-.5f);player.transform.position=body.position;Physics2D.SyncTransforms();
+            Call(trail,"RecordMovement",new Vector2(1,-2),new Vector2(1,-.5f),Time.time-duration-.1f);yield return null;
+            Assert.IsFalse((bool)Call(trail,"TryBlockBeam",beam),"Moving the retained tail elsewhere must remove defense at the previous location.");
+            object[] moved={new Vector2(.5f,-1),new Vector2(1.5f,-1),.02f,Vector2.zero};Assert.IsTrue((bool)Call(trail,"TryBlockBeam",moved));
+            Call(trail,"ClearTrail");Assert.AreEqual(0,view.positionCount);Assert.AreEqual(0,Get(trail,"ActiveSegmentCount"));Assert.AreEqual(0f,Get(trail,"DisplayedTrailLength"));
+            Assert.IsFalse((bool)Call(trail,"TryBlockBeam",moved),"Clearing the trail must clear its retained defense too.");
+            Call(stage,"ReturnHome");yield return null;Assert.AreEqual(0,view.positionCount);
         }
     }
 }

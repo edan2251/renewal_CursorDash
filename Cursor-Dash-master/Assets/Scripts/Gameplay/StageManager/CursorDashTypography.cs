@@ -42,6 +42,8 @@ public sealed class CursorDashTypography : MonoBehaviour
     {
         foreach(var text in Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include,FindObjectsSortMode.None)){
             if(!assigned.Add(text.GetInstanceID()))continue;
+            // Authored views own their saved font choice and private render atlas.
+            if(text.GetComponentInParent<CursorDashMainMenuView>()!=null||text.GetComponentInParent<CursorDashSettingsView>()!=null||text.GetComponentInParent<CursorDashProjectedScoreView>()!=null||text.GetComponentInParent<CursorDashGuidanceView>()!=null)continue;
             string name=text.name.ToLowerInvariant();bool heavy=IsNumber(text.text)||name.Contains("score")||name.Contains("multiplier")||name.Contains("best");
             var font=heavy?bold:medium;if(font==null)continue;
             // Preserve font size/alignment, including existing shadow objects and title logo Images.

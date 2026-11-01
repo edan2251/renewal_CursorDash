@@ -14,9 +14,11 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
     private Material material;
     private Image source;
     private bool previousEnabled;
+    private CursorDashBoardView boardSource;
     public Image SourceImage => source;
+    public Sprite SourceSprite=>source!=null&&source.sprite!=null?source.sprite:boardSource==null?null:boardSource.ComparisonDecoration;
     public bool DynamicCircuits {get;set;}
-    public bool Ready {get {Bind();return material!=null&&source!=null&&source.sprite!=null&&source.gameObject.activeInHierarchy;}}
+    public bool Ready {get {Bind();return material!=null&&(boardSource!=null&&boardSource.IsConfigured||source!=null&&source.sprite!=null&&source.gameObject.activeInHierarchy);}}
     public int ActiveFlashCount => flashes.Count;
     public const float FlashSeconds = .25f;
 
@@ -31,6 +33,12 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
     private void Bind()
     {
         if (source != null || material == null) return;
+        var stage=StageManager.instance;
+        if(stage!=null&&stage.gameObject.scene==gameObject.scene&&stage.BoardView!=null&&stage.BoardView.IsConfigured){
+            boardSource=stage.BoardView;source=boardSource.DecorationAnchor;
+            if(source!=null){previousEnabled=source.enabled;source.enabled=false;}
+            return;
+        }
         foreach (var image in Object.FindObjectsByType<Image>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (image.name != "Background_Flash" || image.transform.root.name != "RemakeHUD" || image.gameObject.scene != gameObject.scene ||
@@ -45,7 +53,7 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
     }
     public bool CanComposite
     {
-        get { return !DynamicCircuits&&Ready; }
+        get { return !DynamicCircuits&&Ready&&source!=null&&SourceSprite!=null; }
     }
     public void Hit(Vector3 point)
     {
@@ -72,7 +80,7 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
         { Graphics.Blit(input, destination); return; }
         material.SetVector("_ImageRect", new Vector4((a.x - viewport.x) / viewport.width, (a.y - viewport.y) / viewport.height,
             (b.x - a.x) / viewport.width, (b.y - a.y) / viewport.height));
-        Sprite sprite = source.sprite; Rect uv = sprite.textureRect; Texture texture = sprite.texture;
+        Sprite sprite = SourceSprite; Rect uv = sprite.textureRect; Texture texture = sprite.texture;
         material.SetTexture("_FlashTex", texture);
         material.SetVector("_SpriteRect", new Vector4(uv.x / texture.width, uv.y / texture.height, uv.width / texture.width, uv.height / texture.height));
         material.SetColor("_ImageColor", source.color);
@@ -101,6 +109,7 @@ public sealed class OriginalBackgroundFlash : MonoBehaviour
         Clear();
         if (source != null) source.enabled = previousEnabled;
         source = null;
+        boardSource=null;
     }
     private void OnDisable() { Restore(); }
     private void OnDestroy() { Restore(); if (material != null) Destroy(material); }

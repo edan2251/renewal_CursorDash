@@ -24,7 +24,11 @@ namespace CursorDashTests
             yield return WaitRealtime(.18f);Assert.That((float)Get(energy,"SurfacePress"),Is.Zero);Assert.That((float)Get(energy,"DisplayedLevel"),Is.EqualTo(.7f).Within(.00001f));
             Set(score,"Hp",0f);Assert.IsTrue((bool)Get(stage,"IsDeath"));Assert.That((float)Get(energy,"DisplayedLevel"),Is.Zero);Assert.That((float)Get(energy,"SurfacePress"),Is.Zero);
             Call(stage,"Retry");yield return WaitForScene("Cyberpunk");yield return null;yield return null;DisablePatterns();
-            var next=Find("StageManager");Assert.AreNotSame(stage,next);Assert.That((float)Get(Get(next,"Energy"),"DisplayedLevel"),Is.EqualTo(1));Assert.That((float)Get(Get(next,"Energy"),"SurfacePress"),Is.Zero);
+            var next=Find("StageManager");
+            Assert.AreSame(stage,next,"The approved shared scene retries with the same manager, not a scene reload.");
+            Assert.AreEqual("Playing",Get(next,"State").ToString());
+            Assert.That((float)Get(Get(next,"Energy"),"DisplayedLevel"),Is.EqualTo(1));Assert.That((float)Get(Get(next,"Energy"),"SurfacePress"),Is.Zero);
+            Assert.That((double)Get(Get(Get(next,"Fever"),"Model"),"Gauge"),Is.Zero);
         }
 
         [UnityTest]

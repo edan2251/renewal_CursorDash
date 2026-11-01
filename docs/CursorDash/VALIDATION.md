@@ -1,5 +1,62 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-076 현재본 릴리스 (2026-11-02)
+
+PASS: 대상 Unity6000.3.23f1의 컴파일 오류0·최종 비Play Editor25/25(Hierarchy2/SceneScreen4/Authoring7/World5/Usability4/비Play로고3), 선별 소스 비밀정보 검사 발견0. Native Play는 이번 NOT_RUN이며 D-075의 승인후6항목을 이번 재실행으로 기록하지 않는다. WebGL오류0/경고8·233.063초, 로컬23파일HTTP/SHA256/WASM MIME·실IAB메인/설정슬라이더100→70→100·시작/커서잔상/Pause/계속/Home·브라우저오류0 PASS. 빌드가 비운 파생glyphcache2개 복원뒤1606입력 동일/보호6문자열3float동일. 공개 HTTP/브라우저는 진행 중이며 [릴리스 기록](RELEASE_EDITOR_20261102.md)에 실제 결과를 갱신한다. 모바일/터치·성능·전체 전투/튜토리얼/피버 완주·앱재실행 저장 NOT_RUN.
+
+## D-075 Hierarchy 정리 (2026-11-02)
+
+PASS: nativecompile/최종Console0, Editor25(새구분/연결2 포함·실제상태/저장/Undo/원본표시), 사용자명시승인후 Native6/6(시작/Home·Settings입력저장·Pause/Retry·실반환레이저/육각·피버정리·실제배경/PNG비교). 최초27PASS는Editor25+기존로고Native2의혼합이며후자승인대기중실행실수를보고했다. 종료/로고·보호5키복원확인뒤별도승인Native6실행. 분리run으로기록하며Play포함묶음을순수Editor라고부르지않는다.
+
+PASS: 생존362개 부모/변환/레이어/태그/active/컴포넌트·직렬화대상불변, 원본Scene생존YAML은SceneRoots순서만변경·삭제135문서/신규구분선12문서. 400→368오브젝트/기존원본파일삭제0/runtime코드불변, PlayOFF/TimeScale1/clean/missing0/보호fixture6문자열3float동일. NOT_RUN: 손·모바일/터치·WebGL·성능·전체전투·전체 에셋 미사용 확정. [현재근거·범위](HIERARCHY_CLEANUP_20261102.md). 빌드·커밋/push/배포없음.
+
+## D-074 상태별 Scene 편집 최종 검사 (2026-11-02)
+
+PASS: Nativecompile/최종Console오류·경고0, Editor/GPU27(7상태/2화면비·여러Editor프레임·Scene사본위치/폰트/Image색Undo/Redo/Save재열기·기존Prefab/로고·실Shader획보호), 실제NativePlay9고유항목(기존UI입력/저장·Pause/Retry/Home·같은매니저/시작중복방지·Nexus경계/합성·배경파라미터/동적회로·PNG비교·첫피버/회수/Pause). 27+9는 분리run, 낡은검사2번실패이력과같은단언정정후1PASS를보존. 실제Scene7종/NativeGame캡처열어확인/연속영상아님.
+
+PASS 최종상태: PlayOFF/TimeScale1/scene clean/previewOFF·임시root0/missing0, fixture6문자열/3float값·존재동일. 기존노드·꼬리·입력·공격·점수/피버규칙/사용자프리셋·기존Prefab/폰트·ProjectSettings해시보존. NOT_RUN: 손·모바일/터치·WebGL/성능·앱재실행저장·전투전체. 현재도구는정적기본화면/배경흐름이며실제전환/회로ambient·피버후처리/타격애니메이션은Play전용. [근거·실패정정·파일·복구](EDITOR_REFACTOR_STATUS.md). 빌드·커밋/push/배포없음.
+
+
+
+## D-073 실제 편집 사용성 (2026-11-02)
+
+PASS: nativecompile/Console0·Edit89/89, 최종Editor11/11 및실제FileSave검사4/4, NativePlay4(메인공통배경/스타일·Settings실raycast/drag·Pause/Continue/Retry/Home·중복시작). 각각별도run이며합계단일통과로포장하지않음. 실제원본PrefabMode flatCanvas/설정·Pause·안내GPU캡처와NativeGameMain/설정/PausePNG열어확인, privateMain0/23초색면변화. copyPrefab에서글꼴/이미지/문구/위치·색Undo/Redo/실제Save/재열기유지, 임시WorldSpace미저장, 원본Scene선택→Stop후Placement/Overlay/dirty불변PASS.
+
+FAIL이력은환경Canvas/reflectionOverload/빈TestRunnerScene준비오류로정정, runtime4는최초모두PASS. shadealpha.32부작용은사본RGBA1확인후guard복구, 최종UI원래값. 사용자게임저장보호fixture/Editor비교PASS, 기존문자/fontMaterial보존(캐시갱신만). NOT_RUN: 손/모바일·터치·이번WebGL실행/성능·앱재실행저장·연속영상. 사용자WebGL정상회신과이번실행을구분한다. [세부결과·실패/자동승인처리](EDITOR_REFACTOR_STATUS.md).
+
+
+## D-072 D~G 최신 실행 결과 (2026-11-01)
+
+PASS: C사용자직접검수, 최종Nativecompile/Console0·Edit85/85(`G-final-edit85-after-build.json/xml`14:53:06Z), Native통합고유18의각최종PASS(`G-integration18-final-index.json`, 여러run), 별도logo5/E4/F외형기록1. 실제UI pointer·Native충돌/반사·정지꼬리/입력·실습/피버/피격·정산·격리QA키Play재진입저장을 포함한다. private GPU정적세로/가로·실NativePause/첫안내PNG육안확인, 기본InGame전후픽셀차0. 테스트내부입력/함수호출을손조작통과로쓰지않는다.
+
+PASS로컬WebGL: 오류0/기존경고8/670.613초, 86,415,324bytes/23파일로더참조·SHA256확인. 출력`D:/renewal_CursorDash/Builds/LocalDevPreview/editor-refactor-DG-20261101-local`; browser미실행/게시없음. TMP빌드자동캐시정리는원본보존후DG시작사본해시로복구, runtime/source변경아님. PASS저장보존은모든NativePlay뒤빌드전Editor12/standalone0/Persistent3동일이고최종추가재조회는BLOCKED다.
+
+FAIL이력해결: Retry의과거새Scene기대/원형진입첫프레임·기존morph+반동대기/검사순간이동꼬리샘플/전환1.35초끝값/글꼴C#래퍼동일성단언. 핵심실제동작단언유지·현재게임규칙코드변경없음. 글꼴은동일UnityInstance/GUID/localID로검증, source/copy atlas분리도실제확인. 상세실패/수정/최종증거는단일진행기록에남긴다.
+
+BLOCKED: unfocusedEditor의CaptureScreenshotAsTexture실패로최종GameView커서/Nexus/HUD픽셀순서미확인. 자동승인검토가두View폰트강제재임포트(미저장상태위험)와빌드후추가registry비교(원시값접근/진단산출물위험)를거부하여재시도/폐기하지않음. 기존dirty6+자체BoldAtlas메모리cache1보존/디스크원본해시동일. NOT_RUN: 손전체플레이/터치·모바일/브라우저WebGL/성능·앱재실행저장·연속영상. 최종PlayOFF/timeScale1/Cyberpunkclean/참조6View/missing0.
+
+[전체 진행·증거·수동 검수](EDITOR_REFACTOR_STATUS.md). 기존D-071미실행제약은이력이며현재권한·결과는D-072를따른다.
+
+## D-071 대표 편집 구조 B/C (2026-11-01)
+
+PASS: nativecompile/최종Console오류경고0·집중EditMode10(새7+로고3)/실제Scene 원본 위치·크기 편집/UndoRedo/저장재열기/조합전환유지→기본복원·원본Scene미리보기dirty불변/샘플·fontatlas·저장값불변/PreviewScene에게임매니저·EventSystem없음/cleanup. 실제합성GPU1080×1920·1920×1080에서Main/MainSettings·0/긴숫자표시를확인했다. 이는Play/터치/후처리실행검사가아니다. FAIL이력: 초기7PASS3FAIL/다음6PASS4FAIL, reflection오버로드와 runtime-onlySlider/Handle의nullScript직렬화문제수정·새 cs/GUID정정 후 asset/scene 재열기9slider/1handle/missing0·핵심단언유지통과. NOT_RUN: 모든Play·입력·전체전투/튜토리얼·피버/저장재실행·모바일/WebGL·성능. C실제실행관문사용자대기이므로D/E/F/G완료처리없음. [실제파일/로그·한계·복구](EDITOR_REFACTOR_STATUS.md).
+
+## D-070 메인 로고 View 집중 검수 (2026-11-01)
+
+**PASS:** native 컴파일/최종Console 오류·경고0, 정상TestRunner5/5(편집·Prefab3/실제Play진입·종료2), 편집값 Pos/size/다른Sprite/tint의 Play·Home 반복·종료 유지와 기본 복원, 기존 timeline 이동/fade·결과 reveal/Home·중복 생성/반복시작 거부. 실제1080×1920 변경 전후 Main/퇴장/Home 및 Play 없는 Scene/Game View 표시·선택 확인. 사본1,625파일 삭제0/예상 밖 기존 게임 변경0·CursorDash registry12/standalone0 동일. **FAIL 이력:** 최초3건은 빈 TestRunner 씬을 전제로 하지 못한 검사 준비 오류, 대상 씬 준비만 추가해 핵심 단언 유지 후 전부통과. MCP job 추적 domain reload 정지는 실제UnityReporter XML/JSON으로 구분했다. **NOT_RUN:** 손/터치·UI전체/전투·튜토리얼·피버완주·다른 실제화면비·모바일/WebGL·성능. **미변경:** 노드/입력/점수/피버/기존17개수정 중 로고연결외부분. [검수·사본·편집/복구 상세](MAIN_LOGO_VIEW_20261101.md). 종료PlayOFF/timeScale1/Cyberpunkclean/미커밋·빌드/Git게시없음.
+
+## D-069 잔존 꼬리 방어 검사 (2026-10-29)
+
+**PASS 정적·참조:** 기존 Arrow→소속 AfterImage.TryBlockBeam→기존 Block/반환 경로를 확인했다. 공격/반사 처리 코드는 수정하지 않고 조회 경로만 표시 리본과 일치시켰다. runtime118/test17/Editor2 참조 컴파일 오류0·기존 runtime경고133, diffcheck·범위·보존 확인. **PASS 관리형:** 실제 꼬리 소스에서20% 잔존경로 장기정지 방어/실제교차점·표시에서 잘린 옛경로 방어불가/이동 직후 최신머리·경로 반영/Clear 뒤 방어소멸/고스트50%·속도.375 유지·제어수비 경로24를 확인했다. 31,813개 계산 단언은 Unity 물리·GPU·손조작 검사가 아니다. **NOT_RUN:** 공식 `RetainedRestTailBlocksOnlyItsDisplayedPathAfterTimedSamplesExpire`의 활성 리본/Native 기하·정지방어·옛경로 무효/이동·Pause/Clear 단언은 작성·참조 컴파일만 했다. Unity 컴파일/정상TestRunner·Play/실제 표시·반사/모바일·WebGL 성능은 사용자 검수 대기. D-067/068 ‘잔존 표시 만료 후 방어불가’는 현재 요구에서 대체되었다. [검수 인계](RETAINED_TAIL_DEFENSE_20261029.md).
+
+## D-068 표시 복구 검사 (2026-10-29)
+
+FAIL(사용자관찰): D-067 실제잔상 미표시. PASS: 이번 참조118/test17/Editor2 오류0/기존133경고·diffcheck/범위·보존, 관리형 실제 꼬리 소스/고스트·Controller 수학에서 명시 리본정점·머리연결/정지20%·ghost최초/연속1.95·만료방어불가/방어풀불변·초기화·일정.375와제어된수비경로24. 어댑터는 실제 Unity 리본/픽셀/GPU가 아니다. 공식단언에 LineRenderer활성/정점/NativeBakeMesh기하·고정길이·느린입력을추가했으나작성/컴파일만함. NOT_RUN: 사용자 직접검수 선택에 따른Unity컴파일/TestRunner/Play·실제표시/반사·Fever검은꼬리·기기성능. 컴퓨터조작·빌드/Git게시없음. [현재 인계](TRAIL_DISPLAY_GHOST_SPEED_20261029.md).
+
+## D-067 로컬 검사 (2026-10-29)
+
+PASS: diffcheck/범위·보존 확인, 참조 runtime118/test17/Editor2 오류0·기존 runtime경고133. 실제 점수/꼬리 소스와 추출한 고스트 경로·Controller 수학을 관리형 어댑터에서 검사: 숫자/색/이동 공통 시계·opacity55%/양수 끝에0, 정지꼬리.78·굴곡/머리연결/만료방어불가·초기화, 일정.50 입력/방향8×계산간격3 수비 교차24. Unity 물리·GPU·완전자동플레이 검증으로 간주하지 않는다. 초기 API 컴파일 오류와 수비 경로/검사 샘플링 실패는 보완 후 최종PASS/중간로그 보존. 공식 회귀는 문구·일정 입력/실넥서스 앞 반사·시각꼬리와 실제 방어 구분·전환 순서 단언을 보강하고 컴파일만 했다. NOT_RUN: 실제Unity컴파일/TestRunner·Play/손조작·GPU·모바일/WebGL·성능/재실행저장. [검수 순서·근거](TUTORIAL_CLARITY_20261029.md).
+
 ## D-066 최신 릴리스 검사 (2026-10-28)
 
 USER_VERIFIED:사용자가UI조작정상확인. PASS:정적/참조118-test17-Editor2 오류0·기존133경고/JS구문,실제WebGL오류0·경고8/312.175초,입력1518전후동일·기존1609보존. 기존동일게임Native고유7PASS는이번자동Play실행으로표시하지않는다. 로컬24/공개25HTTP200·SHA256·WASM MIME와bare URL새ID/소스SHA·Pages40576817544 success PASS. 실제브라우저메인설정7·로컬드래그100→70→100/시작·커서/Pause2/계속/Home·warn/error0 PASS. 실제스크린샷과논리/참조검사는구분. NOT_RUN:실모바일/터치·전체전투/튜토리얼완주·피버·장시간성능·재실행저장·전체공식테스트·독립QA·빌드뒤Unity메모리재조회. [세부기록](RELEASE_SETTINGS_20261028.md).

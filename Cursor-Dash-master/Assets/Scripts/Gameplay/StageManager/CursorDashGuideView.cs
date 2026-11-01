@@ -7,9 +7,16 @@ public sealed class CursorDashGuideView
 {
     private readonly GameObject root,hintRoot,noticeRoot;private readonly TextMeshProUGUI hint,notice;private readonly Image white;
     private readonly bool bound;
+    private readonly CursorDashGuidanceView authored;
     public bool Bound=>bound&&root!=null;
-    public CursorDashGuideView(Transform parent)
+    public CursorDashGuideView(Transform parent,CursorDashGuidanceView saved=null)
     {
+        if(saved!=null&&saved.IsConfigured){
+            authored=saved;root=saved.gameObject;hintRoot=saved.HintRoot;noticeRoot=saved.NoticeRoot;
+            hint=saved.Hint;notice=saved.Notice;white=saved.NoticeBackground;
+            bound=parent!=null&&parent.GetComponentInParent<Canvas>()!=null;
+            saved.PrepareRendering();saved.Clear();return;
+        }
         root=new GameObject("In-world guidance",typeof(RectTransform)){hideFlags=HideFlags.DontSave};
         var rect=root.GetComponent<RectTransform>();rect.SetParent(parent,false);rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
         bound=parent!=null&&parent.GetComponentInParent<Canvas>()!=null;
@@ -32,7 +39,7 @@ public sealed class CursorDashGuideView
         var r=text.rectTransform;r.anchorMin=r.anchorMax=anchor;r.sizeDelta=dimensions;return text;
     }
     private static void Configure(TextMeshProUGUI text,float size){text.font=CursorDashTypography.Medium;text.fontSize=size;text.enableAutoSizing=true;text.fontSizeMin=size*.65f;text.fontSizeMax=size;text.alignment=TextAlignmentOptions.Center;text.raycastTarget=false;}
-    public void ShowHint(string value,bool visible){if(hintRoot==null||hint==null)return;hintRoot.SetActive(visible&&Bound);if(hint.text!=value)hint.text=value;}
+    public void ShowHint(string value,bool visible){if(authored!=null){authored.PresentHint(value,visible&&Bound);return;}if(hintRoot==null||hint==null)return;hintRoot.SetActive(visible&&Bound);if(hint.text!=value)hint.text=value;}
     public bool BlocksSpawn(Vector2 point,float radius,Camera board)
     {
         if(hintRoot==null||!hintRoot.activeInHierarchy||board==null)return false;
@@ -45,10 +52,11 @@ public sealed class CursorDashGuideView
     }
     public void ShowNotice(float alpha)
     {
+        if(authored!=null){authored.PresentNotice(Bound?alpha:0);return;}
         if(noticeRoot==null||white==null||notice==null)return;
         // The completed fever world supplies white. Fade only wording so pre-supplied nodes remain visible.
         noticeRoot.SetActive(alpha>0&&Bound);white.color=Color.clear;notice.color=new Color(0,0,0,Mathf.Clamp01(alpha));
     }
     public void Clear(){ShowHint("",false);ShowNotice(0);}
-    public void Dispose(){if(root!=null)Object.Destroy(root);}
+    public void Dispose(){if(authored!=null)authored.Clear();else if(root!=null)Object.Destroy(root);}
 }

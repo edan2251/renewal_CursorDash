@@ -11,7 +11,7 @@ public sealed partial class CursorDashPractice
     public bool Resetting=>Guided&&Flow!=null&&Flow.Current==CursorDashGuideFlow.Phase.Reset;
     public bool Completing=>Guided&&Flow!=null&&(Flow.Current==CursorDashGuideFlow.Phase.Settling||Flow.Current==CursorDashGuideFlow.Phase.Fading);
     public float ResetProgress=>Flow==null?0:Mathf.Clamp01((float)Flow.ResetAge/ResetSeconds);
-    public string GuideInstruction=>Flow==null?"":$"원형노드 처치 {Flow.CircleWins}/2{(Flow.CircleWins==2?"  [완료]":"")}\n육각노드 처치 {Flow.HexWins}/2{(Flow.HexWins==2?"  [완료]":"")}";
+    public string GuideInstruction=>Flow==null?"":stage.GuidanceView!=null?stage.GuidanceView.Checklist(Flow.CircleWins,Flow.HexWins):$"원형노드 파괴 {Flow.CircleWins}/2{(Flow.CircleWins==2?"  [완료]":"")}\n육각노드로부터 수비 {Flow.HexWins}/2{(Flow.HexWins==2?"  [완료]":"")}";
     public IReadOnlyList<string> BeamTrace=>beamTrace;
     public IReadOnlyDictionary<Node,ulong> PracticeTargets=>targets;
     private readonly List<string> beamTrace=new List<string>();
