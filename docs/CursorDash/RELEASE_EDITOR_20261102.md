@@ -1,10 +1,13 @@
 # D-076 화면 편집·Hierarchy·잔존 꼬리 최신본 릴리스 (2026-11-02)
 
-**RELEASE_IN_PROGRESS.** 사용자 ‘현재 상태로 빌드 커밋 푸시 배포’ 승인에 따른 기존 GitHub Pages 릴리스다. 새 게임 기능·디자인·밸런스 변경은 하지 않는다. 결과가 확인된 단계만 PASS로 갱신한다.
+**RELEASE_COMPLETE / NATIVE_COMPILE_PASS / EDITOR25_PASS / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** 사용자 현본 게시 승인에 따른 기존 GitHub Pages 릴리스다. 새 게임 기능·디자인·밸런스 변경은 하지 않았다.
 
 - 공개 주소: https://edan2251.github.io/renewal_CursorDash/
 - buildId: `cursordash-20261102-editor-069d35f8b4b9`
-- 빌드 소스·배포·사후 문서 커밋: 완료 후 아래에 구분 기록.
+- 실제 빌드 소스 main: `9bd15ba72966dfe71310c207a31a769758ef6b80` — `[Release] Publish editable views, hierarchy cleanup and retained trail defense` (145파일).
+- 웹 배포 gh-pages: `404818e3c0bb5e256593065b61d49fff574e39af` — `[Build] Deploy editor-069d35f8b4b9 from 9bd15ba`.
+- [Pages 작업41357603103](https://github.com/edan2251/renewal_CursorDash/actions/runs/41357603103) success, Pages API built/동일 SHA, 2026-11-02 07:32:54KST 게시 완료.
+- 이 최종 기록은 빌드 소스 뒤 별도 `[Docs]` 커밋으로 main에 푸시한다. 문서만 바뀌므로 게임은 재빌드하지 않는다. 실제 빌드 sourceCommit은 계속9bd15ba다.
 - Git 루트 `D:/renewal_CursorDash`, Unity 루트 `Cursor-Dash-master`, 기존 main / gh-pages 구조 유지.
 
 ## 포함한 구현과 보존 범위
@@ -28,11 +31,21 @@ D-067~069의 튜토리얼 문구/고스트·점수 연결과 잔상 표시·정�
 | 이번 Native Play | NOT_RUN — 이번 승인으로 이전 Play 권한을 재사용하지 않음. D-075의 승인후 Native6은 과거 별도 증거 |
 | WebGL 빌드 | PASS — Unity6000.3.23f1/WebGL/NoPlay, 오류0·경고8(기존 미사용 필드6·NexusGameboard gradient 경고 DX11/GLES3 각1),233.063초,86,353,798bytes,2026-11-02 07:26:04KST |
 | 로컬 HTTP·실제 브라우저 | PASS — 23파일 HTTP200/SHA256·WASM MIME일치. 실제1280×720 메인/설정7슬라이더·100→70→100/닫기/시작·실튜토리얼객체/실드래그커서·잔상/Pause·계속·Home, 브라우저warn/error0 |
-| 기존 Pages·공개 브라우저 | NOT_RUN — 배포 후 확인 |
+| 기존 Pages·공개 브라우저 | PASS — 작업success/Pages built·배포SHA동일,25파일HTTP200/Git blob SHA256·WASM MIME. 쿼리없는공개주소의 실제 새loader/framework ID·메인/설정7개/닫기/시작·실튜토리얼객체/드래그커서·잔상/Pause/Home, 브라우저warn/error0 |
 | 실제 모바일/터치·성능·전체 전투·튜토리얼/피버 완주·앱 재실행 저장 | NOT_RUN |
 
 ## 증거와 다음 작업
 
 로컬 기록: `Cursor-Dash-master/Logs/release-editor-20261102/`. 테스트 JSON/XML, 시작/빌드 입력 SHA256 manifest, commit-selection과 배포 파일·HTTP·브라우저 증거를 이 위치에 남긴다. 인증정보·실제 사용자 저장 데이터 값은 공개하지 않는다. 소스 커밋과 사후 문서 커밋을 구분하며 문서만 바뀌면 게임을 재빌드하지 않는다.
 
-현재 다음 작업은 성공 빌드·로컬 WebGL 검수본의 소스 선별커밋/push → 기존 gh-pages 게시/공개 확인이다. 실패한 결과는 게시하거나 완료로 기록하지 않는다. 이번 릴리스 완료 뒤 새 기능·추가 빌드/Git/배포는 새 지시를 기다린다.
+**다음 한 작업:** 사용자가 기존 공개주소에서 PC/실모바일로 정지 꼬리의 육각 방어·튜토리얼 완주·피버·최종파괴/점수저장과 UI를 검수한다. Editor 편집은 Cyberpunk에서 Tools→CursorDash→화면 편집의 상태버튼을 사용한다. 새 기능·추가 빌드/Git/배포는 새 지시를 기다린다.
+
+## 공개 파일·복구·종료 상태
+
+전용 배포 checkout `Deployments/cp14-pages-20261024-131718/checkout`의 기존25파일을 `Logs/release-editor-20261102/PagesBefore`로 보존했다. 이전 Build4파일만 새 식별자의 파일로 교체하고 `.nojekyll`·`version.json`·기존 TemplateData 구조를 유지했다. 배포25파일에 로그/백업/영상/사적진단/인증정보 없음. Git 줄바꿈 정규화가 적용된 텍스트는 실제 Git blob을 공개 해시 기준으로 썼다. 소스 에셋의 Git 비교도 줄바꿈46개 외 불일치0이다.
+
+작업 시작1720파일과 종료 비교: 삭제0·예상외변경0. 이번에 바뀐 기존파일은 build helper/BuildIdentity, Editor검사로 갱신한 파생fontcache2개와 인계문서5개다. 신규 릴리스문서1개 외 새게임기능 없음. staged code/docs diffcheck PASS; Unity직렬화YAML의 빈값 뒤 공백은 기존생성형식을 유지했다(전체 diffcheck 경고는 코드오류로 처리하지 않음).
+
+최종 Native 확인: Cyberpunk clean/PlayOFF/compileOFF/timeScale1, 보호6문자열3float 동일, 기존 미저장 imported 자산은 저장·폐기하지 않음. 이번 Native Play는0회다. 다른 Project_Brawl/Unity프로젝트·MCP서버/설정·사용자저장기록을 변경하거나 종료하지 않았다. 임시 localhost8888 서버와 로컬검수 탭은 정리했고 공개탭은 Main으로 남겼다. 로컬서버 첫실행의 네트워크제약/연결timeout은 정상승인경로로 재실행하여 해결했으며 게임수정/보안설정변경은 없었다.
+
+작업ID release-editor-20261102 / 프로젝트 CursorDash / 명시프로젝트 `D:/renewal_CursorDash/Cursor-Dash-master` / 현재Windows PC / 공통프로필·Slack 목적지 미설정. Slack NOT_SENT·독립Claude QA NOT_RUN. 실제 증거는 PNG 정지화면이며 연속영상은 촬영하지 않았다. 공개접속·기본조작 성공을 전체게임/모바일/성능 통과로 확대하지 않는다.

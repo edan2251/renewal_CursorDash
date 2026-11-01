@@ -2,7 +2,7 @@
 
 ## D-076 현재본 릴리스 (2026-11-02)
 
-PASS: 대상 Unity6000.3.23f1의 컴파일 오류0·최종 비Play Editor25/25(Hierarchy2/SceneScreen4/Authoring7/World5/Usability4/비Play로고3), 선별 소스 비밀정보 검사 발견0. Native Play는 이번 NOT_RUN이며 D-075의 승인후6항목을 이번 재실행으로 기록하지 않는다. WebGL오류0/경고8·233.063초, 로컬23파일HTTP/SHA256/WASM MIME·실IAB메인/설정슬라이더100→70→100·시작/커서잔상/Pause/계속/Home·브라우저오류0 PASS. 빌드가 비운 파생glyphcache2개 복원뒤1606입력 동일/보호6문자열3float동일. 공개 HTTP/브라우저는 진행 중이며 [릴리스 기록](RELEASE_EDITOR_20261102.md)에 실제 결과를 갱신한다. 모바일/터치·성능·전체 전투/튜토리얼/피버 완주·앱재실행 저장 NOT_RUN.
+PASS: 대상 Unity6000.3.23f1의 컴파일 오류0·최종 비Play Editor25/25(Hierarchy2/SceneScreen4/Authoring7/World5/Usability4/비Play로고3), 선별 소스 비밀정보 검사 발견0. Native Play는 이번 NOT_RUN이며 D-075의 승인후6항목을 이번 재실행으로 기록하지 않는다. WebGL오류0/경고8·233.063초, 로컬23파일HTTP/SHA256/WASM MIME·실IAB메인/설정슬라이더100→70→100·시작/커서잔상/Pause/계속/Home·브라우저오류0 PASS. 빌드가 비운 파생glyphcache2개 복원뒤1606입력 동일/보호6문자열3float동일. 공개25파일HTTP200/GitSHA256/WASM MIME와 Pages success/built·배포SHA일치, 실제IAB메인/설정/시작/커서잔상/Pause/Home·warn/error0·새ID로더확인 PASS이며 [릴리스 기록](RELEASE_EDITOR_20261102.md)에 실제 결과를 갱신한다. 모바일/터치·성능·전체 전투/튜토리얼/피버 완주·앱재실행 저장 NOT_RUN.
 
 ## D-075 Hierarchy 정리 (2026-11-02)
 

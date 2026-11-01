@@ -1,8 +1,10 @@
 # CursorDash 현재 상태와 다음 한 작업
 
-## 최신 — D-076 현재 로컬본 WebGL·기존 Pages 릴리스 진행 (2026-11-02)
+## 최신 — D-076 현재 로컬본 WebGL·기존 Pages 릴리스 완료 (2026-11-02)
 
-사용자 ‘현재 상태로 빌드 커밋 푸시 배포’로 D-067~075의 완료 로컬본 게시를 승인했다. 기능 추가 없이 기존 main/gh-pages와 공개주소를 유지한다. 시작 HEAD/origin main9121b78·gh-pages6909ed2/index빈, 외부 사본 `D:/CursorDash_Backups/release-editor-20261102`에1720파일 manifest/base D075 Final+delta2를 보존했다. 이번 비Play Editor25/25·컴파일 오류0 PASS. WebGL `cursordash-20261102-editor-069d35f8b4b9` 오류0/경고8·233.063초 PASS, 로컬23파일HTTP/해시·WASM MIME와 실제브라우저 메인/설정드래그/시작·커서잔상/Pause·계속/Home·warn/error0 PASS. 소스선별커밋/기존Pages게시·공개확인은 다음 단계다. [릴리스 기록](RELEASE_EDITOR_20261102.md). 이전 Play승인을 재사용하지 않음, 다른 프로젝트/서버·사용자 dirty 자산 보존. 새 Flash그림·별도재구축/노드겹침은 계속 보류. 현재 다음 작업은 선별소스push와 기존Pages게시/공개검수다.
+**RELEASE_COMPLETE / EDITOR25_PASS / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** 현본 선별소스 main `9bd15ba`(145파일), gh-pages `404818e` 정상push/Pages작업41357603103 success·built/동일SHA. buildId `cursordash-20261102-editor-069d35f8b4b9`, Unity6000.3.23f1/WebGL오류0·기존경고8/233.063초. 로컬23·공개25파일HTTP200/해시·WASM MIME, 실제IAB1280×720 메인/설정7개·로컬100→70→100·시작/커서드래그·잔상/Pause/Home·로컬계속, warn/error0/쿼리없는공개URL 새loader/framework확인. [릴리스·정확한미검증/증거](RELEASE_EDITOR_20261102.md), [편집사용법](EDITOR_AUTHORING_GUIDE.md).
+
+1720파일사본 `D:/CursorDash_Backups/release-editor-20261102`·기존사용자작업보존/삭제0·예상외변경0, 빌드가비운파생cache2만직전사본복원뒤1606입력동일. source9bd15ba와이사후문서커밋은구분/문서만재빌드없음. 최종Cyberpunkclean/PlayOFF/timeScale1/보호6문자열3float동일·미저장imported저장폐기없음·이번NativePlay0·다른프로젝트/서버불변/임시서버정리. 실모바일/터치·전체전투/튜토리얼/피버완주·정지꼬리실반사·성능·앱재실행저장·독립QA NOT_RUN. 새Flash그림/별도재구축·일반겹침보류/육각재검토제외유지. **다음 한 작업:** 사용자공개PC/실모바일검수. 이번게시권한완료, 추가개발/빌드/Git/배포 새지시대기.
 
 ## 최신 — D-075 Hierarchy 가독성·미사용 씬 오브젝트 정리 (2026-11-02)
 
