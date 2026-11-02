@@ -1,0 +1,20 @@
+{
+  "fonts": [
+    {
+      "path": "SarasaUiJ-SemiBold.ttf",
+      "bytes": 13358568,
+      "sha256": "b1219dd862247aa23c677129c70c6726b89fdfc40ed1bf82e4cfbe5e38788505",
+      "archive": "SarasaUiJ-TTF-Unhinted-1.0.43.7z",
+      "source": "https://github.com/be5invis/Sarasa-Gothic/releases/tag/v1.0.43"
+    },
+    {
+      "path": "SarasaUiSC-SemiBold.ttf",
+      "bytes": 13011004,
+      "sha256": "e5664bb2451673000b89633a4760a99e12ab1041b3fb49c0660a4e915227dda3",
+      "archive": "SarasaUiSC-TTF-Unhinted-1.0.43.7z",
+      "source": "https://github.com/be5invis/Sarasa-Gothic/releases/tag/v1.0.43"
+    }
+  ],
+  "use": "Editor-only source for baked static menu glyph atlases; not installed on Windows",
+  "license": "SIL Open Font License 1.1"
+}

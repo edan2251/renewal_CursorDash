@@ -50,10 +50,10 @@ namespace CursorDashTests
             Assert.AreEqual(RenderMode.WorldSpace,canvas.renderMode);Assert.Greater(view.transform.lossyScale.x,0);
             Assert.Greater(((RectTransform)view.transform).rect.height,0);Assert.AreEqual(1,Get(Get(view,"ContentOpacity"),"alpha"));
             Assert.IsFalse(PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty);
-            var label=view.GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();
+            var label=((Component)Get(view,"ContentAnimation")).GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();
             var labelType=T("TMPro.TMP_Text");var fontProperty=labelType.GetProperty("font");var sizeProperty=labelType.GetProperty("fontSize");var textProperty=labelType.GetProperty("text");
             var originalText=textProperty.GetValue(label);var font=AssetDatabase.LoadAssetAtPath<Object>("Assets/Resources/CursorDash/Fonts/esamanru Bold View SDF.asset");
-            var image=((RectTransform)Get(view,"SheetAnimation")).GetComponent<UnityEngine.UI.Image>();
+            var image=(UnityEngine.UI.Image)Get(view,"SheetSurface");
             var sprite=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/MainLogo.prefab").GetComponentInChildren<UnityEngine.UI.Image>(true).sprite;
             var before=placement.anchoredPosition;Undo.IncrementCurrentGroup();Undo.RecordObjects(new Object[]{placement,label,image},"Isolated editable UI");
             placement.anchoredPosition+=new Vector2(17,-13);sizeProperty.SetValue(label,32f);fontProperty.SetValue(label,font);textProperty.SetValue(label,"편집 확인");image.sprite=sprite;image.color=new Color(.1f,.15f,.2f,.9f);Undo.FlushUndoRecordObjects();
@@ -71,8 +71,8 @@ namespace CursorDashTests
             var reopened=PrefabStageUtility.OpenPrefab(copy).prefabContentsRoot.GetComponent(T("CursorDashSettingsView"));
             Assert.AreEqual(before+new Vector2(17,-13),((RectTransform)new SerializedObject(reopened).FindProperty("contentPlacement").objectReferenceValue).anchoredPosition);
             Assert.Greater(reopened.transform.lossyScale.x,0);Assert.AreEqual(RenderMode.WorldSpace,((Canvas)Get(reopened,"Canvas")).renderMode);
-            var savedLabel=reopened.GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();Assert.AreEqual("편집 확인",textProperty.GetValue(savedLabel));Assert.AreEqual(32f,sizeProperty.GetValue(savedLabel));Assert.AreEqual(font,fontProperty.GetValue(savedLabel));
-            var savedImage=((RectTransform)Get(reopened,"SheetAnimation")).GetComponent<UnityEngine.UI.Image>();Assert.AreEqual(sprite,savedImage.sprite);Assert.AreEqual(new Color(.1f,.15f,.2f,.9f),savedImage.color);
+            var savedLabel=((Component)Get(reopened,"ContentAnimation")).GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();Assert.AreEqual("편집 확인",textProperty.GetValue(savedLabel));Assert.AreEqual(32f,sizeProperty.GetValue(savedLabel));Assert.AreEqual(font,fontProperty.GetValue(savedLabel));
+            var savedImage=(UnityEngine.UI.Image)Get(reopened,"SheetSurface");Assert.AreEqual(sprite,savedImage.sprite);Assert.AreEqual(new Color(.1f,.15f,.2f,.9f),savedImage.color);
         }
         [Test]public void GuidanceGetsOnlyTemporaryCanvasAndKeepsEditedTypography()
         {

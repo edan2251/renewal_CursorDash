@@ -26,7 +26,7 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
     [SerializeField] private RectTransform pauseAnimation;
     [SerializeField] private Row[] rows;
     [SerializeField] private Button replayTutorial, resetSettings, resume, retry, home;
-    [SerializeField, Range(.5f, 1)] private float sheetHeightFraction = .95f;
+    [SerializeField, Range(.5f, 1)] private float sheetHeightFraction = 1;
     [SerializeField] private float horizontalInset = 48;
     [SerializeField] private float sheetTopInset = 65;
     [SerializeField] private float pauseVerticalInset = 90;
@@ -50,7 +50,7 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
     {
         get
         {
-            if(canvas==null||safeArea==null||shade==null||sheetAnimation==null||contentPlacement==null||contentAnimation==null||contentOpacity==null||handle==null||handle.GetComponent<CursorDashSheetHandle>()==null||pauseOpacity==null||pausePlacement==null||pauseAnimation==null||rows==null||rows.Length!=9||replayTutorial==null||resetSettings==null||resume==null||retry==null||home==null)return false;
+            if(canvas==null||safeArea==null||shade==null||sheetAnimation==null||contentPlacement==null||contentAnimation==null||contentOpacity==null||handle==null||handle.GetComponent<CursorDashSheetHandle>()==null||pauseOpacity==null||pausePlacement==null||pauseAnimation==null||rows==null||rows.Length!=9||replayTutorial==null||(!HasMenuPanels&&resetSettings==null)||resume==null||retry==null||home==null)return false;
             foreach(var row in rows)if(row==null||row.slider==null||!(row.slider is CursorDashSettingSlider)||row.value==null)return false;
             return true;
         }
@@ -76,8 +76,9 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
             ((CursorDashSettingSlider)row.slider).finished = owner.Save;
         }
         GetComponentInChildren<CursorDashSheetHandle>(true).owner = owner;
-        replayTutorial.onClick.AddListener(owner.ReplayTutorial); resetSettings.onClick.AddListener(owner.ResetSettings);
+        replayTutorial.onClick.AddListener(owner.ReplayTutorial); if(resetSettings!=null)resetSettings.onClick.AddListener(owner.ResetSettings);
         resume.onClick.AddListener(owner.Resume); retry.onClick.AddListener(owner.Retry); home.onClick.AddListener(owner.Home);
+        BindNavigation();
     }
 
     public void Unbind()
@@ -93,6 +94,7 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
         var grip=GetComponentInChildren<CursorDashSheetHandle>(true);if(grip!=null)grip.owner = null;
         if(replayTutorial!=null)replayTutorial.onClick.RemoveListener(owner.ReplayTutorial);if(resetSettings!=null)resetSettings.onClick.RemoveListener(owner.ResetSettings);
         if(resume!=null)resume.onClick.RemoveListener(owner.Resume);if(retry!=null)retry.onClick.RemoveListener(owner.Retry);if(home!=null)home.onClick.RemoveListener(owner.Home);
+        UnbindNavigation();
         owner = null;
     }
 
@@ -105,8 +107,11 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         float height = safeArea.rect.height * sheetHeightFraction;
         sheetAnimation.sizeDelta = new Vector2(safeArea.rect.width, height);
+        // Only the chosen half-header occupies the top strip; the body starts below it.
+        if(sheetSurface!=null){sheetSurface.rectTransform.offsetMin=Vector2.zero;sheetSurface.rectTransform.offsetMax=new Vector2(0,-navigationHeight);}
         float fit = Mathf.Min(1, (safeArea.rect.width - horizontalInset) / Mathf.Max(1, contentPlacement.rect.width), (height - sheetTopInset) / Mathf.Max(1, contentPlacement.rect.height));
         contentAnimation.localScale = Vector3.one * Mathf.Max(.4f, fit);
+        if(rankingAnimation!=null&&rankingPlacement!=null){float rankFit=Mathf.Min(1,(safeArea.rect.width-horizontalInset)/Mathf.Max(1,rankingPlacement.rect.width),(height-sheetTopInset)/Mathf.Max(1,rankingPlacement.rect.height));rankingAnimation.localScale=Vector3.one*Mathf.Max(.4f,rankFit);}
         float pauseFit = Mathf.Min(1, (safeArea.rect.width - horizontalInset) / Mathf.Max(1, pausePlacement.rect.width), (safeArea.rect.height - pauseVerticalInset) / Mathf.Max(1, pausePlacement.rect.height));
         pauseAnimation.localScale = Vector3.one * Mathf.Max(.4f, pauseFit);
         return height;
@@ -115,9 +120,7 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
     public void Present(bool menu, float sheet, float pauseAlpha, bool interactive)
     {
         float eased = sheet * sheet * (3 - 2 * sheet);
-        sheetAnimation.gameObject.SetActive(menu);
-        sheetAnimation.anchoredPosition = new Vector2(0, -(sheetAnimation.rect.height - 48) * (1 - eased));
-        contentOpacity.alpha = eased; contentOpacity.interactable = interactive && sheet > .98f; contentOpacity.blocksRaycasts = interactive && sheet > .98f;
+        PresentMenu(menu,sheet,interactive);
         pauseOpacity.gameObject.SetActive(pauseAlpha > .001f); pauseOpacity.alpha = pauseAlpha;
         pauseOpacity.interactable = pauseOpacity.blocksRaycasts = interactive && pauseAlpha > 0;
         pauseAnimation.anchoredPosition = new Vector2(0, Mathf.Lerp(-9, 0, pauseAlpha));

@@ -82,6 +82,7 @@ public sealed partial class CursorDashSettingsView
         view.contentPlacement=contentPlacement;view.contentAnimation=content;view.contentOpacity=sheetContent;view.handle=handle;
         view.pauseOpacity=pauseGroup;view.pausePlacement=pausePlacement;view.pauseAnimation=pauseCard;view.rows=rows.ToArray();
         view.replayTutorial=replayTutorial;view.resetSettings=resetSettings;view.resume=resume;view.retry=retry;view.home=home;
+        view.AddBottomPanelsForAuthoring(font);
         return view;
     }
     private void Row(Transform parent,string key,string label,float y)

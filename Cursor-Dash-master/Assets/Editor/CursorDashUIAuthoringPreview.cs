@@ -98,17 +98,33 @@ public static partial class CursorDashUIAuthoringPreview
     }
     public static void Show(CursorDashSettingsView view,bool pause)
     {
-        if(!Begin(view,()=>Show(view,pause)))return;
+        ShowSettings(view,pause,CursorDashSettingsView.MenuPanel.Settings);
+    }
+    public static void ShowMenu(CursorDashSettingsView view,CursorDashSettingsView.MenuPanel panel)
+    {
+        ShowSettings(view,false,panel);
+    }
+    private static void KeepMenuPresentation(CursorDashSettingsView view)
+    {
+        Keep(view,()=>view.SelectedPanel,value=>view.SelectPanel(value));
+        if(view.NavigationPlacement!=null)Active(view.NavigationPlacement.gameObject);
+        foreach(var rect in view.MenuAnimationTransforms)if(rect!=null)Rect(rect);
+        foreach(var group in view.MenuOpacityGroups)if(group!=null)Group(group);
+        foreach(var graphic in view.MenuDirectionGraphics)if(graphic!=null)Keep(graphic,()=>graphic.enabled,value=>graphic.enabled=value);
+    }
+    private static void ShowSettings(CursorDashSettingsView view,bool pause,CursorDashSettingsView.MenuPanel panel)
+    {
+        if(!Begin(view,()=>ShowSettings(view,pause,panel)))return;
         HideOtherCanvases(view);
         CanvasFrame(view.Canvas);Rect(view.SafeArea);Rect(view.SheetAnimation);Active(view.SheetAnimation.gameObject);
         Rect(view.ContentAnimation);Rect(view.PauseAnimation);Group(view.ContentOpacity);Group(view.PauseOpacity);
+        KeepMenuPresentation(view);
         var scaler=view.Canvas.GetComponent<CanvasScaler>();var size=scaler==null?new Vector2(540,960):scaler.referenceResolution;
         view.Layout(new UnityEngine.Rect(Vector2.zero,size),size);
         // Only presenter-owned values. The placement roots and label styles are not overwritten.
         // Show finished endpoint geometry, without Present's mutation of the authored
         // shade Image.color. Editing an image tint must never be reverted by Stop.
-        view.SheetAnimation.gameObject.SetActive(!pause);view.SheetAnimation.anchoredPosition=Vector2.zero;
-        view.ContentOpacity.alpha=1;view.ContentOpacity.blocksRaycasts=false;
+        view.SelectPanel(panel);view.PresentMenu(!pause,1,false);
         view.PauseOpacity.gameObject.SetActive(pause);view.PauseOpacity.alpha=1;view.PauseOpacity.blocksRaycasts=false;
         view.PauseAnimation.anchoredPosition=Vector2.zero;
         view.ContentOpacity.interactable=true;view.PauseOpacity.interactable=true;
@@ -119,7 +135,7 @@ public static partial class CursorDashUIAuthoringPreview
             var label=row.value;Keep(label,()=>label.text,v=>label.text=v);
             label.text=Mathf.RoundToInt(row.slider.value*100)+"%";
         }
-        Frame(pause?Ref<RectTransform>(view,"pausePlacement"):Ref<RectTransform>(view,"contentPlacement"));
+        Frame(pause?Ref<RectTransform>(view,"pausePlacement"):panel==CursorDashSettingsView.MenuPanel.Ranking?view.RankingPlacement:Ref<RectTransform>(view,"contentPlacement"));
     }
     public static void Show(CursorDashMainMenuView view)
     {
@@ -206,6 +222,7 @@ internal sealed class CursorDashSettingsViewEditor:Editor
     {
         EditorGUILayout.HelpBox("이 컴포넌트는 표시/컨트롤 연결입니다. 배치는 Settings placement / Pause placement, 글꼴·색·이미지는 그 아래 TMP/Image에서 편집합니다. 표시 버튼은 샘플75%를 쓰며 저장값·게임 상태를 실행하지 않습니다.",MessageType.Info);
         using(new EditorGUILayout.HorizontalScope()){
+            if(GUILayout.Button("랭킹 UI 표시"))CursorDashUIAuthoringPreview.ShowMenu((CursorDashSettingsView)target,CursorDashSettingsView.MenuPanel.Ranking);
             if(GUILayout.Button("설정 UI 표시"))CursorDashUIAuthoringPreview.Show((CursorDashSettingsView)target,false);
             if(GUILayout.Button("일시정지 UI 표시"))CursorDashUIAuthoringPreview.Show((CursorDashSettingsView)target,true);
             if(GUILayout.Button("표시 종료"))CursorDashUIAuthoringPreview.Stop();

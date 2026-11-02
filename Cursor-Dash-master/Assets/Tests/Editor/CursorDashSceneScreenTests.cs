@@ -60,13 +60,13 @@ namespace CursorDashTests
             var view=(Component)Get(stage,"SettingsView");var layout=new SerializedObject(view);var placement=(RectTransform)layout.FindProperty("contentPlacement").objectReferenceValue;
             var expected=placement.anchoredPosition+new Vector2(17,-11);
             T("CursorDashUIAuthoringPreview").GetMethod("ShowScreen").Invoke(null,new[]{stage,Enum.Parse(T("CursorDashScreenAuthoringWindow+Screen"),"MainSettings"),1080,1920,"99",1f,.5f,.6f,0f,0f,false,false});
-            var label=view.GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();var size=T("TMPro.TMP_Text").GetProperty("fontSize");float expectedFont=(float)size.GetValue(label)+2;
-            var image=((RectTransform)Get(view,"SheetAnimation")).GetComponent<UnityEngine.UI.Image>();var expectedTint=new Color(.05f,.08f,.12f,.95f);
+            var label=((Component)Get(view,"ContentAnimation")).GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();var size=T("TMPro.TMP_Text").GetProperty("fontSize");float expectedFont=(float)size.GetValue(label)+2;
+            var image=(UnityEngine.UI.Image)Get(view,"SheetSurface");var expectedTint=new Color(.05f,.08f,.12f,.95f);
             Undo.RecordObjects(new Object[]{placement,label,image},"Scene appearance edit");placement.anchoredPosition=expected;size.SetValue(label,expectedFont);image.color=expectedTint;Undo.FlushUndoRecordObjects();Undo.PerformUndo();Undo.PerformRedo();Assert.AreEqual(expected,placement.anchoredPosition);
             EditorSceneManager.MarkSceneDirty(scene);Assert.IsTrue(EditorSceneManager.SaveScene(scene));Stop();
             scene=EditorSceneManager.OpenScene(copy);stage=Object.FindFirstObjectByType(T("StageManager"));view=(Component)Get(stage,"SettingsView");layout=new SerializedObject(view);placement=(RectTransform)layout.FindProperty("contentPlacement").objectReferenceValue;
             Assert.AreEqual(expected,placement.anchoredPosition);Assert.AreEqual(RenderMode.ScreenSpaceOverlay,((Canvas)Get(view,"Canvas")).renderMode);
-            label=view.GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();Assert.AreEqual(expectedFont,size.GetValue(label));Assert.AreEqual(expectedTint,((RectTransform)Get(view,"SheetAnimation")).GetComponent<UnityEngine.UI.Image>().color);
+            label=((Component)Get(view,"ContentAnimation")).GetComponentsInChildren(T("TMPro.TMP_Text"),true).First();Assert.AreEqual(expectedFont,size.GetValue(label));Assert.AreEqual(expectedTint,((UnityEngine.UI.Image)Get(view,"SheetSurface")).color);
             Assert.IsFalse(scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<Transform>(true)).Any(t=>t.name.StartsWith("EDITOR ONLY")||t.name.StartsWith("PREVIEW ONLY")));
             Assert.IsFalse(scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<Renderer>(true)).Any(r=>r.sharedMaterial!=null&&(r.sharedMaterial.hideFlags&HideFlags.DontSave)!=0));
             Assert.AreEqual("0",Get(Get(Get(stage,"ProjectedScoreView"),"Artwork"),"text"));

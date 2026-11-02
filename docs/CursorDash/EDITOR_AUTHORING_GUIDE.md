@@ -1,5 +1,18 @@
 # CursorDash 직접 편집 안내 — D~G 구조
 
+## 새 하단 랭킹·설정 — D-077 (2026-11-02)
+
+Tools→CursorDash→화면 편집에서 **메인 / 설정 / 랭킹**을 누른다. 기존 상태 버튼/실제 Scene 편집 방식 그대로다. 공통 원본은 `Assets/Prefabs/UI/SettingsView.prefab`, 실제 Scene 인스턴스는 `StageManager/SettingsView`다.
+
+- 하단 두 제목/아이콘: `StageManager/SettingsView/Safe area/Main navigation placement/{Ranking,Settings} header animation`의 Menu title TMP와 Menu icon Image.
+- 설정 본문/초기화/튜토리얼/언어 버튼: `.../Safe area/Main bottom sheet/Settings placement/Settings content`.
+- 랭킹 본문: `.../Safe area/Main bottom sheet/Ranking placement/Ranking content`.
+- View의 Navigation Height(72), Panel Travel Seconds(.24), sheetHeightFraction(.95)가 높이/이동 시간을 제어한다. Placement와 TMP/Image는 디자인 기준이며 header/sheet/content의 Animation offset은 코드 소유다.
+- 한국어는 해당 TMP 원문, 나머지3언어는 SettingsView→Menu Texts에서 수정한다. 일본어/간체는 메뉴용 static Sarasa atlas이므로 새 문자를 추가할 때 atlas 재생성이 필요하다. 현재 KO/EN/JA/간체 문구는 glyph검사를 통과했으며 Pause/튜토리얼 본문 전체 번역은 하지 않았다.
+- Google SVG 원본은 `Assets/Art/UI/MenuIcons/Sources`, 실제 Image sprite는 `Assets/Resources/CursorDash/MenuIcons`. 기존 Icon Kind는 기본 연결용이다. Image Sprite를 직접 편집하면 값이 있는 동안 매 프레임 기본 sprite로 덮어쓰지 않는다.
+
+현재 검증은 비Play Editor26과 private 편집 렌더뿐이다. 실제 클릭/드래그·언어 저장/재실행·모바일 터치는 [수동 순서](BOTTOM_PANELS_20261102.md)에 따라 확인한다.
+
 ## Hierarchy에서 찾는 위치 — D-075 (2026-11-02)
 
 현재 Scene 루트는 `----[Manager]----`, `----[Camera & Input]----`, `----[Background]----`, `----[Gameplay]----`, `----[Pool & Spawn]----`, `----[UI]----` 순서로 구분된다. 구분선은 빈 오브젝트이며 다른 요소의 부모가 아니다. 기존 편집 경로와 Tools→CursorDash→화면 편집 사용법은 그대로다. **StageManager/SettingsView는 Manager 구역 안의 기존 자식**, Nexus는 UI 구역의 UI/NexusPlacement, 메인 로고/문구/점수는 각각 MainLogo/MainMenuView/ProjectedScoreView에 있다. Nodes·AfterImageCollision·GeneratePositions는 실제 게임 풀이므로 비활성이어도 삭제하지 않는다. [이번 제거·보존 목록](HIERARCHY_CLEANUP_20261102.md).

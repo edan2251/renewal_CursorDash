@@ -400,6 +400,12 @@ public static class CursorDashTuning
     public static float EffectGain(string detail) => Mathf.Clamp01(Number(detail,1))*(1-Mathf.Clamp01(Number("user.vfxReduction",0)));
     public static readonly string[] AudioVisualKeys={"user.master","user.bgm","user.sfx","user.vfxReduction","user.shake","user.flash","user.distortion"};
     public static void ResetAudioVisual(){foreach(string key in AudioVisualKeys)userValues[key]=Find(key).defaultValue.DeepClone();Changed?.Invoke();}
+    public static void ResetAudio(){ResetUserSection(new[]{"user.master","user.bgm","user.sfx"});}
+    public static void ResetVisual(){ResetUserSection(new[]{"user.vfxReduction","user.shake","user.flash","user.distortion"});}
+    private static void ResetUserSection(string[] keys){foreach(var key in keys)userValues[key]=Find(key).defaultValue.DeepClone();Changed?.Invoke();}
+    // Menu preference uses the existing user JSON; it is not a combat/developer parameter.
+    public static string MenuLanguage {get{var token=userValues["menu.language"];string value=token!=null&&token.Type==JTokenType.String?(string)token:null;return value=="en"||value=="ja"||value=="zh-Hans"?value:"ko";}}
+    public static void CycleMenuLanguage(){var languages=new[]{"ko","en","ja","zh-Hans"};userValues["menu.language"]=languages[(Array.IndexOf(languages,MenuLanguage)+1)%languages.Length];Changed?.Invoke();}
     public static double DoubleNumber(string key,double fallback) => (double)Read(key,new JValue(fallback));
     public static int Integer(string key,int fallback) => Mathf.RoundToInt(Number(key,fallback));
     public static bool Toggle(string key,bool fallback) => (bool)Read(key,new JValue(fallback));

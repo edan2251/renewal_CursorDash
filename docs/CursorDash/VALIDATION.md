@@ -1,5 +1,19 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-079 패널 물리적 가림·전체높이
+
+PASS: 실제 compile/최종Console0, 최종비Play29/29(job60ea7bf8fd6b408b9db0feab4228cb08,14.777초). 첫run의2FAIL은 전체Hierarchy.First TMP가 AutoSize헤더로 바뀐 검사준비오류이며 원래설정본문/실제surface를 명시해 동일 저장·글꼴·문구·이미지·Undo단언으로 재검사했다. 반대headeralpha1/뒤그림순서·opaque body·상단끝·세로/가로/축소safe area Footer기하/기존언어·초기화·참조와 편집 복원 포함. private편집GPU10 생성/초반과열림·가로화면을 직접 확인했다. NOT_RUN: NativePlay/손드래그·터치·모바일/WebGL·성능·재실행저장. 실제Scene보존/파생font2시작본복원·미커밋/빌드·Git게시없음. [정확한 경로/범위](BOTTOM_PANELS_20261102.md).
+
+## D-078 하단 패널 모양·정렬 (2026-11-02)
+
+PASS: 실제Unity컴파일/최종Console오류·경고0, 비Play27/27(job63c405b0c7aa4e22a7b306591f772232,14.893초)와 private 편집GPU8. 닫힌화살표·선택제목/본문경계·균등Footer입력영역/시각높이·JP/CN표시·4언어glyph/기존원문복원·분리reset·배치보존/참조·Undo/저장사본/임시표시정리 확인. 실제Scene/Packages/ProjectSettings 보존, 기존userValues/PlayerPrefs쓰기없음·테스트격리복원, 기존font2 파생cache는 이번 시작본 보존. NOT_RUN: 실제Play/손클릭·드래그·모바일/WebGL·성능·앱재실행저장. 빌드·커밋/push/배포없음. [근거/값/수동순서](BOTTOM_PANELS_20261102.md).
+
+## D-077 하단 메뉴 (2026-11-02)
+
+PASS: 실제 대상 Unity6000.3.23f1 컴파일/최종 Console오류·경고0. 최종 비Play26/26(job90b9d2f94e394be7ab63ff6c8f49e9a9,14.020초): 새BottomPanel9/Authoring7/Hierarchy2/SceneScreen4/Usability4. fixture 내 EnterPlayMode 메서드를 제외하고 실제 실행 본문을 먼저 확인했다. 4언어 실제glyph와 KO font/문구복원·정적 지역 atlas의 Editor 소스 의존성0, reset 범위·기존참조/Pause·임시표시복원/Undo·별도사본저장·기존최고점불변을 검사했다. 1080×1920과1920×1080 private 편집 GPU 캡처9개를 열어 확인했으며 실제 Play/입력 영상이 아니다.
+
+첫25검사 중 Canvas모드3FAIL과 임시 아이콘/검정 fill은 수정 후 동일 단언으로 통과. 작업전 사본과 비교해 임시표시가 섞인 실제Scene·파생폰트cache를 사용자저장기준으로 복원했다. 보호6문자열3float 존재/해시 동일, 최종Cyberpunkclean/Overlay/PlayOFF/compileOFF/timeScale1/previewOFF/missing0. NOT_RUN: 실제 클릭/드래그·저장후재실행·손/모바일·WebGL·성능·전체 전투/튜토리얼 회귀. 빌드/Git게시 없음. [정확한 결과·경로·한계](BOTTOM_PANELS_20261102.md).
+
 ## D-076 현재본 릴리스 (2026-11-02)
 
 PASS: 대상 Unity6000.3.23f1의 컴파일 오류0·최종 비Play Editor25/25(Hierarchy2/SceneScreen4/Authoring7/World5/Usability4/비Play로고3), 선별 소스 비밀정보 검사 발견0. Native Play는 이번 NOT_RUN이며 D-075의 승인후6항목을 이번 재실행으로 기록하지 않는다. WebGL오류0/경고8·233.063초, 로컬23파일HTTP/SHA256/WASM MIME·실IAB메인/설정슬라이더100→70→100·시작/커서잔상/Pause/계속/Home·브라우저오류0 PASS. 빌드가 비운 파생glyphcache2개 복원뒤1606입력 동일/보호6문자열3float동일. 공개25파일HTTP200/GitSHA256/WASM MIME와 Pages success/built·배포SHA일치, 실제IAB메인/설정/시작/커서잔상/Pause/Home·warn/error0·새ID로더확인 PASS이며 [릴리스 기록](RELEASE_EDITOR_20261102.md)에 실제 결과를 갱신한다. 모바일/터치·성능·전체 전투/튜토리얼/피버 완주·앱재실행 저장 NOT_RUN.

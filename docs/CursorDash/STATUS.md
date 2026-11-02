@@ -1,5 +1,33 @@
 # CursorDash 현재 상태와 다음 한 작업
 
+## 최신 — D-080 하단 패널 현본 릴리스 진행 (2026-11-03)
+
+**RELEASE_IN_PROGRESS.** 최신 사용자 ‘지금상태 빌드·커밋·push·배포’ 승인으로 D077~079 현재본을 기존 main/gh-pages·기존주소에 게시한다. [진행/고정 문맥/실행 증거](RELEASE_BOTTOM_PANELS_20261103.md). main d2801e8/원격일치·미푸시0/gh-pages404818e, Cyberpunkclean/PlayOFF/WebGL6000.3.23f1·사본1741파일 보존. 게임기능 변경 없이 검사→빌드→로컬웹→선별Git/기존Pages→공개확인 순서다. 실패를 완료로 기록하지 않고 Native Play/다른프로젝트·서버·사용자미저장자산저장폐기·force/새호스팅은 하지 않는다. 완료 뒤 이번게시권한은 자동연장하지 않는다.
+
+## 최신 — D-079 패널 덮기·상단 도달·본문 간격 보완
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDITOR29_PASS / USER_PLAY_REVIEW_PENDING.** 반대 헤더/divider fade 제거·본문 뒤의 제자리 버튼을 불투명 sheet가 덮음, 열린높이95→100%(safe area), 설정 block은 직전 패널내Y보다16아래/행간유지. Footer는1:1/JP·CN·크기 유지·높이증가 보정/fit bounds 확장. [값·파일·실패정정·검수](BOTTOM_PANELS_20261102.md) 최신D079절.
+
+사본1741 D:/CursorDash_Backups/bottom-panels-cover-20261102/Before/main d2801e8/index빈·미커밋 사용자작업/Scene/meta/폰트보존. 최종Editor29/29·Console0, 편집GPU10·초반/열림/가로 확인. 검사2개의 첫TMP 선택오류는 본문/실surface 명시로 수정 후 같은 저장 단언PASS. 실제Sceneclean/PlayOFF/compileOFF/timeScale1/previewOFF. 모든MCP per-call CursorDash·재연결뒤경로재확인/다른프로젝트·서버불변. Play/손드래그·모바일/WebGL성능·저장재실행NOT_RUN·빌드/Git게시없음. 다음은사용자 천천히드래그/역드래그·끝까지열기·본문여백/하단/Pause·Home검수다.
+
+## 최신 — D-078 하단 패널 모양·정렬 보완 (2026-11-02)
+
+**LOCAL_IMPLEMENTED / NATIVE_COMPILE_PASS / EDITOR27_PASS / EDITOR_GPU_CAPTURED / USER_PLAY_REVIEW_PENDING.** 닫힌 화살표 제거/열린 선택 제목만 표시, 전체사각형 배경을 본문 surface로 분리해 선택한 절반만 솟는 상단, 표시 JP/CN(내부키불변), footer230×60 좌우1:1·글자18/globe18/flag24×18·간격6, 설정7행·heading/reset 위18 이동. 기존controller/드래그/설정저장·게임룰·D077번역/라이선스 유지. [정확한 변경 전후·편집/검수](BOTTOM_PANELS_20261102.md).
+
+새 사본1741파일 `D:/CursorDash_Backups/bottom-panels-polish-20261102/Before`/main d2801e8·빈index·기존미커밋/사용자Scene·font·미추적보존. 비Play27/27·Console0, 편집GPU8(세로/가로·양쪽half/open/JP/CN), Cyberpunkclean/PlayOFF/compileOFF/timeScale1/previewOFF/missing0. Play·실클릭/드래그·모바일/WebGL·성능 NOT_RUN/빌드·Git게시없음. MCP per-call CursorDash 명시·Project_Brawl/서버불변. **다음 한 작업:** 사용자 닫힌 상태→각 패널드래그단차→Footer/JP·CN→상단여백→Pause/Home 확인. 추가개발 자동진행없음.
+
+## 최신 — D-077 하단 랭킹·설정 개편 / 사용자 Play 검수 대기 (2026-11-02)
+
+**LOCAL_IMPLEMENTED / EDITOR26_PASS / EDITOR_GPU_CAPTURED / USER_PLAY_REVIEW_PENDING.** [구현·실패정정·파일·사용법·미검증](BOTTOM_PANELS_20261102.md). 기존 SettingsView/SettingsUI/Tuning에 랭킹|설정 두 헤더·선택한 제목만 이동·음향/효과별 초기화·튜토리얼/국기 언어 선택을 연결했다. 실제 최고점+온라인 준비중 랭킹 틀이며 SDK/로그인/실랭킹은 구현하지 않았다. 최신 회신대로 새 하단·랭킹·설정만 KO/EN/JA/간체4언어, JA/SC는 선택한 Sarasa UI/한국어·영어 이사만루체 유지. Google 공식 아이콘/flag-icons SVG 원본·Sprite·라이선스 보존.
+
+사본 D:/CursorDash_Backups/bottom-panels-20261102/Before(1686파일), 사용자저장Scene·기존font2/STATUS·미추적보존/main d2801e8/빈index. 최종 컴파일 Console0/비Play26/26, 1080×1920/1920×1080 편집 GPU PNG9와 4언어 실제glyph·원문복원 확인. 초기 Canvas3FAIL/아이콘/임시표시 저장 혼입은 수정·사본복원/재검사 이력이며 숨기지 않는다. Reload 알림 사용자가 처리 후 대상재확인, Cyberpunkclean/PlayOFF/compileOFF/timeScale1/previewOFF/missing0/보호6문자열3float동일. MCP는 매번 CursorDash 명시/Project_Brawl·기본선택·서버 불변. 실제 Play·저장재실행·손/모바일·WebGL·성능 NOT_RUN. 이번 빌드/커밋/push/배포 없음. **다음 한 작업:** 사용자 클릭·드래그/섹션reset·4언어저장/튜토리얼·Pause/Home 검수. 추가 구현·게시로 자동 진행하지 않는다.
+
+## 조회 기록 — 메인 하단 바·설정 UI 작업 전 MCP 연결 재확인 (2026-11-02)
+
+사용자 요청은 UI 수정 가능 여부와 다른 Claude 프로젝트와 혼선 없는 MCP 연결 확인이다. 이번에는 Unity 읽기 전용 진단만 실행했다. 기존 `http://127.0.0.1:8080/mcp`(서버10.3.0)에 Cursor-Dash-master@6cde4df4002de875 / Project_Brawl@d67741550f30280e 두 인스턴스가 연결되어 있다. 현재 세션 기본대상은 Project_Brawl이므로 기본대상으로 프로젝트 조회하지 않고, 서버의 per-call routing 구현을 읽어 확인한 뒤 **모든 대상 조회에 unity_instance=Cursor-Dash-master@6cde4df4002de875를 명시**했다. 실제 project=D:/renewal_CursorDash/Cursor-Dash-master·Cyberpunk·Unity6000.3.23f1 확인 PASS. 이후 기본대상 Project_Brawl 불변도 서버 진단으로 확인했다. Project_Brawl Editor에는 명령을 보내지 않았다. 서버 설정·재시작·인스턴스 기본선택 변경 없음.
+
+현재 Cyberpunk dirty=true, Play/compile/build=false다. 미저장 씬은 저장·폐기하지 않았다. 시작/종료 main d2801e8, 기존 추적변경 View SDF font2개·미추적7972개는 보존했고, 이번 파일변경은 이 STATUS 연결기록뿐이다. 씬/에셋/코드/UI 수정·Play·테스트·빌드·Git게시 NOT_RUN. **다음 한 작업:** 사용자 하단 메뉴 구성·설정창 배치 요구를 확인하고, 실제 씬 수정 전 미저장 변경의 사용자 보존 여부를 재확인한다. 이전 배포/Play 권한을 새 UI 작업에 재사용하지 않는다.
+
 ## 최신 — D-076 현재 로컬본 WebGL·기존 Pages 릴리스 완료 (2026-11-02)
 
 **RELEASE_COMPLETE / EDITOR25_PASS / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** 현본 선별소스 main `9bd15ba`(145파일), gh-pages `404818e` 정상push/Pages작업41357603103 success·built/동일SHA. buildId `cursordash-20261102-editor-069d35f8b4b9`, Unity6000.3.23f1/WebGL오류0·기존경고8/233.063초. 로컬23·공개25파일HTTP200/해시·WASM MIME, 실제IAB1280×720 메인/설정7개·로컬100→70→100·시작/커서드래그·잔상/Pause/Home·로컬계속, warn/error0/쿼리없는공개URL 새loader/framework확인. [릴리스·정확한미검증/증거](RELEASE_EDITOR_20261102.md), [편집사용법](EDITOR_AUTHORING_GUIDE.md).

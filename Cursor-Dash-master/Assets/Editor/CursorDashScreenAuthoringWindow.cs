@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// <summary>Static representative composition from real view instances. No game managers or saved sample data.</summary>
 public sealed partial class CursorDashScreenAuthoringWindow : EditorWindow
 {
-    public enum Screen { Main, MainSettings, InGame, InGamePause, Returning, Tutorial, FeverNotice }
+    public enum Screen { Main, MainSettings, InGame, InGamePause, Returning, Tutorial, FeverNotice, MainRanking }
     [SerializeField] private StageManager source;
     [SerializeField] private Screen screen;
     [SerializeField] private bool landscape;
@@ -117,7 +117,7 @@ public sealed partial class CursorDashScreenAuthoringWindow : EditorWindow
     }
     private void DrawScreenButtons()
     {
-        using(new EditorGUILayout.HorizontalScope()){ScreenButton("메인",Screen.Main);ScreenButton("메인 옵션",Screen.MainSettings);ScreenButton("인게임",Screen.InGame);}
+        using(new EditorGUILayout.HorizontalScope()){ScreenButton("메인",Screen.Main);ScreenButton("설정",Screen.MainSettings);ScreenButton("랭킹",Screen.MainRanking);ScreenButton("인게임",Screen.InGame);}
         using(new EditorGUILayout.HorizontalScope()){ScreenButton("일시정지",Screen.InGamePause);ScreenButton("게임 종료 · 점수 대기",Screen.Returning);}
         using(new EditorGUILayout.HorizontalScope()){ScreenButton("튜토리얼",Screen.Tutorial);ScreenButton("첫 피버 안내",Screen.FeverNotice);}
     }
@@ -131,15 +131,15 @@ public sealed partial class CursorDashScreenAuthoringWindow : EditorWindow
     {
         using(new EditorGUILayout.HorizontalScope()){
             if(GUILayout.Button("점수"))Select(source.ProjectedScoreView.gameObject);
-            if(screen==Screen.Main||screen==Screen.MainSettings){if(GUILayout.Button("로고"))Select(source.MainLogoView.PlacementRoot.gameObject);if(GUILayout.Button("시작 문구"))Select(source.MainMenuView.Prompt.gameObject);if(GUILayout.Button("BEST 문구"))Select(source.MainMenuView.Caption.gameObject);}
+            if(screen==Screen.Main||screen==Screen.MainSettings||screen==Screen.MainRanking){if(GUILayout.Button("로고"))Select(source.MainLogoView.PlacementRoot.gameObject);if(GUILayout.Button("시작 문구"))Select(source.MainMenuView.Prompt.gameObject);if(GUILayout.Button("BEST 문구"))Select(source.MainMenuView.Caption.gameObject);}
             else{if(GUILayout.Button("넥서스"))Select(source.NexusView.gameObject);if(screen==Screen.Tutorial||screen==Screen.FeverNotice)if(GUILayout.Button("안내 문구"))Select((screen==Screen.Tutorial?source.GuidanceView.Hint:source.GuidanceView.Notice).gameObject);}
-            if(screen==Screen.MainSettings||screen==Screen.InGamePause)if(GUILayout.Button("설정/Pause 배치")){var data=new SerializedObject(source.SettingsView);Select(((RectTransform)data.FindProperty(screen==Screen.InGamePause?"pausePlacement":"contentPlacement").objectReferenceValue).gameObject);}
+            if(screen==Screen.MainSettings||screen==Screen.MainRanking||screen==Screen.InGamePause)if(GUILayout.Button("설정/Pause 배치")){var data=new SerializedObject(source.SettingsView);Select(((RectTransform)data.FindProperty(screen==Screen.InGamePause?"pausePlacement":screen==Screen.MainRanking?"rankingPlacement":"contentPlacement").objectReferenceValue).gameObject);}
             if(GUILayout.Button("배경·회로 설정"))Selection.activeObject=source.BoardView!=null?(UnityEngine.Object)source.BoardView:Resources.Load<CursorDashVisualProfile>("CursorDash/VisualPrototype");
         }
     }
     private void ApplyToScene(bool frame)
     {
-        string digits=useSavedBest&&(screen==Screen.Main||screen==Screen.MainSettings)?CursorDashPointsRecord.Read("Cyberpunk").ToString():sampleScore;
+        string digits=useSavedBest&&(screen==Screen.Main||screen==Screen.MainSettings||screen==Screen.MainRanking)?CursorDashPointsRecord.Read("Cyberpunk").ToString():sampleScore;
         CursorDashUIAuthoringPreview.ShowScreen(source,screen,landscape?1920:1080,landscape?1080:1920,digits,sampleHealth,sampleCharge,sampleNodeCharge,sampleHexMorph,backgroundSeconds,sampleNodes,frame);
     }
 
@@ -167,7 +167,7 @@ public sealed partial class CursorDashScreenAuthoringWindow : EditorWindow
         {
             previewCamera.backgroundColor=screen==Screen.FeverNotice?Color.white:Color.black;
             if(screen!=Screen.FeverNotice)AddBackground();
-            bool main = screen == Screen.Main || screen == Screen.MainSettings;
+            bool main = screen == Screen.Main || screen == Screen.MainSettings || screen == Screen.MainRanking;
             bool returning = screen == Screen.Returning;
             var logo = Clone(source.MainLogoView); logo.SetVisible(main); logo.Present(0, 1);
             var menu = Clone(source.MainMenuView); BindFonts(menu.gameObject); menu.SetVisible(true); menu.PresentPrompt(main ? .70f : 0);
@@ -191,7 +191,8 @@ public sealed partial class CursorDashScreenAuthoringWindow : EditorWindow
                 float value = row.key == "user.vfxReduction" ? 0 : 1; row.slider.SetValueWithoutNotify(value); row.value.text = Mathf.RoundToInt(value * 100) + "%";
             }
             settings.Layout(new Rect(0, 0, width, height), new Vector2(width, height));
-            settings.Present(main, screen == Screen.MainSettings ? 1 : 0, screen == Screen.InGamePause ? 1 : 0, screen == Screen.InGamePause);
+            settings.SelectPanel(screen==Screen.MainRanking?CursorDashSettingsView.MenuPanel.Ranking:CursorDashSettingsView.MenuPanel.Settings);
+            settings.Present(main, screen == Screen.MainSettings || screen == Screen.MainRanking ? 1 : 0, screen == Screen.InGamePause ? 1 : 0, screen == Screen.InGamePause);
             // Keep the live enabled appearance; absence of a raycaster/EventSystem blocks preview input.
             settings.ContentOpacity.interactable = true; settings.ContentOpacity.blocksRaycasts = false;
             foreach (var raycaster in settings.GetComponentsInChildren<GraphicRaycaster>(true)) raycaster.enabled = false;

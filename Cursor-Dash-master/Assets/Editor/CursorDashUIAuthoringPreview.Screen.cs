@@ -49,7 +49,7 @@ public static partial class CursorDashUIAuthoringPreview
         var cameraObject=new GameObject("EDITOR ONLY / layout reference camera"){hideFlags=HideFlags.HideAndDontSave};UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(cameraObject,scene);owned.Add(cameraObject);
         var reference=cameraObject.AddComponent<Camera>();reference.CopyFrom(original);reference.enabled=false;reference.targetTexture=null;reference.aspect=(float)width/height;
         reference.transform.SetPositionAndRotation(original.transform.position,original.transform.rotation);
-        bool main=state==CursorDashScreenAuthoringWindow.Screen.Main||state==CursorDashScreenAuthoringWindow.Screen.MainSettings;
+        bool main=state==CursorDashScreenAuthoringWindow.Screen.Main||state==CursorDashScreenAuthoringWindow.Screen.MainSettings||state==CursorDashScreenAuthoringWindow.Screen.MainRanking;
         bool returning=state==CursorDashScreenAuthoringWindow.Screen.Returning;
         bool combat=!main&&!returning&&!whiteScreen;
         // Selectable state transitions write label tint; source design must not be tinted by a preview.
@@ -85,15 +85,16 @@ public static partial class CursorDashUIAuthoringPreview
         Ref<RectTransform>(menu,"captionAnimation").anchoredPosition=captionPoint;
 
         var settings=stage.SettingsView;WorldCanvas(settings.Canvas,reference,width,height);
-        bool sheet=state==CursorDashScreenAuthoringWindow.Screen.MainSettings,pause=state==CursorDashScreenAuthoringWindow.Screen.InGamePause;
+        bool sheet=state==CursorDashScreenAuthoringWindow.Screen.MainSettings||state==CursorDashScreenAuthoringWindow.Screen.MainRanking,pause=state==CursorDashScreenAuthoringWindow.Screen.InGamePause;
         Rect(settings.SafeArea);Rect(settings.SheetAnimation);Active(settings.SheetAnimation.gameObject);Rect(settings.ContentAnimation);Rect(settings.PauseAnimation);Group(settings.ContentOpacity);Group(settings.PauseOpacity);
+        KeepMenuPresentation(settings);
         settings.Layout(new Rect(Vector2.zero,new Vector2(width,height)),new Vector2(width,height));
-        settings.SheetAnimation.gameObject.SetActive(sheet);settings.SheetAnimation.anchoredPosition=Vector2.zero;settings.ContentOpacity.alpha=sheet?1:0;
+        settings.SelectPanel(state==CursorDashScreenAuthoringWindow.Screen.MainRanking?CursorDashSettingsView.MenuPanel.Ranking:CursorDashSettingsView.MenuPanel.Settings);settings.PresentMenu(main,sheet?1:0,false);
         settings.PauseOpacity.gameObject.SetActive(pause);settings.PauseOpacity.alpha=pause?1:0;settings.PauseAnimation.anchoredPosition=Vector2.zero;
         settings.ContentOpacity.interactable=settings.PauseOpacity.interactable=true;
-        Visible(settings.Canvas,sheet||pause);
+        Visible(settings.Canvas,main||pause);
         // This factor is transient and leaves the actual shade Image's design RGBA editable.
-        if(sheet||pause){var shadeGroup=settings.Shade.gameObject.AddComponent<CanvasGroup>();shadeGroup.hideFlags=HideFlags.HideAndDontSave;owned.Add(shadeGroup);shadeGroup.alpha=sheet?.32f:.82f;shadeGroup.blocksRaycasts=false;}
+        if(main||pause){var shadeGroup=settings.Shade.gameObject.AddComponent<CanvasGroup>();shadeGroup.hideFlags=HideFlags.HideAndDontSave;owned.Add(shadeGroup);shadeGroup.alpha=sheet?.32f:pause?.82f:0;shadeGroup.blocksRaycasts=false;}
         foreach(var row in settings.Rows){var slider=row.slider;Keep(slider,()=>slider.value,v=>slider.SetValueWithoutNotify(v));slider.SetValueWithoutNotify(UserValue(row.key));Text(row.value,Mathf.RoundToInt(slider.value*100)+"%");}
 
         var nexus=stage.NexusView;var body=nexus.Body;var nexusCanvas=body.GetComponentInParent<Canvas>(true);WorldCanvas(nexusCanvas,reference,width,height);Visible(nexusCanvas,combat);Visible(body,combat);Visible(nexus.Outer,false);Visible(nexus.Dotted,combat);

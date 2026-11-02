@@ -60,7 +60,7 @@ public sealed class CursorDashSettingsUI : MonoBehaviour
             else if(paused)Resume();else if(!stage.IsDeath&&stage.State!=StageManager.RoundState.Starting)stage.SetPaused(true);
         }
         if(releaseInput&&!PointerHeld()&&!Input.GetKey(KeyCode.Escape)&&!SteeringHeld())releaseInput=false;
-        if(!dragging)sheet=Mathf.MoveTowards(sheet,open?1:0,Time.unscaledDeltaTime/Mathf.Max(.01f,.24f));
+        if(!dragging)sheet=Mathf.MoveTowards(sheet,open?1:0,Time.unscaledDeltaTime/Mathf.Max(.01f,view.PanelTravelSeconds));
         pauseAlpha=Mathf.MoveTowards(pauseAlpha,paused?1:0,Time.unscaledDeltaTime/.16f);
         view.Present(menu,sheet,pauseAlpha,true);
         // Interaction follows the existing state, even while the exit fade remains visible.
@@ -72,15 +72,22 @@ public sealed class CursorDashSettingsUI : MonoBehaviour
     }
     private static bool PointerHeld()=>Input.GetMouseButton(0)||Input.touchCount>0;
     private static bool SteeringHeld()=>Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.D);
-    public static bool HitsHandle(Vector2 point)=>Instance!=null&&Instance.sheetRoot.activeInHierarchy&&RectTransformUtility.RectangleContainsScreenPoint(Instance.handle,point);
+    public static bool HitsHandle(Vector2 point)=>Instance!=null&&Instance.sheetRoot.activeInHierarchy&&Instance.view.ContainsNavigationPoint(point);
     public void SetSheet(bool value){if(stage?.Space?.IsMenu!=true)return;open=value;releaseInput=true;stage.ResetPresentationInput();if(!value)Save();}
-    public void BeginHandle(Vector2 screen)
+    public void OpenPanel(CursorDashSettingsView.MenuPanel panel){if(stage?.Space?.IsMenu!=true)return;SelectPanel(panel);SetSheet(true);}
+    private void SelectPanel(CursorDashSettingsView.MenuPanel panel)
     {
-        if(stage?.Space?.IsMenu!=true)return;dragging=true;releaseInput=true;dragOrigin=dragY=screen.y;dragTime=Time.unscaledTime;dragValue=sheet;velocity=0;
+        view.SelectPanel(panel);
+        if(panel==CursorDashSettingsView.MenuPanel.Ranking){var map=GameManager.instance?.MapInformation;view.SetRankingBest(map==null?"0":CursorDashPointsRecord.Read(map.mapName).ToString(System.Globalization.CultureInfo.InvariantCulture));}
+    }
+    public void BeginHandle(Vector2 screen){BeginHandle(screen,CursorDashSettingsView.MenuPanel.Settings);}
+    public void BeginHandle(Vector2 screen,CursorDashSettingsView.MenuPanel panel)
+    {
+        if(stage?.Space?.IsMenu!=true)return;SelectPanel(panel);dragging=true;releaseInput=true;dragOrigin=dragY=screen.y;dragTime=Time.unscaledTime;dragValue=sheet;velocity=0;
     }
     public void DragHandle(Vector2 screen)
     {
-        if(!dragging)return;float pixels=Mathf.Max(1,sheetHeight*root.GetComponent<Canvas>().scaleFactor-48);
+        if(!dragging)return;float pixels=Mathf.Max(1,(sheetHeight-view.NavigationHeight)*root.GetComponent<Canvas>().scaleFactor);
         float delta=screen.y-dragY,dt=Mathf.Max(.008f,Time.unscaledTime-dragTime);velocity=delta/dt/pixels;
         sheet=Mathf.Clamp01(dragValue+(screen.y-dragOrigin)/pixels);dragY=screen.y;dragTime=Time.unscaledTime;
     }
@@ -95,9 +102,13 @@ public sealed class CursorDashSettingsUI : MonoBehaviour
     public void Sync()
     {
         foreach(var row in rows){float value=(float)CursorDashTuning.Requested(row.key);row.slider.SetValueWithoutNotify(value);row.value.text=Mathf.RoundToInt(value*100)+"%";}
+        view.ApplyMenuLanguage(CursorDashTuning.MenuLanguage);
     }
     public void Save(){if(!dirty)return;if(CursorDashTuning.SaveUser(out string error)){dirty=false;SaveError="";}else {SaveError=error;Debug.LogWarning("CursorDash settings: "+error);}}
     public void ResetSettings(){CursorDashTuning.ResetAudioVisual();dirty=true;Save();}
+    public void ResetAudio(){CursorDashTuning.ResetAudio();dirty=true;Save();}
+    public void ResetEffects(){CursorDashTuning.ResetVisual();dirty=true;Save();}
+    public void CycleMenuLanguage(){CursorDashTuning.CycleMenuLanguage();dirty=true;Save();}
     public void ReplayTutorial(){if(launchTutorial||stage?.Space?.IsMenu!=true)return;launchTutorial=true;SetSheet(false);}
     public void Resume(){if(stage==null)return;Save();releaseInput=true;stage.SetPaused(false);stage.ResetPresentationInput();EventSystem.current?.SetSelectedGameObject(null);}
     public void Retry(){Save();releaseInput=true;stage.Retry();}

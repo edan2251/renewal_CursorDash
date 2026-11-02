@@ -1,5 +1,14 @@
 # 근거와 참고 자료
 
+## D-077 하단 메뉴와 글꼴·아이콘 (2026-11-02)
+
+사용자 첨부77e6dff7/2aaaf3df는 구성/위치 설명이며 새 게임 아트로 복제하지 않았다. 팝업의Sarasa UI 선택과 최신 한정 번역 범위·Scene 저장 회신이 구현 기준이다. 기존 SettingsView/Tuning/저장 경로·직렬화 자료와 대상MCP compile/비Play26/편집GPU9·전후파일/저장해시를 교차 확인했다. [기록](BOTTOM_PANELS_20261102.md).
+
+- [Google Material Symbols](https://fonts.google.com/icons) 공식 SVG5종(leaderboard/settings/restart_alt/language/keyboard_arrow_down), [Apache-2.0](https://github.com/google/material-design-icons/blob/master/LICENSE). 원본은 Art/UI/MenuIcons/Sources, 256px 흰 Sprite 파생본은 Resources/CursorDash/MenuIcons. Unity 벡터 패키지는 설치하지 않았다.
+- [flag-icons](https://flagicons.lipis.dev/)의 KR/US/JP/CN 4:3 SVG, [MIT](https://github.com/lipis/flag-icons/blob/main/LICENSE). 256×192 Sprite로 사용하며 소스/저작권 고지를 보관한다.
+- [Sarasa Gothic UI v1.0.43 공식 배포](https://github.com/be5invis/Sarasa-Gothic/releases/tag/v1.0.43)의 J/SC SemiBold Unhinted, [SIL OFL1.1](https://github.com/be5invis/Sarasa-Gothic/blob/master/LICENSE). Editor-only 원본 TTF/해시와 runtime static 메뉴 glyph atlas·라이선스를 보관한다. 시스템 폰트 설치 없음.
+- [Google Play Games leaderboard 문서](https://developer.android.com/games/pgs/leaderboards)는 향후 연동 구분용이며 이번 SDK/인증/네트워크 구현 증거가 아니다.
+
 ## D-066 최신 실행 근거 (2026-10-28)
 
 출처는사용자최신UI정상확인/이번릴리스승인,기존정상TestRunner7고유항목자료,이번실제UnityBuildReportJSON/1518입력해시,Git main0ad2e99/gh-pages6909ed2,GitHubPages작업40576817544·Pages built API,로컬24/공개25HTTP·Git blob해시,실IAB PNG/브라우저warn/error0이다. 외부아트/폰트/패키지추가없음·기존이용문서보존. 로그/사적진단은공개산출물에포함하지않는다. [경로와범위](RELEASE_SETTINGS_20261028.md).

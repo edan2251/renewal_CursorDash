@@ -1,0 +1,60 @@
+{
+  "retrievedUtc": "2026-11-02T13:40:26.467323+00:00",
+  "sources": [
+    {
+      "name": "leaderboard",
+      "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/leaderboard/default/24px.svg",
+      "sha256": "0b7e63686be69b2ed3b51148d483713487ff41cdbcd1241f6c299bd82c6b871c",
+      "bytes": 221
+    },
+    {
+      "name": "settings",
+      "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/settings/default/24px.svg",
+      "sha256": "6aebb4a88b40a5bf1ce378ca532e4a885aedc402a0574562c6ed4ded03360fd2",
+      "bytes": 752
+    },
+    {
+      "name": "restart_alt",
+      "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/restart_alt/default/24px.svg",
+      "sha256": "3a6c6c3ebcfe7f5c4bdf85d3c67f50c557d69b49c409ed001177d818a396c18d",
+      "bytes": 363
+    },
+    {
+      "name": "language",
+      "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/language/default/24px.svg",
+      "sha256": "71b28a5c798ba00c4b3b331835a24c80dbfca40036ad90183bca759f19ee0862",
+      "bytes": 977
+    },
+    {
+      "name": "keyboard_arrow_down",
+      "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/keyboard_arrow_down/default/24px.svg",
+      "sha256": "0ede97ad33e3ca035e14c7219a78e37b0cfad9e215420b3c2926e121bdba7230",
+      "bytes": 159
+    },
+    {
+      "name": "kr",
+      "url": "https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/kr.svg",
+      "sha256": "7a6cd5b51d0e2841ed8b79b1147ad8a66cf3c09f6344d4a63b5e4413ffa5d15b",
+      "bytes": 1061
+    },
+    {
+      "name": "us",
+      "url": "https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/us.svg",
+      "sha256": "e7be4240cf57987926673708f09233be1ab6bdf35acc7b86bd32a263f197a2a7",
+      "bytes": 648
+    },
+    {
+      "name": "jp",
+      "url": "https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/jp.svg",
+      "sha256": "bfea80baf9989383dc4bf7ca594ed95be0df0ff125bfc88d0bfa878eb0198022",
+      "bytes": 470
+    },
+    {
+      "name": "cn",
+      "url": "https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/cn.svg",
+      "sha256": "981da9bdf82d48e31691f20578cefcb26cf7d0bd95e4ebd5c0df00bdfe988c1a",
+      "bytes": 813
+    }
+  ],
+  "rendering": "PNG 256px from the preserved SVG; no Unity package installation"
+}

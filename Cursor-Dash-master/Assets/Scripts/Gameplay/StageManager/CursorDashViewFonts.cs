@@ -9,6 +9,13 @@ public sealed class CursorDashViewFonts : IDisposable
     private readonly Dictionary<TMP_FontAsset, TMP_FontAsset> copies = new Dictionary<TMP_FontAsset, TMP_FontAsset>();
     private readonly List<Material> presets = new List<Material>();
 
+    public void Bind(TMP_Text text,TMP_FontAsset source)
+    {
+        if(source==null)return;
+        TMP_FontAsset existing;if(copies.TryGetValue(source,out existing)&&text.font==existing)return;
+        text.font=source;text.fontSharedMaterial=source.material;Bind(text);
+    }
+
     public void Bind(TMP_Text text)
     {
         var source = text.font;
