@@ -1,8 +1,8 @@
 # CursorDash 현재 상태와 다음 한 작업
 
-## 최신 — D-080 하단 패널 현본 릴리스 진행 (2026-11-03)
+## 최신 — D-080 하단 패널 현본 릴리스 완료 (2026-11-03)
 
-**RELEASE_IN_PROGRESS.** 최신 사용자 ‘지금상태 빌드·커밋·push·배포’ 승인으로 D077~079 현재본을 기존 main/gh-pages·기존주소에 게시한다. [진행/고정 문맥/실행 증거](RELEASE_BOTTOM_PANELS_20261103.md). main d2801e8/원격일치·미푸시0/gh-pages404818e, Cyberpunkclean/PlayOFF/WebGL6000.3.23f1·사본1741파일 보존. 게임기능 변경 없이 검사→빌드→로컬웹→선별Git/기존Pages→공개확인 순서다. 실패를 완료로 기록하지 않고 Native Play/다른프로젝트·서버·사용자미저장자산저장폐기·force/새호스팅은 하지 않는다. 완료 뒤 이번게시권한은 자동연장하지 않는다.
+**RELEASE_COMPLETE / EDITOR29_PASS / WEBGL_BUILD_PASS / LOCAL_WEB_PASS / PUBLIC_WEB_PASS.** D077~079 현본 선별소스 main `8c3e267`(93파일), gh-pages `9128925` 정상push·Pages41473536940 success/built·동일SHA. buildId `cursordash-20261103-panels-a2436cc6417d`, Unity6000.3.23f1/270.805초/오류0·경고10(기존8+빌드중MCP연결2). [릴리스·문맥·검사·한계](RELEASE_BOTTOM_PANELS_20261103.md). 로컬23/공개25 HTTP200·SHA256·WASM MIME, 실제IAB1280×720 새메뉴·4언어·시작/커서잔상/Pause/Home·warn/error0·새loader PASS, 로컬 slider100→70→reset100·드래그열닫기/계속 포함. Native Play0/다른프로젝트·서버불변/사용자미저장자산저장폐기없음. 시작1741사본·기존사용자변경보존/보호6문자열3float동일·Cyberpunkclean/PlayOFF/timeScale1. 폰트파생cache2직전복원뒤1668빌드입력동일/필수1664커밋대조·기존제외심볼4분리. 소스8c3e267와 이사후Docs기록은 구분·문서만재빌드없음. 모바일·터치/성능·전투/튜토리얼/피버완주·앱재실행저장·독립QA NOT_RUN. 다음한작업은사용자공개검수이며추가개발/게시자동진행없음. 육각제외/일반겹침·새Flash·별도재구축보류유지.
 
 ## 최신 — D-079 패널 덮기·상단 도달·본문 간격 보완
 

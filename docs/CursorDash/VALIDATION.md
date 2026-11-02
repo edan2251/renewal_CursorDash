@@ -1,5 +1,11 @@
 # 구현·회귀 검증 기준과 후속 결과
 
+## D-080 하단 패널 현본 릴리스 (2026-11-03)
+
+PASS: 최종 비Play Editor29/29(job657afb9b58b949aab74fb030fe0bc1e6,14.879초), Unity컴파일오류0·NativePlay0. WebGL오류0·경고10(기존미사용6/gradient2+빌드중MCP연결2),270.805초/86,854,480bytes. 빌드가비운fontcache2직전복원뒤1668입력동일·보호6문자열3float동일·Cyberpunkclean/PlayOFF/timeScale1/previewOFF/missing0. source8c3e267의 필수1664입력 일치(텍스트515개EOL정규화만), 기존Git제외 `.mdb`/meta4는 실제DLL의 Assets/Demigiant 추적을 별도로 확인했다. 선별93파일/비밀패턴발견0·무관파일제외. 소스대조완료전로컬commit 생성실수는 push를 보류하고 최종대조후에만 정상push한 이력이다.
+
+PASS: 로컬23/공개25파일 HTTP200/SHA256/WASM MIME, Pages41473536940 success/built 및 배포9128925 SHA일치. 실제IAB1280×720 로컬/공개 메인·랭킹·설정/KO→EN→JP→CN→KO·시작/커서입력·꼬리/Pause/Home·warn/error0·쿼리없는URL 새loader. 로컬은 드래그열닫기·master100→70→reset100·계속 추가 확인, 공개의음향/효과저장값은변경없음. NOT_RUN: NativePlay·실모바일/터치/성능·전투전체/튜토리얼/피버완주·앱재실행저장·독립QA. 관련소스/빌드정상push·기존주소게시, 문서사후commit은 빌드소스와 구분한다. [정확한결과/증거/한계](RELEASE_BOTTOM_PANELS_20261103.md).
+
 ## D-079 패널 물리적 가림·전체높이
 
 PASS: 실제 compile/최종Console0, 최종비Play29/29(job60ea7bf8fd6b408b9db0feab4228cb08,14.777초). 첫run의2FAIL은 전체Hierarchy.First TMP가 AutoSize헤더로 바뀐 검사준비오류이며 원래설정본문/실제surface를 명시해 동일 저장·글꼴·문구·이미지·Undo단언으로 재검사했다. 반대headeralpha1/뒤그림순서·opaque body·상단끝·세로/가로/축소safe area Footer기하/기존언어·초기화·참조와 편집 복원 포함. private편집GPU10 생성/초반과열림·가로화면을 직접 확인했다. NOT_RUN: NativePlay/손드래그·터치·모바일/WebGL·성능·재실행저장. 실제Scene보존/파생font2시작본복원·미커밋/빌드·Git게시없음. [정확한 경로/범위](BOTTOM_PANELS_20261102.md).
