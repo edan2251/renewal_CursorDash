@@ -27,7 +27,7 @@ public class PatternStep
     }
 }
 
-public class PatternReader : MonoBehaviour
+public partial class PatternReader : MonoBehaviour
 {
     private readonly List<PatternData> mainPatterns = new List<PatternData>();
     private readonly List<PatternData> subPatterns = new List<PatternData>();
@@ -41,11 +41,13 @@ public class PatternReader : MonoBehaviour
     public void StartRound()
     {
         StopAllCoroutines();enabled=true;seededRandom=null;
+        ResetEncounterState();
         if(CursorDashSession.IsPractice){enabled=false;return;}
         if(!configured){configured=true;sourceBetweenPatterns=betweenPatterns;}
         betweenPatterns=CursorDashTuning.Number("spawn.interval",sourceBetweenPatterns);
         selection=CursorDashTuning.Integer("spawn.pattern",0);repeat=CursorDashTuning.Toggle("spawn.repeat",true);
         if(CursorDashTuning.Toggle("spawn.seedEnabled",false))seededRandom=new System.Random(CursorDashTuning.Integer("spawn.seed",1234)+1);
+        if (TryStartMultiplierEncounters()) return;
         Execute();
         if (mainPatterns.Count == 0 && subPatterns.Count == 0)
         {
@@ -134,5 +136,5 @@ public class PatternReader : MonoBehaviour
         }
         return result;
     }
-    private void OnDisable() => StopAllCoroutines();
+    private void OnDisable() { StopAllCoroutines(); ResetEncounterState(); }
 }

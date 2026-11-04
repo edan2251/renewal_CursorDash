@@ -108,7 +108,12 @@ public static partial class CursorDashUIAuthoringPreview
     {
         Keep(view,()=>view.SelectedPanel,value=>view.SelectPanel(value));
         if(view.NavigationPlacement!=null)Active(view.NavigationPlacement.gameObject);
-        foreach(var rect in view.MenuAnimationTransforms)if(rect!=null)Rect(rect);
+        foreach(var rect in view.MenuAnimationTransforms)
+        {
+            if(rect==null)continue;
+            Rect(rect);
+            if(rect.parent==view.SafeArea)Keep(rect,()=>rect.GetSiblingIndex(),index=>rect.SetSiblingIndex(index));
+        }
         foreach(var group in view.MenuOpacityGroups)if(group!=null)Group(group);
         foreach(var graphic in view.MenuDirectionGraphics)if(graphic!=null)Keep(graphic,()=>graphic.enabled,value=>graphic.enabled=value);
     }

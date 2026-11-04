@@ -35,6 +35,12 @@ public sealed class CursorDashNexusReview : EditorWindow
             EditorGUILayout.LabelField("시작 진행 / 직전 길이",stage.Space.StartProgress.ToString("0.000")+" / "+stage.Space.LastStartSeconds.ToString("0.000")+"초");
             EditorGUILayout.LabelField("피격 원호 되감기",stage.Fever.View.Rewinding?"진행":"없음");
             EditorGUILayout.LabelField("실제 피해 광학",(stage.Fever.World.DamageActive?"진행 ":"없음 ")+stage.Fever.World.DamageViewportCenter);
+            var patterns=stage.GetComponent<PatternReader>();
+            if(patterns!=null&&patterns.UsesMultiplierDifficulty){
+                EditorGUILayout.LabelField("일반 난이도 / 현재 조합","×"+patterns.CurrentDifficulty+" / "+patterns.CurrentEncounter);
+                EditorGUILayout.LabelField("생성 / 배치 대기 후 생략",patterns.EncounterSpawns+" / "+patterns.SkippedEncounterSpawns);
+                EditorGUILayout.LabelField("일반 전투 시계",stage.NormalCombatTime.ToString("0.000")+"초");
+            }
         }
         bool available=EditorApplication.isPlaying&&stage!=null&&CursorDashSession.IsPractice;
         using(new EditorGUI.DisabledScope(!available))

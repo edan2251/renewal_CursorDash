@@ -54,28 +54,41 @@ public sealed partial class CursorDashSettingsView
     public void PresentMenu(bool menu,float progress,bool interactive)
     {
         float eased=progress*progress*(3-2*progress);
-        sheetAnimation.gameObject.SetActive(menu);
-        sheetAnimation.anchoredPosition=new Vector2(0,-(sheetAnimation.rect.height-navigationHeight)*(1-eased));
         bool settings=selectedPanel==MenuPanel.Settings;
+        bool hasMenuPanels=HasMenuPanels;
+        float travel=Mathf.Max(0,sheetAnimation.rect.height-(hasMenuPanels?0:navigationHeight));
+        sheetAnimation.gameObject.SetActive(menu);
+        sheetAnimation.anchoredPosition=new Vector2(0,-travel*(1-eased));
         contentOpacity.alpha=settings?eased:0;
         contentOpacity.interactable=contentOpacity.blocksRaycasts=menu&&settings&&interactive&&progress>.98f;
-        if(!HasMenuPanels)return;
+        if(!hasMenuPanels)return;
         rankingOpacity.alpha=settings?0:eased;
         rankingOpacity.interactable=rankingOpacity.blocksRaycasts=menu&&!settings&&interactive&&progress>.98f;
         navigationPlacement.gameObject.SetActive(menu);
-        float travel=Mathf.Max(0,sheetAnimation.rect.height-navigationHeight);
-        Header(rankingHeaderAnimation,rankingHeaderOpacity,!settings,eased,travel,interactive);
-        Header(settingsHeaderAnimation,settingsHeaderOpacity,settings,eased,travel,interactive);
+        rankingHeaderAnimation.gameObject.SetActive(menu);
+        settingsHeaderAnimation.gameObject.SetActive(menu);
+        PositionMenuButtonLayer(settings?rankingHeaderAnimation:settingsHeaderAnimation,false);
+        PositionMenuButtonLayer(settings?settingsHeaderAnimation:rankingHeaderAnimation,true);
+
+        float reveal=travel*eased;
+        Header(rankingHeaderOpacity,settings&&reveal>=rankingHeaderAnimation.rect.height,interactive);
+        Header(settingsHeaderOpacity,!settings&&reveal>=settingsHeaderAnimation.rect.height,interactive);
         if(rankingDirection!=null)rankingDirection.enabled=menu&&!settings&&progress>.001f;
         if(settingsDirection!=null)settingsDirection.enabled=menu&&settings&&progress>.001f;
         if(navigationDivider!=null)navigationDivider.alpha=1;
     }
-    private static void Header(RectTransform rect,CanvasGroup opacity,bool selected,float eased,float travel,bool interactive)
+    private void PositionMenuButtonLayer(RectTransform button,bool aboveSheet)
     {
-        // Both headers remain opaque. The later-drawn sheet physically covers the stationary half.
-        rect.anchoredPosition=new Vector2(0,selected?travel*eased:0);
+        int buttonIndex=button.GetSiblingIndex();
+        int sheetIndex=sheetAnimation.GetSiblingIndex();
+        // Removing a button before the sheet shifts the sheet index down by one.
+        if(buttonIndex<sheetIndex)sheetIndex--;
+        int targetIndex=aboveSheet?sheetIndex+1:sheetIndex;
+        if(buttonIndex!=targetIndex)button.SetSiblingIndex(targetIndex);
+    }
+    private static void Header(CanvasGroup opacity,bool covered,bool interactive)
+    {
         opacity.alpha=1;
-        bool covered=!selected&&travel*eased>=rect.rect.height;
         opacity.interactable=opacity.blocksRaycasts=interactive&&!covered;
     }
     public void ApplyMenuLanguage(string language)
@@ -97,12 +110,12 @@ public sealed partial class CursorDashSettingsView
     private void BindNavigation()
     {
         if(!HasMenuPanels)return;
-        foreach(var grip in navigationPlacement.GetComponentsInChildren<CursorDashSheetHandle>(true))grip.owner=owner;
+        foreach(var grip in GetComponentsInChildren<CursorDashSheetHandle>(true))grip.owner=owner;
         resetAudio.onClick.AddListener(owner.ResetAudio);resetEffects.onClick.AddListener(owner.ResetEffects);languageButton.onClick.AddListener(owner.CycleMenuLanguage);
     }
     private void UnbindNavigation()
     {
-        if(navigationPlacement!=null)foreach(var grip in navigationPlacement.GetComponentsInChildren<CursorDashSheetHandle>(true))grip.owner=null;
+        if(navigationPlacement!=null)foreach(var grip in GetComponentsInChildren<CursorDashSheetHandle>(true))grip.owner=null;
         if(resetAudio!=null)resetAudio.onClick.RemoveListener(owner.ResetAudio);if(resetEffects!=null)resetEffects.onClick.RemoveListener(owner.ResetEffects);if(languageButton!=null)languageButton.onClick.RemoveListener(owner.CycleMenuLanguage);
     }
 }

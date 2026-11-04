@@ -5328,6 +5328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   betweenPatterns: 1.4
+  difficultyProfile: {fileID: 11400000, guid: f379779b73624d709e78cb31207e1d35, type: 2}
 --- !u!1 &1051641379
 GameObject:
   m_ObjectHideFlags: 0

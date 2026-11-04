@@ -40,30 +40,41 @@ namespace CursorDashTests
         [Test]public void SavedViewHasTwoNamedHeadersAndRenderableIcons()
         {
             Assert.IsTrue((bool)Get(view,"HasMenuPanels"));Assert.IsTrue((bool)Get(view,"IsConfigured"));Assert.AreEqual(9,((Array)Get(view,"Rows")).Length);
-            var nav=(RectTransform)Get(view,"NavigationPlacement");var grips=nav.GetComponentsInChildren(T("CursorDashSheetHandle"),true);Assert.AreEqual(2,grips.Length);
+            var grips=root.GetComponentsInChildren(T("CursorDashSheetHandle"),true);Assert.AreEqual(2,grips.Length);
             CollectionAssert.AreEquivalent(new[]{"Ranking","Settings"},grips.Select(g=>g.GetType().GetField("panel").GetValue(g).ToString()));
             foreach(var icon in root.GetComponentsInChildren(T("CursorDashMenuIcon"),true)){Assert.IsNotNull(icon.GetComponent<CanvasRenderer>(),icon.name);Assert.IsNotNull(((Image)icon).sprite,icon.name);Assert.IsTrue(((Image)icon).preserveAspect);Assert.Greater(icon.GetComponent<RectTransform>().rect.width,10);}
             Assert.IsNull(root.GetComponentsInChildren<Button>(true).FirstOrDefault(b=>b.name=="Reset audio and VFX"));
         }
         [TestCase("Ranking")][TestCase("Settings")]
-        public void OnlyChosenHeaderTravelsAndRisingBodyCoversOpaqueOppositeHeader(string panel)
+        public void SelectedButtonStaysAtBottomWhilePanelFillsSafeArea(string panel)
         {
             Call(view,"Layout",new Rect(0,0,1080,1920),new Vector2(1080,1920));Call(view,"SelectPanel",Panel(panel));
             var transforms=((Array)Get(view,"MenuAnimationTransforms")).Cast<RectTransform>().ToArray();var groups=((Array)Get(view,"MenuOpacityGroups")).Cast<CanvasGroup>().ToArray();int chosen=panel=="Ranking"?0:1,other=1-chosen;
             Call(view,"Present",true,0f,0f,true);Assert.AreEqual(0,transforms[chosen].anchoredPosition.y);Assert.AreEqual(1,groups[other].alpha);
             var arrows=((Array)Get(view,"MenuDirectionGraphics")).Cast<Graphic>().ToArray();Assert.IsTrue(arrows.All(g=>g!=null&&!g.enabled),"Closed tabs have no down arrows");
             foreach(float progress in new[]{.01f,.05f,.2f,.6f}){
-                Call(view,"Present",true,progress,0f,true);Assert.Greater(transforms[chosen].anchoredPosition.y,0);Assert.AreEqual(0,transforms[other].anchoredPosition.y);Assert.AreEqual(1,groups[other].alpha,"The opposite header must be covered, not faded");
+                Call(view,"Present",true,progress,0f,true);
+                Assert.AreEqual(0,transforms[0].anchoredPosition.y);
+                Assert.AreEqual(0,transforms[1].anchoredPosition.y);
+                Assert.AreEqual(1,groups[other].alpha,"The opposite header must be covered, not faded");
             }
-            Assert.IsFalse(groups[other].blocksRaycasts);
-            var nav=(RectTransform)Get(view,"NavigationPlacement");var sheet=(RectTransform)Get(view,"SheetAnimation");Assert.AreSame(nav.parent,sheet.parent);Assert.Less(nav.GetSiblingIndex(),sheet.GetSiblingIndex(),"Body draws and receives raycasts above the stationary header");Assert.AreEqual(1,((Image)Get(view,"SheetSurface")).color.a);
+            Assert.IsFalse(groups[other].blocksRaycasts);Assert.IsTrue(groups[chosen].blocksRaycasts);
+            var sheet=(RectTransform)Get(view,"SheetAnimation");
+            Assert.AreSame(sheet.parent,transforms[other].parent);Assert.AreSame(sheet.parent,transforms[chosen].parent);
+            Assert.Less(transforms[other].GetSiblingIndex(),sheet.GetSiblingIndex());Assert.Greater(transforms[chosen].GetSiblingIndex(),sheet.GetSiblingIndex());
+            Assert.AreEqual(1,((Image)Get(view,"SheetSurface")).color.a);
             Call(view,"Present",true,1f,0f,true);Assert.That(groups[chosen].alpha,Is.EqualTo(1));Assert.That(((CanvasGroup)Get(view,"ContentOpacity")).alpha,Is.EqualTo(panel=="Settings"?1:0));Assert.That(groups[2].alpha,Is.EqualTo(panel=="Ranking"?1:0));
             Assert.IsTrue(arrows[chosen].enabled);Assert.IsFalse(arrows[other].enabled);
-            Canvas.ForceUpdateCanvases();var surface=(Image)Get(view,"SheetSurface");Assert.IsNotNull(surface);Assert.IsFalse(((RectTransform)Get(view,"SheetAnimation")).GetComponent<Image>().enabled,"No full top-strip rectangle behind the other tab");
+            Canvas.ForceUpdateCanvases();var surface=(Image)Get(view,"SheetSurface");Assert.IsNotNull(surface);
             var bodyCorners=new Vector3[4];var titleCorners=new Vector3[4];surface.rectTransform.GetWorldCorners(bodyCorners);transforms[chosen].GetWorldCorners(titleCorners);
-            Assert.That(bodyCorners[1].y,Is.EqualTo(titleCorners[0].y).Within(.02f),"The full-width body starts at the selected title's bottom edge");
-            var safe=(RectTransform)Get(view,"SafeArea");var safeCorners=new Vector3[4];safe.GetWorldCorners(safeCorners);Assert.That(titleCorners[1].y,Is.EqualTo(safeCorners[1].y).Within(.02f),"The selected title reaches the top edge");
+            var safe=(RectTransform)Get(view,"SafeArea");var safeCorners=new Vector3[4];safe.GetWorldCorners(safeCorners);
+            Assert.That(bodyCorners[1].y,Is.EqualTo(safeCorners[1].y).Within(.02f));
+            Assert.That(titleCorners[0].y,Is.EqualTo(safeCorners[0].y).Within(.02f));
+            Call(view,"Present",true,0f,0f,true);surface.rectTransform.GetWorldCorners(bodyCorners);
+            Assert.That(bodyCorners[1].y,Is.EqualTo(safeCorners[0].y).Within(.02f));
+            Assert.IsTrue(groups[0].blocksRaycasts&&groups[1].blocksRaycasts);
             Call(view,"Present",false,0f,0f,false);Assert.IsFalse(((RectTransform)Get(view,"NavigationPlacement")).gameObject.activeSelf);
+            Assert.IsFalse(transforms[0].gameObject.activeSelf||transforms[1].gameObject.activeSelf);
         }
         [Test]public void PanelMotionKeepsAuthoredPlacementAndPauseControls()
         {
@@ -134,7 +145,12 @@ namespace CursorDashTests
             var pixels=wide?new Vector2(1920,1080):new Vector2(1080,1920);Call(view,"Layout",new Rect(0,pixels.y*.05f,pixels.x,pixels.y*.9f),pixels);Call(view,"Present",true,1f,0f,true);Canvas.ForceUpdateCanvases();
             var safe=(RectTransform)Get(view,"SafeArea");var sheet=(RectTransform)Get(view,"SheetAnimation");Assert.That(sheet.rect.height,Is.EqualTo(safe.rect.height).Within(.01f));
             var corners=new Vector3[4];safe.GetWorldCorners(corners);var data=new SerializedObject(view);
-            foreach(var field in new[]{"replayTutorial","languageButton"}){var button=(Button)data.FindProperty(field).objectReferenceValue;var target=new Vector3[4];((RectTransform)button.transform).GetWorldCorners(target);Assert.That(target[0].y,Is.GreaterThanOrEqualTo(corners[0].y),field+" below safe area");Assert.That(target[1].y,Is.LessThanOrEqualTo(corners[1].y));}
+            var settingsButton=new Vector3[4];((RectTransform)Get(view,"Handle")).GetWorldCorners(settingsButton);
+            foreach(var field in new[]{"replayTutorial","languageButton"}){var button=(Button)data.FindProperty(field).objectReferenceValue;var target=new Vector3[4];((RectTransform)button.transform).GetWorldCorners(target);Assert.That(target[0].y,Is.GreaterThanOrEqualTo(settingsButton[1].y),field+" overlaps the fixed navigation");Assert.That(target[1].y,Is.LessThanOrEqualTo(corners[1].y));}
+            Call(view,"SelectPanel",Panel("Ranking"));Call(view,"Present",true,1f,0f,true);Canvas.ForceUpdateCanvases();
+            var ranking=(RectTransform)Get(view,"RankingPlacement");var note=(RectTransform)ranking.Find("Ranking content/Ranking placeholder note");
+            var noteCorners=new Vector3[4];note.GetWorldCorners(noteCorners);
+            Assert.That(noteCorners[0].y,Is.GreaterThanOrEqualTo(settingsButton[1].y));
         }
     }
 }

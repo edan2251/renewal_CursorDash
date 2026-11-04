@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45f402907a942aa9ad03979672a9758, type: 3}
+  m_Name: MultiplierDifficulty
+  m_EditorClassIdentifier: 
+  useMultiplierEncounters: 1
+  phraseRestExtra: 0.65
+  feverRecovery: 0.8
+  damageRecovery: 0.8
+  placementWait: 0.6
+  nodeGap: 0.18
+  nexusClearance: 0.65
+  cursorClearance: 0.2
+  tiers:
+  - name: 1 - Find the rhythm
+    spacingScale: 1
+    recoveryExtra: 0.5
+    angularSpread: 8
+    radialSpread: 0.18
+    activeLimit: 4
+    hexLimit: 2
+  - name: 2 - Change direction
+    spacingScale: 0.9
+    recoveryExtra: 0.55
+    angularSpread: 14
+    radialSpread: 0.22
+    activeLimit: 4
+    hexLimit: 2
+  - name: 3 - Attack and defend
+    spacingScale: 0.8
+    recoveryExtra: 0.6
+    angularSpread: 21
+    radialSpread: 0.27
+    activeLimit: 5
+    hexLimit: 2
+  - name: 4 - Controlled crossfire
+    spacingScale: 0.7
+    recoveryExtra: 0.7
+    angularSpread: 28
+    radialSpread: 0.32
+    activeLimit: 6
+    hexLimit: 3
+  patterns:
+  - name: Opposite circles
+    recovery: 0
+    weights: 04000000020000000100000000000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 1
+      kind: 0
+      lane: 2
+  - name: Break then defend
+    recovery: 0
+    weights: 03000000030000000200000001000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 1.15
+      kind: 1
+      lane: 1
+  - name: Defend then turn
+    recovery: 0
+    weights: 03000000030000000200000001000000
+    steps:
+    - delay: 0
+      kind: 1
+      lane: 0
+    - delay: 1.25
+      kind: 0
+      lane: 3
+  - name: Three corner sweep
+    recovery: 0
+    weights: 00000000030000000200000001000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 0.95
+      kind: 0
+      lane: 1
+    - delay: 0.95
+      kind: 0
+      lane: 3
+  - name: Guard and cross
+    recovery: 0
+    weights: 00000000030000000300000002000000
+    steps:
+    - delay: 0
+      kind: 1
+      lane: 0
+    - delay: 1.1
+      kind: 0
+      lane: 2
+    - delay: 0.95
+      kind: 0
+      lane: 1
+  - name: Two defense lanes
+    recovery: 0
+    weights: 00000000000000000300000002000000
+    steps:
+    - delay: 0
+      kind: 1
+      lane: 0
+    - delay: 1.15
+      kind: 1
+      lane: 2
+    - delay: 0.9
+      kind: 0
+      lane: 1
+  - name: Cut across the beam
+    recovery: 0
+    weights: 00000000020000000400000003000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 0.8
+      kind: 1
+      lane: 2
+    - delay: 0.85
+      kind: 0
+      lane: 1
+  - name: Four way exchange
+    recovery: 0
+    weights: 00000000000000000200000004000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 0.85
+      kind: 1
+      lane: 1
+    - delay: 0.85
+      kind: 0
+      lane: 3
+    - delay: 0.9
+      kind: 1
+      lane: 2
+  - name: Guard and sweep
+    recovery: 0
+    weights: 00000000000000000200000003000000
+    steps:
+    - delay: 0
+      kind: 1
+      lane: 0
+    - delay: 0.9
+      kind: 0
+      lane: 2
+    - delay: 0.8
+      kind: 0
+      lane: 3
+    - delay: 0.85
+      kind: 0
+      lane: 1
+  - name: Late double defense
+    recovery: 0
+    weights: 00000000000000000000000002000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 0.65
+      kind: 0
+      lane: 1
+    - delay: 0.75
+      kind: 1
+      lane: 3
+    - delay: 1.05
+      kind: 1
+      lane: 2
+  - name: Recovery - two circles
+    recovery: 1
+    weights: 03000000030000000300000003000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 1.5
+      kind: 0
+      lane: 1
+  - name: Recovery - read a beam
+    recovery: 1
+    weights: 02000000020000000200000002000000
+    steps:
+    - delay: 0
+      kind: 0
+      lane: 0
+    - delay: 1.7
+      kind: 1
+      lane: 2

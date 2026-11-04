@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using NaughtyAttributes;
 
-public class NodeCreator : MonoBehaviour
+public partial class NodeCreator : MonoBehaviour
 {
     [SerializeField] private GameObject nodesObject;
     [SerializeField] private Transform[] generatePositions;

@@ -105,9 +105,13 @@ public sealed partial class CursorDashSettingsView
         public void Refine()
         {
             view.sheetHeightFraction=1;
-            // Headers are behind the rising body. The chosen header stays ahead of its upper edge.
+            // Both tabs stay bottom-anchored. Only the selected tab draws above the sheet.
             view.navigationPlacement.SetAsFirstSibling();
-            // Keep content/controls intact; the old full rectangle no longer fills the other header's notch.
+            view.rankingHeaderAnimation.SetParent(view.safeArea,false);
+            view.settingsHeaderAnimation.SetParent(view.safeArea,false);
+            view.rankingHeaderAnimation.anchoredPosition=view.settingsHeaderAnimation.anchoredPosition=Vector2.zero;
+            view.PositionMenuButtonLayer(view.rankingHeaderAnimation,false);
+            view.PositionMenuButtonLayer(view.settingsHeaderAnimation,true);
             var oldSurface=view.sheetAnimation.GetComponent<Image>();
             if(view.sheetSurface==null){
                 var surface=Rect("Panel body surface",view.sheetAnimation,Vector2.zero,Vector2.zero,Vector2.zero);
@@ -115,7 +119,7 @@ public sealed partial class CursorDashSettingsView
                 view.sheetSurface=Image(surface,oldSurface!=null?oldSurface.color:Panel,true);
                 if(oldSurface!=null){view.sheetSurface.sprite=oldSurface.sprite;view.sheetSurface.material=oldSurface.material;view.sheetSurface.type=oldSurface.type;}
             }
-            view.sheetSurface.rectTransform.offsetMin=Vector2.zero;view.sheetSurface.rectTransform.offsetMax=new Vector2(0,-view.navigationHeight);
+            view.sheetSurface.rectTransform.offsetMin=view.sheetSurface.rectTransform.offsetMax=Vector2.zero;
             var tint=view.sheetSurface.color;tint.a=1;view.sheetSurface.color=tint;
             if(oldSurface!=null){oldSurface.enabled=false;oldSurface.raycastTarget=false;}
             view.rankingDirection=view.rankingHeaderAnimation.Find("Close direction").GetComponent<Graphic>();
@@ -130,10 +134,9 @@ public sealed partial class CursorDashSettingsView
 
             var tutorial=(RectTransform)view.replayTutorial.transform;var language=(RectTransform)view.languageButton.transform;
             tutorial.sizeDelta=language.sizeDelta=new Vector2(view.contentPlacement.rect.width*.5f,60);
-            // Compensate the previous 5% top gap (48 at the 960-high reference frame).
-            // Include the footer in the fit bounds so smaller safe areas cannot clip its touch target.
-            view.contentPlacement.sizeDelta=new Vector2(view.contentPlacement.sizeDelta.x,838);
-            tutorial.anchoredPosition=new Vector2(-view.contentPlacement.rect.width*.25f,-790);language.anchoredPosition=new Vector2(view.contentPlacement.rect.width*.25f,-790);
+            // Fit the footer above the fixed settings button, including its touch targets.
+            view.contentPlacement.sizeDelta=new Vector2(view.contentPlacement.sizeDelta.x,790);
+            tutorial.anchoredPosition=new Vector2(-view.contentPlacement.rect.width*.25f,-742);language.anchoredPosition=new Vector2(view.contentPlacement.rect.width*.25f,-742);
             var tutorialText=view.replayTutorial.GetComponentInChildren<TMP_Text>();var textRect=tutorialText.rectTransform;
             textRect.anchorMin=Vector2.zero;textRect.anchorMax=Vector2.one;textRect.pivot=Vector2.one*.5f;textRect.anchoredPosition=Vector2.zero;textRect.sizeDelta=new Vector2(-16,0);
             tutorialText.fontSize=18;tutorialText.fontSizeMin=14;tutorialText.fontSizeMax=18;tutorialText.enableAutoSizing=true;tutorialText.alignment=TextAlignmentOptions.Center;

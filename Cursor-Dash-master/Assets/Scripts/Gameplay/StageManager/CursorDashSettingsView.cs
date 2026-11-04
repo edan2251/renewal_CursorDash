@@ -107,11 +107,10 @@ public sealed partial class CursorDashSettingsView : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         float height = safeArea.rect.height * sheetHeightFraction;
         sheetAnimation.sizeDelta = new Vector2(safeArea.rect.width, height);
-        // Only the chosen half-header occupies the top strip; the body starts below it.
-        if(sheetSurface!=null){sheetSurface.rectTransform.offsetMin=Vector2.zero;sheetSurface.rectTransform.offsetMax=new Vector2(0,-navigationHeight);}
-        float fit = Mathf.Min(1, (safeArea.rect.width - horizontalInset) / Mathf.Max(1, contentPlacement.rect.width), (height - sheetTopInset) / Mathf.Max(1, contentPlacement.rect.height));
+        float panelContentHeight = height - sheetTopInset - (HasMenuPanels ? navigationHeight : 0);
+        float fit = Mathf.Min(1, (safeArea.rect.width - horizontalInset) / Mathf.Max(1, contentPlacement.rect.width), panelContentHeight / Mathf.Max(1, contentPlacement.rect.height));
         contentAnimation.localScale = Vector3.one * Mathf.Max(.4f, fit);
-        if(rankingAnimation!=null&&rankingPlacement!=null){float rankFit=Mathf.Min(1,(safeArea.rect.width-horizontalInset)/Mathf.Max(1,rankingPlacement.rect.width),(height-sheetTopInset)/Mathf.Max(1,rankingPlacement.rect.height));rankingAnimation.localScale=Vector3.one*Mathf.Max(.4f,rankFit);}
+        if(rankingAnimation!=null&&rankingPlacement!=null){float rankFit=Mathf.Min(1,(safeArea.rect.width-horizontalInset)/Mathf.Max(1,rankingPlacement.rect.width),panelContentHeight/Mathf.Max(1,rankingPlacement.rect.height));rankingAnimation.localScale=Vector3.one*Mathf.Max(.4f,rankFit);}
         float pauseFit = Mathf.Min(1, (safeArea.rect.width - horizontalInset) / Mathf.Max(1, pausePlacement.rect.width), (safeArea.rect.height - pauseVerticalInset) / Mathf.Max(1, pausePlacement.rect.height));
         pauseAnimation.localScale = Vector3.one * Mathf.Max(.4f, pauseFit);
         return height;
