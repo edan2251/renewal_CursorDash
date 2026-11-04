@@ -1,6 +1,6 @@
 # D-084 배율 난이도·하단 고정 버튼 WebGL 릴리스
 
-**IN_PROGRESS — 완료 전 기록.** 사용자 ‘이 상태로 빌드 커밋 푸시 배포, 테스트는 직접 WebGL에서’ 승인에 따른 현본 릴리스다. 이번에 Play·자동 테스트·브라우저 게임 조작을 하지 않으며, 빌드/게시 완료와 실제 게임 검수를 분리한다.
+**RELEASE_COMPLETE / WEBGL_BUILD_PASS / PUBLIC_ARTIFACTS_PASS / USER_PLAY_PENDING.** 사용자 ‘이 상태로 빌드 커밋 푸시 배포, 테스트는 직접 WebGL에서’ 승인에 따른 현본 릴리스다. 이번에 Play·자동 테스트·브라우저 게임 조작을 하지 않으며, 빌드/게시 완료와 실제 게임 검수를 분리한다.
 
 ## 대상과 범위
 
@@ -31,7 +31,34 @@
 - 스테이징32파일/필수 빌드 입력1,676파일 Git blob 일치(줄바꿈 정규화만 허용). 기존 gitignore된 중복 DOTween debug symbol4개는 제외하고 실제 DLL은 추적 상태 유지. 비밀키 패턴/50MB 초과 파일 발견0.
 - 전체 `git diff --cached --check`는 신규 Unity YAML의 비어 있는 필드19줄 후행 공백만 지적했다. `.cs/.shader/.md/.txt/.json` 공백 검사는 PASS. 빌드 입력을 바꾸지 않기 위해 Unity 직렬화 원문은 보존한다.
 - BuildReport 경고는 기존 ArrowNode 미사용 필드6건(CS0414)과 NexusGameboard gradient 루프 경고2건(d3d11/gles3)이다. 새 난이도 코드 경고는 없다.
-- 선별 소스/배포 커밋·Pages·공개 파일 반영 결과는 게시 완료 후 갱신한다.
+- 선별 소스32파일 커밋 및 배포 커밋을 기존 원격에 정상 푸시했고, 이번 배포 SHA의 Pages 완료와 공개25파일 반영을 확인했다. 상세 결과는 아래와 같다.
 - 실제 난이도/연속 수비·메뉴 터치·튜토리얼·피버·모바일/WebGL 성능·브라우저 플레이: **NOT_RUN**, 사용자 검수 예정.
 
-증거 위치: `Cursor-Dash-master/Logs/release-multiplier-20261105/`. 완료 후 상태·커밋·파일 해시를 기록하며, 사후 문서 커밋은 빌드 소스 커밋과 구분한다. 문서만 변경되면 재빌드하지 않는다.
+증거 위치: `Cursor-Dash-master/Logs/release-multiplier-20261105/`. 상태·커밋·파일 해시를 기록했다. 이 완료 기록을 저장하는 사후 문서 커밋은 빌드 소스 커밋과 구분한다. 문서만 변경되면 재빌드하지 않는다.
+
+
+## 실제 게시 결과
+
+| 항목 | 결과 |
+|---|---|
+| 빌드에 사용한 소스 | `62c7d31110a891dd45cded6dd2491ef9dd08c5c7` — main, 관련32파일 |
+| 배포 커밋 | `cd36b3f748a67f25684f78c2bdf0daf177d685ed` — gh-pages |
+| 공개 주소 | https://edan2251.github.io/renewal_CursorDash/ |
+| Pages | [41861139546](https://github.com/edan2251/renewal_CursorDash/actions/runs/41861139546) completed/success, Pages API built·동일 배포 SHA |
+| 빌드 | Unity6000.3.23f1, 오류0·기존 경고8, 234.413초 |
+| 공개 파일 | 일반 URL25/25 HTTP200·배포 Git blob SHA256 일치, WASM application/wasm |
+| 게임 플레이 | **NOT_RUN** — 사용자가 직접 WebGL 검수 |
+
+빌드 산출물은 `D:/renewal_CursorDash/Builds/LocalDevPreview/cursordash-20261105-difficulty-f70fb565edb7`에 있다. 전용 기존 gh-pages checkout의 이전25파일은 `Logs/release-multiplier-20261105/PagesBefore`에 보존했다. 이전 해시명이 붙은4파일만 새 산출물로 교체하고 기존 `.nojekyll`과 배포 구조를 유지했다.
+
+배포 대상25파일을 Git index/commit과 대조했다. 첫 대조에서 텍스트5파일의 CRLF→LF 차이를 발견했으며, 코드/내용이 동일한 줄바꿈 정규화임을 확인해 기록했다. 바이너리/data/wasm은 정확히 일치한다. 공개 확인은 이 실제 배포 Git blob의 해시로 수행했다. 첫 공개 검사에서 폰트2개의 공백 URL 인코딩이 누락됐고, 확인 스크립트만 수정한 뒤25/25를 통과했다. 이 두 검수 도구 문제는 게임·빌드 실패로 기록하지 않는다.
+
+작업 전1,755파일에 삭제0·예상 밖 변경0을 확인했다. 릴리스에서 추가로 변경한 게임 측 파일은 BuildIdentity와 기존 빌드 진입점의 ID 가드뿐이며, 이미 완성된 UI/난이도/폰트 소스를 그대로 빌드·커밋했다. 사용자 저장12값·persistent3파일 동일, 미저장 imported 자산8개 보존. Cyberpunk clean/PlayOFF·compileOFF/buildOFF를 확인했다. Unity 종료·사용자 저장/폐기·다른 프로젝트/서버 조작·컴퓨터 입력 없음.
+
+## 사후 기록과 다음 한 작업
+
+이 문서·STATUS·DECISIONS·MASTER_SPEC·AGENTS의 완료 기록은 **소스62c7d31 뒤의 별도 `[Docs]` 커밋**으로 main에 푸시한다. 게임 소스는 변경하지 않으며 문서만으로 재빌드하지 않는다. 정확한 사후 문서 커밋은 Git 이력과 최종 응답에 남긴다.
+
+다음 작업은 사용자 공개 WebGL 검수다. 권장 순서는 하단 랭킹/설정 열기·같은 버튼 닫기 → 정상 전투×1 → 피버 후×2~×4 조합·연속 수비/원형 이동 → 피격 시×1 복귀 → Pause/Retry/Home이다. 실제 재미·난이도·물리/시각·모바일 터치·브라우저 실행/성능·튜토리얼/피버 전체 회귀·재실행 저장은 이번에 확인하지 않았다. 테스트 생략을 정상 동작 보장으로 해석하지 않는다.
+
+실제 GooglePlay 랭킹 연동, 전면적인 일반 노드 겹침 개선, 새 Flash 그림/별도 사이버 재구축은 보류다. 이번 한정 빌드/커밋/푸시/배포 권한은 완료 후 자동 연장하지 않는다. 추가 개선은 구현하지 않고 사용자 검수를 기다린다.

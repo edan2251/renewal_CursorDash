@@ -1,8 +1,10 @@
 # CursorDash 현재 상태와 다음 한 작업
 
-## 진행 — D-084 현본 WebGL 릴리스 (2026-11-05)
+## 최신 — D-084 현본 WebGL 릴리스 완료 (2026-11-05)
 
-사용자 ‘이 상태로 빌드 커밋 푸시 배포 / 테스트는 직접 WebGL’에 따라 D081/082 하단 고정 버튼과 D083 배율 난이도 현본을 기존 main/gh-pages에 게시한다. Play/Test Runner/브라우저 게임 조작은 생략하며 빌드·Pages·공개 파일 반영만 확인한다. 작업 전 사본1,755파일, 원격 main0/0·배포9128925 clean. 사용자 MCP 연결 후 CursorDash 경로·Cyberpunk clean/PlayOFF/Console오류0 확인, per-call 대상 명시/Project_Brawl 불변. 새 기능·추가 밸런스 변경 없음. [실행 기록](RELEASE_DIFFICULTY_20261105.md). 현재 완료/게임 검수 통과로 표시하지 않는다.
+**RELEASE_COMPLETE / WEBGL_BUILD_PASS / PUBLIC_ARTIFACTS_PASS / USER_PLAY_PENDING.** D081/082 하단 고정 버튼과 D083 배율 난이도 현본을 선별소스 main `62c7d31`(32파일) / gh-pages `cd36b3f`로 정상 푸시했다. buildId `cursordash-20261105-difficulty-f70fb565edb7`, Unity6000.3.23f1/234.413초/오류0·기존경고8, Pages41861139546 success/built·동일SHA. 공개25파일 HTTP200·Git SHA256·WASM MIME 일치. [릴리스·보존·미검증](RELEASE_DIFFICULTY_20261105.md).
+
+요청대로 이번 Play/Test Runner/브라우저 게임 조작은 **NOT_RUN**, 사용자 직접 WebGL 검수 대기다. 사본1,755파일 보존/삭제0·예상 밖 변경0, 빌드입력1,680파일 전후동일/필수1,676개 커밋대조(기존 제외 심볼4개), 보호 저장12값·persistent3파일 동일. Cyberpunk clean/PlayOFF/compileOFF/buildOFF·기존dirty8보존, MCP per-call CursorDash/Project_Brawl·서버 불변. 소스62c7d31과 사후 완료 문서 커밋은 구분하고 문서만으로 재빌드하지 않는다. **다음 한 작업:** 사용자가 기존 공개 URL에서 패널/×1~×4 전투·피버/피격복귀·Pause/Retry/Home 확인. 추가 기능·재게시 자동 진행 없음.
 
 ## 최신 — D-083 현재 배율별 일반 전투 조합·난이도 (2026-11-05)
 
