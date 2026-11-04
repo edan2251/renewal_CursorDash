@@ -1,6 +1,7 @@
 {
-  "buildId": "cursordash-20261103-panels-a2436cc6417d",
-  "sourceCommit": "8c3e267aec9a289cae67e1120946098ab796b46b",
+  "buildId": "cursordash-20261105-difficulty-f70fb565edb7",
+  "sourceCommit": "62c7d31110a891dd45cded6dd2491ef9dd08c5c7",
   "unity": "6000.3.23f1",
-  "builtUtc": "2026-11-02T15:24:24.5758138Z"
+  "builtUtc": "2026-11-04T15:37:26.2197115Z",
+  "playValidation": "NOT_RUN - user will review WebGL"
 }
