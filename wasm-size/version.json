@@ -1,0 +1,12 @@
+{
+  "buildId": "cursordash-20261110-cloudflare-62c7d31-wasm-size",
+  "sourceCommit": "62c7d31110a891dd45cded6dd2491ef9dd08c5c7",
+  "baselinePagesCommit": "cd36b3f748a67f25684f78c2bdf0daf177d685ed",
+  "unity": "6000.3.23f1",
+  "compression": "Brotli",
+  "decompressionFallback": true,
+  "builtUtc": "2026-11-10T10:39:45.8273222Z",
+  "assignmentStage": "Web comparison with Unity Disk Size with LTO",
+  "backgroundMusicIncluded": false,
+  "wasmOptimization": "DiskSizeLTO"
+}
